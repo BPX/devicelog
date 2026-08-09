@@ -33,7 +33,11 @@ export default function EmployeesPage() {
     setNewEmp('')
   }
 
-  function remove(name: string) { persist(employees.filter(e => e !== name)) }
+  function remove(name: string) {
+    const count = counts[name] || 0
+    if (count > 0 && !confirm(`${name} has ${count} device(s) assigned. Remove from directory anyway? (Assets will keep their name)`)) return
+    persist(employees.filter(e => e !== name))
+  }
 
   return (<div>
     <div className="flex justify-between items-center mb-6">

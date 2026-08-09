@@ -36,6 +36,10 @@ export default function SettingsPage() {
   }
 
   function removeItem(field: 'categories'|'statuses'|'employees', value: string) {
+    if (field === 'employees') {
+      const count = counts[value] || 0
+      if (count > 0 && !confirm(`${value} has ${count} device(s) assigned. Remove from directory anyway?`)) return
+    }
     persist({ ...settings, [field]: settings[field].filter(v => v !== value) })
     if (field === 'employees') setCounts(getAssetCounts())
   }
