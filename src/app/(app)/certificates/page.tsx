@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { formatDate, daysUntil } from '@/lib/utils'
-import { Plus, Trash2, Upload, Download, Shield } from 'lucide-react'
+import { Plus, Trash2, Upload, Download, Shield, Search, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
 import CsvImport from '@/components/csv-import'
 import { downloadCsv } from '@/lib/export'
 
@@ -13,8 +13,10 @@ function saveCerts(c: Cert[]) { localStorage.setItem('trackstack_certificates', 
 
 export default function CertsPage() {
   const [certs, setCerts] = useState<Cert[]>([]); const [loading, setLoading] = useState(true)
-  const [showForm, setShowForm] = useState(false)
-  const [showImport, setShowImport] = useState(false)
+  const [showForm, setShowForm] = useState(false); const [showImport, setShowImport] = useState(false)
+  const [search, setSearch] = useState('')
+  const [sortField, setSortField] = useState<string>('')
+  const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
   const [form, setForm] = useState({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30 })
 
   useEffect(() => { setCerts(getCerts()); setLoading(false) }, [])
@@ -27,6 +29,28 @@ export default function CertsPage() {
     setShowForm(false); setForm({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30 })
   }
 
+  function toggleSort(field: string) {
+    if (sortField === field) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    else { setSortField(field); setSortDir('asc') }
+  }
+
+  function sortIcon(field: string) {
+    if (sortField !== field) return <ArrowUpDown size={12} className="opacity-30" />
+    return sortDir === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />
+  }
+
+  const filtered = certs.filter(c => c.name.toLowerCase().includes(search.toLowerCase()) || c.issuer.toLowerCase().includes(search.toLowerCase()))
+
+  const sorted = sortField ? [...filtered].sort((a:any,b:any) => {
+    const av = (a[sortField] || '').toString().toLowerCase()
+    const bv = (b[sortField] || '').toString().toLowerCase()
+    if (sortField === 'expires_at') {
+      const ad = daysUntil(a.expires_at); const bd = daysUntil(b.expires_at)
+      return sortDir === 'asc' ? ad - bd : bd - ad
+    }
+    return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av)
+  }) : filtered
+
   if (loading) return <div className="p-8 text-slate-500">Loading...</div>
 
   return (<div>
@@ -38,6 +62,8 @@ export default function CertsPage() {
         <button onClick={()=>setShowForm(true)} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700"><Plus size={16}/>Add Certificate</button>
       </div>
     </div>
+
+    <div className="mb-4 relative"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/><input placeholder="Search by name or issuer..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"/></div>
 
     {showForm && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"><div className="bg-white rounded-lg p-6 w-full max-w-md border border-slate-200 shadow-xl"><h2 className="text-lg font-semibold mb-4">New Certificate</h2>
       <form onSubmit={handleSubmit} className="space-y-3">
@@ -78,15 +104,16 @@ export default function CertsPage() {
         <table className="w-full text-sm">
           <thead className="sticky top-0 z-10">
             <tr className="text-left text-slate-500 bg-slate-50 border-b">
-              <th className="py-3 px-4 font-medium">Name</th>
-              <th className="py-3 px-4 font-medium">Type</th>
-              <th className="py-3 px-4 font-medium">Issuer</th>
-              <th className="py-3 px-4 font-medium">Expires</th>
+              {['name','type','issuer','expires_at'].map(f => (
+                <th key={f} onClick={() => toggleSort(f)} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700">
+                  <span className="inline-flex items-center gap-1">{f==='expires_at' ? 'Expires' : f.charAt(0).toUpperCase()+f.slice(1)}{sortIcon(f)}</span>
+                </th>
+              ))}
               <th className="py-3 px-4 font-medium w-12"></th>
             </tr>
           </thead>
           <tbody>
-            {certs.map(c => {
+            {sorted.map(c => {
               const d = daysUntil(c.expires_at)
               return (
                 <tr key={c.id} className="border-b border-slate-100 hover:bg-slate-50">
