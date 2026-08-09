@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { formatDate } from '@/lib/utils'
 import { Plus, Search, Pencil, Trash2, Package, Upload, Monitor, QrCode } from 'lucide-react'
-import { getSettings } from '@/lib/settings-store'
+import { getSettings, addEmployee as addEmp } from '@/lib/settings-store'
 import CsvImport from '@/components/csv-import'
 import EmployeeAutocomplete from '@/components/employee-autocomplete'
 import ScanDevice from '@/components/scan-device'
@@ -51,6 +51,7 @@ export default function AssetsPage() {
       all.push({ id: Date.now().toString() + Math.random().toString(36).slice(2,6), ...form, warranty_expires: form.warranty_expires || null, purchase_date: form.purchase_date || null })
     }
     saveAssets(all); reload(); setShowForm(false); setEditing(null)
+    if (form.assigned_to.trim()) addEmp(form.assigned_to.trim())
     setForm({ name:'', category:'laptop', manufacturer:'', model:'', serial_number:'', status:'active', assigned_to:'', location:'', purchase_date:'', warranty_expires:'' })
   }
 
