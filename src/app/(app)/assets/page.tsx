@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { formatDate } from '@/lib/utils'
-import { Plus, Search, Pencil, Trash2, Package, Upload, Monitor, QrCode } from 'lucide-react'
+import { Plus, Search, Pencil, Trash2, Package, Upload, Monitor, QrCode, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
 import { getSettings, addEmployee as addEmp } from '@/lib/settings-store'
 import CsvImport from '@/components/csv-import'
 import EmployeeAutocomplete from '@/components/employee-autocomplete'
@@ -19,6 +19,24 @@ export default function AssetsPage() {
   const [search, setSearch] = useState(''); const [showCsvImport, setShowCsvImport] = useState(false)
   const [showScanner, setShowScanner] = useState(false)
   const [qrAsset, setQrAsset] = useState<Asset | null>(null)
+  const [sortField, setSortField] = useState<string>('')
+  const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
+
+  function toggleSort(field: string) {
+    if (sortField === field) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    else { setSortField(field); setSortDir('asc') }
+  }
+
+  function sortIcon(field: string) {
+    if (sortField !== field) return <ArrowUpDown size={12} className="opacity-30" />
+    return sortDir === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />
+  }
+
+  const sorted = sortField ? [...filtered].sort((a:any,b:any) => {
+    const av = (a[sortField] || '').toString().toLowerCase()
+    const bv = (b[sortField] || '').toString().toLowerCase()
+    return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av)
+  }) : filtered
   const [form, setForm] = useState({ name:'', category:'laptop', manufacturer:'', model:'', serial_number:'', status:'active', assigned_to:'', location:'', purchase_date:'', warranty_expires:'' })
   const settings = getSettings()
 
@@ -119,8 +137,13 @@ export default function AssetsPage() {
         <table className="w-full text-sm">
           <thead className="sticky top-0 z-10">
             <tr className="text-left text-slate-500 bg-slate-50 border-b">
-              <th className="py-3 px-4 font-medium">Name</th><th className="py-3 px-4 font-medium">Category</th><th className="py-3 px-4 font-medium">Assigned To</th><th className="py-3 px-4 font-medium">Status</th><th className="py-3 px-4 font-medium">Warranty</th><th className="py-3 px-4 font-medium w-20"></th></tr></thead>
-          <tbody>{filtered.map(a=><tr key={a.id} className="border-b border-slate-100 hover:bg-slate-50"><td className="py-2.5 px-4 text-slate-900 font-medium">{a.name}</td><td className="py-2.5 px-4 text-slate-500 capitalize">{a.category}</td><td className="py-2.5 px-4 text-slate-600">{a.assigned_to||'—'}</td><td className="py-2.5 px-4"><span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${a.status==='active'?'bg-emerald-50 text-emerald-700':a.status==='maintenance'?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-600'}`}>{a.status}</span></td><td className="py-2.5 px-4 text-slate-500">{formatDate(a.warranty_expires)}</td><td className="py-2.5 px-4"><div className="flex gap-1"><button onClick={()=>startEdit(a)} className="p-1 hover:bg-slate-100 rounded"><Pencil size={14} className="text-slate-400"/></button><button onClick={()=>setQrAsset(a)} className="p-1 hover:bg-cyan-50 rounded"><QrCode size={14} className="text-cyan-500"/></button><button onClick={()=>{if(!confirm('Delete?'))return;saveAssets(getAssets().filter(x=>x.id!==a.id));reload()}} className="p-1 hover:bg-red-50 rounded"><Trash2 size={14} className="text-red-400"/></button></div></td></tr>)}</tbody></table>
+              {['name','category','assigned_to','status','warranty_expires'].map(f => (
+                <th key={f} onClick={() => toggleSort(f)} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700">
+                  <span className="inline-flex items-center gap-1">{f==='warranty_expires' ? 'Warranty' : f==='assigned_to' ? 'Assigned To' : f.charAt(0).toUpperCase()+f.slice(1)}{sortIcon(f)}</span>
+                </th>
+              ))}
+              <th className="py-3 px-4 font-medium w-20"></th></tr></thead>
+          <tbody>{sorted.map(a=><tr key={a.id} className="border-b border-slate-100 hover:bg-slate-50"><td className="py-2.5 px-4 text-slate-900 font-medium">{a.name}</td><td className="py-2.5 px-4 text-slate-500 capitalize">{a.category}</td><td className="py-2.5 px-4 text-slate-600">{a.assigned_to||'—'}</td><td className="py-2.5 px-4"><span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${a.status==='active'?'bg-emerald-50 text-emerald-700':a.status==='maintenance'?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-600'}`}>{a.status}</span></td><td className="py-2.5 px-4 text-slate-500">{formatDate(a.warranty_expires)}</td><td className="py-2.5 px-4"><div className="flex gap-1"><button onClick={()=>startEdit(a)} className="p-1 hover:bg-slate-100 rounded"><Pencil size={14} className="text-slate-400"/></button><button onClick={()=>setQrAsset(a)} className="p-1 hover:bg-cyan-50 rounded"><QrCode size={14} className="text-cyan-500"/></button><button onClick={()=>{if(!confirm('Delete?'))return;saveAssets(getAssets().filter(x=>x.id!==a.id));reload()}} className="p-1 hover:bg-red-50 rounded"><Trash2 size={14} className="text-red-400"/></button></div></td></tr>)}</tbody></table>
       </div>
     </div>}
   </div>)
