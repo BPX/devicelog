@@ -38,7 +38,14 @@ export default function SettingsPage() {
   function removeItem(field: 'categories'|'statuses'|'employees', value: string) {
     if (field === 'employees') {
       const count = counts[value] || 0
-      if (count > 0 && !confirm(`${value} has ${count} device(s) assigned. Remove from directory anyway?`)) return
+      if (count > 0 && !confirm(`${value} has ${count} device(s) assigned. Remove and unassign all?`)) return
+      // Clear from assets
+      try {
+        const assets = JSON.parse(localStorage.getItem('trackstack_assets') || '[]')
+        let changed = false
+        for (const a of assets) { if (a.assigned_to === value) { a.assigned_to = ''; changed = true } }
+        if (changed) localStorage.setItem('trackstack_assets', JSON.stringify(assets))
+      } catch {}
     }
     persist({ ...settings, [field]: settings[field].filter(v => v !== value) })
     if (field === 'employees') setCounts(getAssetCounts())

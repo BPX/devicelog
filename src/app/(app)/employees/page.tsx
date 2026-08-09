@@ -83,9 +83,21 @@ export default function EmployeesPage() {
 
     {confirmRemove && <ConfirmDialog
       title={`Remove ${confirmRemove.name}?`}
-      message={`They currently have ${confirmRemove.count} device(s) assigned. Removing them from the directory won't unassign those assets — their name will still appear on existing entries.`}
+      message={`They have ${confirmRemove.count} device(s) assigned. Removing them will unassign all their assets.`}
       confirmLabel="Remove"
-      onConfirm={() => { persist(employees.filter(e => e !== confirmRemove.name)); setConfirmRemove(null) }}
+      onConfirm={() => { 
+        persist(employees.filter(e => e !== confirmRemove.name))
+        // Clear this employee from all assigned assets
+        try {
+          const assets = JSON.parse(localStorage.getItem('trackstack_assets') || '[]')
+          let changed = false
+          for (const a of assets) {
+            if (a.assigned_to === confirmRemove.name) { a.assigned_to = ''; changed = true }
+          }
+          if (changed) localStorage.setItem('trackstack_assets', JSON.stringify(assets))
+        } catch {}
+        setConfirmRemove(null) 
+      }}
       onCancel={() => setConfirmRemove(null)}
     />}
   </div>)
