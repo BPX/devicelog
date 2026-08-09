@@ -26,7 +26,7 @@ export default function EmployeeAutocomplete({ value, onChange, options, placeho
 
   const filtered = query.trim()
     ? options.filter(o => o.toLowerCase().includes(query.toLowerCase())).slice(0, 8)
-    : options.slice(0, 8)
+    : []
 
   function select(option: string) { setQuery(option); onChange(option); setOpen(false); setHighlighted(-1) }
 
@@ -44,7 +44,7 @@ export default function EmployeeAutocomplete({ value, onChange, options, placeho
         ref={inputRef}
         value={query}
         onChange={e => { setQuery(e.target.value); onChange(e.target.value); setOpen(true); setHighlighted(-1) }}
-        onFocus={() => setOpen(true)}
+        onFocus={() => { if (query.trim()) setOpen(true) }}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
