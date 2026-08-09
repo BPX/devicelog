@@ -98,6 +98,7 @@ export default function AssetsPage() {
     saveAssets(updated); setSelected(new Set()); reload()
     if (name.trim()) addEmp(name.trim())
   }
+  function startEdit(a: Asset) {
     setEditing(a); setForm({ name:a.name, category:a.category, manufacturer:a.manufacturer||'', model:a.model||'', serial_number:a.serial_number||'', status:a.status, assigned_to:a.assigned_to||'', location:a.location||'', purchase_date:a.purchase_date||'', warranty_expires:a.warranty_expires||'' })
     setShowForm(true)
   }
