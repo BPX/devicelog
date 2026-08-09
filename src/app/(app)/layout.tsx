@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Package, Shield, Settings, LogOut, LayoutDashboard } from 'lucide-react'
+import { Package, Shield, Settings, LogOut, LayoutDashboard, Users } from 'lucide-react'
 import { getCurrentUser, signOut } from '@/lib/demo-auth'
 import { useEffect, useState } from 'react'
 import InstallPrompt from '@/components/install-prompt'
@@ -9,6 +9,7 @@ import InstallPrompt from '@/components/install-prompt'
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/assets', label: 'Assets', icon: Package },
+  { href: '/employees', label: 'Employees', icon: Users },
   { href: '/certificates', label: 'Certs & Licenses', icon: Shield },
   { href: '/settings', label: 'Settings', icon: Settings },
 ]
