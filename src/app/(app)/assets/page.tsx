@@ -4,7 +4,6 @@ import { formatDate } from '@/lib/utils'
 import { Plus, Search, Pencil, Trash2, Package, Upload, Monitor, QrCode, ArrowUpDown, ArrowUp, ArrowDown, Download } from 'lucide-react'
 import { getSettings, addEmployee as addEmp } from '@/lib/settings-store'
 import CsvImport from '@/components/csv-import'
-import ConfirmDialog from '@/components/confirm-dialog'
 import EmployeeAutocomplete from '@/components/employee-autocomplete'
 import ScanDevice from '@/components/scan-device'
 import QrLabel from '@/components/qr-label'
@@ -23,10 +22,6 @@ export default function AssetsPage() {
   const [qrAsset, setQrAsset] = useState<Asset | null>(null)
   const [sortField, setSortField] = useState<string>('')
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
-  const [selected, setSelected] = useState<Set<string>>(new Set())
-  const [bulkReassignOpen, setBulkReassignOpen] = useState(false)
-  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false)
-  const [bulkReassignName, setBulkReassignName] = useState('')
   const [form, setForm] = useState({ name:'', category:'laptop', manufacturer:'', model:'', serial_number:'', status:'active', assigned_to:'', location:'', purchase_date:'', warranty_expires:'' })
   const settings = getSettings()
 
@@ -81,20 +76,6 @@ export default function AssetsPage() {
     setForm({ name:'', category:'laptop', manufacturer:'', model:'', serial_number:'', status:'active', assigned_to:'', location:'', purchase_date:'', warranty_expires:'' })
   }
 
-  function toggleSelect(id: string) {
-    const next = new Set(selected)
-    if (next.has(id)) next.delete(id); else next.add(id)
-    setSelected(next)
-  }
-  function bulkDelete() {
-    saveAssets(assets.filter(a => !selected.has(a.id)))
-    setSelected(new Set()); setBulkDeleteOpen(false); reload()
-  }
-  function bulkReassign() {
-    const updated = assets.map(a => selected.has(a.id) ? { ...a, assigned_to: bulkReassignName } : a)
-    saveAssets(updated); setSelected(new Set()); setBulkReassignOpen(false); setBulkReassignName(''); reload()
-    if (bulkReassignName.trim()) addEmp(bulkReassignName.trim())
-  }
   function startEdit(a: Asset) {
     setEditing(a); setForm({ name:a.name, category:a.category, manufacturer:a.manufacturer||'', model:a.model||'', serial_number:a.serial_number||'', status:a.status, assigned_to:a.assigned_to||'', location:a.location||'', purchase_date:a.purchase_date||'', warranty_expires:a.warranty_expires||'' })
     setShowForm(true)
@@ -114,34 +95,6 @@ export default function AssetsPage() {
     </div>
 
     <div className="mb-4 relative"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/><input placeholder="Search by name, person, or serial..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"/></div>
-
-    {selected.size > 0 && <div className="mb-4 flex items-center gap-4 px-4 py-3 bg-slate-900 text-white rounded-lg text-sm">
-      <span className="font-medium">{selected.size} item{selected.size>1?'s':''} selected</span>
-      <button onClick={() => setBulkReassignOpen(true)} className="px-3 py-1.5 bg-white/10 border border-white/20 text-white rounded-md text-xs font-medium hover:bg-white/20 transition-colors">Reassign</button>
-      <button onClick={() => setBulkDeleteOpen(true)} className="px-3 py-1.5 bg-red-500/30 border border-red-400/40 text-red-100 rounded-md text-xs font-medium hover:bg-red-500/50 transition-colors">Delete</button>
-      <button onClick={() => setSelected(new Set())} className="ml-auto text-xs text-white/60 hover:text-white">Clear selection</button>
-    </div>}
-
-    {bulkDeleteOpen && <ConfirmDialog
-      title={`Delete ${selected.size} asset${selected.size>1?'s':''}?`}
-      message="This permanently removes them from your inventory. This cannot be undone."
-      confirmLabel={`Delete ${selected.size}`}
-      onConfirm={bulkDelete}
-      onCancel={() => setBulkDeleteOpen(false)}
-    />}
-
-    {bulkReassignOpen && <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/20" onClick={() => setBulkReassignOpen(false)} />
-      <div className="relative bg-white rounded-lg shadow-xl border border-slate-200 p-6 max-w-md w-full mx-4">
-        <h3 className="text-sm font-semibold text-slate-900 mb-1">Reassign {selected.size} asset{selected.size>1?'s':''}</h3>
-        <p className="text-sm text-slate-500 mb-4">Assign all selected assets to someone</p>
-        <input autoFocus value={bulkReassignName} onChange={e => setBulkReassignName(e.target.value)} placeholder="Employee name..." className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 mb-4" onKeyDown={e => { if(e.key==='Enter' && bulkReassignName.trim()) bulkReassign() }} />
-        <div className="flex gap-2 justify-end">
-          <button onClick={() => { setBulkReassignOpen(false); setBulkReassignName('') }} className="px-4 py-1.5 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button>
-          <button onClick={bulkReassign} disabled={!bulkReassignName.trim()} className="px-4 py-1.5 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed">Reassign</button>
-        </div>
-      </div>
-    </div>}
 
     {showCsvImport && <CsvImport
       title="Import Assets from CSV"
@@ -186,16 +139,13 @@ export default function AssetsPage() {
         <table className="w-full text-sm">
           <thead className="sticky top-0 z-10">
             <tr className="text-left text-slate-500 bg-slate-50 border-b">
-              <th className="py-3 px-4 w-8"></th>
               {['name','category','assigned_to','status','warranty_expires'].map(f => (
                 <th key={f} onClick={() => toggleSort(f)} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700">
                   <span className="inline-flex items-center gap-1">{f==='warranty_expires' ? 'Warranty' : f==='assigned_to' ? 'Assigned To' : f.charAt(0).toUpperCase()+f.slice(1)}{sortIcon(f)}</span>
                 </th>
               ))}
               <th className="py-3 px-4 font-medium w-20"></th></tr></thead>
-          <tbody>{sorted.map(a=><tr key={a.id} className={`border-b border-slate-100 ${selected.has(a.id) ? 'bg-cyan-50/50' : 'hover:bg-slate-50'}`}>
-            <td className="py-2.5 px-4"><input type="checkbox" checked={selected.has(a.id)} onChange={() => toggleSelect(a.id)} className="rounded" /></td>
-            <td className="py-2.5 px-4 text-slate-900 font-medium">{a.name}</td><td className="py-2.5 px-4 text-slate-500 capitalize">{a.category}</td><td className="py-2.5 px-4 text-slate-600">{a.assigned_to||'—'}</td><td className="py-2.5 px-4"><span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${a.status==='active'?'bg-emerald-50 text-emerald-700':a.status==='maintenance'?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-600'}`}>{a.status}</span></td><td className="py-2.5 px-4 text-slate-500">{formatDate(a.warranty_expires)}</td><td className="py-2.5 px-4"><div className="flex gap-1"><button onClick={()=>startEdit(a)} className="p-1 hover:bg-slate-100 rounded"><Pencil size={14} className="text-slate-400"/></button><button onClick={()=>setQrAsset(a)} className="p-1 hover:bg-cyan-50 rounded"><QrCode size={14} className="text-cyan-500"/></button><button onClick={()=>{if(!confirm('Delete?'))return;saveAssets(getAssets().filter(x=>x.id!==a.id));reload()}} className="p-1 hover:bg-red-50 rounded"><Trash2 size={14} className="text-red-400"/></button></div></td></tr>)}</tbody></table>
+          <tbody>{sorted.map(a=><tr key={a.id} className="border-b border-slate-100 hover:bg-slate-50"><td className="py-2.5 px-4 text-slate-900 font-medium">{a.name}</td><td className="py-2.5 px-4 text-slate-500 capitalize">{a.category}</td><td className="py-2.5 px-4 text-slate-600">{a.assigned_to||'—'}</td><td className="py-2.5 px-4"><span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${a.status==='active'?'bg-emerald-50 text-emerald-700':a.status==='maintenance'?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-600'}`}>{a.status}</span></td><td className="py-2.5 px-4 text-slate-500">{formatDate(a.warranty_expires)}</td><td className="py-2.5 px-4"><div className="flex gap-1"><button onClick={()=>startEdit(a)} className="p-1 hover:bg-slate-100 rounded"><Pencil size={14} className="text-slate-400"/></button><button onClick={()=>setQrAsset(a)} className="p-1 hover:bg-cyan-50 rounded"><QrCode size={14} className="text-cyan-500"/></button><button onClick={()=>{if(!confirm('Delete?'))return;saveAssets(getAssets().filter(x=>x.id!==a.id));reload()}} className="p-1 hover:bg-red-50 rounded"><Trash2 size={14} className="text-red-400"/></button></div></td></tr>)}</tbody></table>
       </div>
     </div>}
   </div>)
