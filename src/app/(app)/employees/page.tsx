@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { getSettings, saveSettings, importEmployees } from '@/lib/settings-store'
 import CsvImport from '@/components/csv-import'
 import ConfirmDialog from '@/components/confirm-dialog'
-import { Plus, Search, X, Upload, Ghost, Monitor, Download } from 'lucide-react'
+import { Plus, Search, X, Upload, Ghost, Monitor, Download, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
 import { downloadCsv } from '@/lib/export'
 
 function getCounts(): Record<string, number> {
@@ -22,8 +22,19 @@ export default function EmployeesPage() {
   const [newEmp, setNewEmp] = useState('')
   const [showImport, setShowImport] = useState(false)
   const [confirmRemove, setConfirmRemove] = useState<{name:string, count:number}|null>(null)
+  const [sortField, setSortField] = useState<string>('')
+  const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
 
   useEffect(() => { setEmployees(getSettings().employees); setCounts(getCounts()) }, [])
+
+  function toggleSort(f: string) {
+    if (sortField === f) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    else { setSortField(f); setSortDir('asc') }
+  }
+  function sortIcon(f: string) {
+    if (sortField !== f) return <ArrowUpDown size={12} className="opacity-30" />
+    return sortDir === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />
+  }
 
   function persist(list: string[]) {
     setEmployees(list)
@@ -45,6 +56,13 @@ export default function EmployeesPage() {
 
   const filtered = employees.filter(e => e.toLowerCase().includes(search.toLowerCase()))
 
+  const sorted = sortField ? [...filtered].sort((a,b) => {
+    const av = sortField === 'devices' ? (counts[a]||0) : a.toLowerCase()
+    const bv = sortField === 'devices' ? (counts[b]||0) : b.toLowerCase()
+    if (typeof av === 'number') return sortDir === 'asc' ? av - (bv as number) : (bv as number) - av
+    return sortDir === 'asc' ? av.localeCompare(bv as string) : (bv as string).localeCompare(av)
+  }) : filtered
+
   return (<div>
     <div className="flex justify-between items-center mb-6">
       <h1 className="text-2xl font-semibold text-slate-900">Employees</h1>
@@ -65,13 +83,17 @@ export default function EmployeesPage() {
           <table className="w-full text-sm">
             <thead className="sticky top-0 z-10">
               <tr className="text-left text-slate-500 bg-slate-50 border-b">
-                <th className="py-3 px-4 font-medium">Name</th>
-                <th className="py-3 px-4 font-medium">Devices</th>
+                <th onClick={() => toggleSort('name')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700">
+                  <span className="inline-flex items-center gap-1">Name{sortIcon('name')}</span>
+                </th>
+                <th onClick={() => toggleSort('devices')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700">
+                  <span className="inline-flex items-center gap-1">Devices{sortIcon('devices')}</span>
+                </th>
                 <th className="py-3 px-4 font-medium w-12"></th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map(e => {
+              {sorted.map(e => {
                 const count = counts[e] || 0
                 return (
                   <tr key={e} className={`border-b border-slate-100 ${count === 0 ? 'bg-red-50/30' : 'hover:bg-slate-50'}`}>

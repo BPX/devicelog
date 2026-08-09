@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { formatDate, daysUntil } from '@/lib/utils'
 import { Plus, Trash2, Upload, Download, Shield, Search, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
 import CsvImport from '@/components/csv-import'
+import ConfirmDialog from '@/components/confirm-dialog'
 import { downloadCsv } from '@/lib/export'
 
 interface Cert { id: string; name: string; type: string; issuer: string; expires_at: string; notify_before_days: number }
@@ -14,6 +15,7 @@ function saveCerts(c: Cert[]) { localStorage.setItem('trackstack_certificates', 
 export default function CertsPage() {
   const [certs, setCerts] = useState<Cert[]>([]); const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false); const [showImport, setShowImport] = useState(false)
+  const [deleteCert, setDeleteCert] = useState<Cert | null>(null)
   const [search, setSearch] = useState('')
   const [sortField, setSortField] = useState<string>('')
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
@@ -98,6 +100,14 @@ export default function CertsPage() {
       onClose={() => setShowImport(false)}
     />}
 
+    {deleteCert && <ConfirmDialog
+      title={`Delete ${deleteCert.name}?`}
+      message="This permanently removes the certificate from your tracking."
+      confirmLabel="Delete"
+      onConfirm={() => { saveCerts(getCerts().filter(x=>x.id!==deleteCert.id)); setCerts(getCerts()); setDeleteCert(null) }}
+      onCancel={() => setDeleteCert(null)}
+    />}
+
     {certs.length===0 ? <div className="text-center py-16 text-slate-400"><Shield size={48} className="mx-auto mb-3 opacity-50"/><p className="text-lg font-medium">No certificates yet</p><p className="text-sm mt-1">Track SSL certs, software licenses, and support contracts</p></div> :
     <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
       <div className="max-h-[calc(100vh-220px)] overflow-auto">
@@ -126,7 +136,7 @@ export default function CertsPage() {
                     </span>
                   </td>
                   <td className="py-2.5 px-4">
-                    <button onClick={()=>{if(!confirm('Delete?'))return;saveCerts(getCerts().filter(x=>x.id!==c.id));setCerts(getCerts())}} className="p-1 hover:bg-red-50 rounded"><Trash2 size={14} className="text-red-400"/></button>
+                    <button onClick={()=>setDeleteCert(c)} className="p-1 hover:bg-red-50 rounded"><Trash2 size={14} className="text-red-400"/></button>
                   </td>
                 </tr>
               )
