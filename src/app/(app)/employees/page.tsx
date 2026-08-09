@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { getSettings, saveSettings, importEmployees } from '@/lib/settings-store'
 import CsvImport from '@/components/csv-import'
+import ConfirmDialog from '@/components/confirm-dialog'
 import { Plus, X, Upload, Ghost, Monitor } from 'lucide-react'
 
 function getCounts(): Record<string, number> {
@@ -18,6 +19,7 @@ export default function EmployeesPage() {
   const [counts, setCounts] = useState<Record<string, number>>({})
   const [newEmp, setNewEmp] = useState('')
   const [showImport, setShowImport] = useState(false)
+  const [confirmRemove, setConfirmRemove] = useState<{name:string, count:number}|null>(null)
 
   useEffect(() => { setCounts(getCounts()) }, [])
 
@@ -35,7 +37,7 @@ export default function EmployeesPage() {
 
   function remove(name: string) {
     const count = counts[name] || 0
-    if (count > 0 && !confirm(`${name} has ${count} device(s) assigned. Remove from directory anyway? (Assets will keep their name)`)) return
+    if (count > 0) { setConfirmRemove({ name, count }); return }
     persist(employees.filter(e => e !== name))
   }
 
@@ -78,5 +80,13 @@ export default function EmployeesPage() {
     </div>
 
     {showImport && <CsvImport title="Import Employees" description="Upload a CSV with employee names." sampleData="John Smith\nJane Doe\nBob Wilson" sampleFilename="employees.csv" onImport={rows => { importEmployees(rows.map(r => Object.values(r)[0])); setEmployees(getSettings().employees); setCounts(getCounts()); setShowImport(false) }} onClose={() => setShowImport(false)} />}
+
+    {confirmRemove && <ConfirmDialog
+      title={`Remove ${confirmRemove.name}?`}
+      message={`They currently have ${confirmRemove.count} device(s) assigned. Removing them from the directory won't unassign those assets — their name will still appear on existing entries.`}
+      confirmLabel="Remove"
+      onConfirm={() => { persist(employees.filter(e => e !== confirmRemove.name)); setConfirmRemove(null) }}
+      onCancel={() => setConfirmRemove(null)}
+    />}
   </div>)
 }
