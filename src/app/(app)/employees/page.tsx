@@ -53,11 +53,7 @@ export default function EmployeesPage() {
       </div>
     </div>
 
-    <div className="mb-4 flex gap-2">
-      <div className="relative flex-1"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/><input placeholder="Search employees..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"/></div>
-      <input id="emp-add-input" value={newEmp} onChange={e => setNewEmp(e.target.value)} placeholder="Name..." className="w-48 px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" onKeyDown={e => { if(e.key==='Enter') add() }} />
-      <button onClick={add} className="px-3 py-2 bg-cyan-600 text-white rounded-md text-sm hover:bg-cyan-700"><Plus size={14}/></button>
-    </div>
+    <div className="mb-4 relative"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/><input placeholder="Search or add employee..." value={newEmp || search} onChange={e => { setSearch(e.target.value); setNewEmp(e.target.value) }} className="w-full pl-10 pr-[72px] py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" onKeyDown={e => { if(e.key==='Enter'){ add(); setSearch('') } }} /><button onClick={() => { add(); setSearch('') }} className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 bg-cyan-600 text-white rounded text-xs font-medium hover:bg-cyan-700">Add</button></div>
 
     {filtered.length === 0 ? (
       <div className="text-center py-16 text-slate-400"><Monitor size={48} className="mx-auto mb-3 opacity-50"/><p className="text-lg font-medium">No employees yet</p><p className="text-sm mt-1">Import a CSV, add manually, or type a name when assigning an asset — it auto-adds here.</p></div>
