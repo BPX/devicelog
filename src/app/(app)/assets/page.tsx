@@ -21,6 +21,8 @@ export default function AssetsPage() {
   const [qrAsset, setQrAsset] = useState<Asset | null>(null)
   const [sortField, setSortField] = useState<string>('')
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
+  const [form, setForm] = useState({ name:'', category:'laptop', manufacturer:'', model:'', serial_number:'', status:'active', assigned_to:'', location:'', purchase_date:'', warranty_expires:'' })
+  const settings = getSettings()
 
   function toggleSort(field: string) {
     if (sortField === field) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
@@ -32,13 +34,13 @@ export default function AssetsPage() {
     return sortDir === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />
   }
 
+  const filtered = assets.filter(a => a.name.toLowerCase().includes(search.toLowerCase()) || a.assigned_to?.toLowerCase().includes(search.toLowerCase()) || a.serial_number?.toLowerCase().includes(search.toLowerCase()))
+  
   const sorted = sortField ? [...filtered].sort((a:any,b:any) => {
     const av = (a[sortField] || '').toString().toLowerCase()
     const bv = (b[sortField] || '').toString().toLowerCase()
     return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av)
   }) : filtered
-  const [form, setForm] = useState({ name:'', category:'laptop', manufacturer:'', model:'', serial_number:'', status:'active', assigned_to:'', location:'', purchase_date:'', warranty_expires:'' })
-  const settings = getSettings()
 
   useEffect(() => { setAssets(getAssets()); setLoading(false) }, [])
   function reload() { setAssets(getAssets()) }
@@ -77,8 +79,6 @@ export default function AssetsPage() {
     setEditing(a); setForm({ name:a.name, category:a.category, manufacturer:a.manufacturer||'', model:a.model||'', serial_number:a.serial_number||'', status:a.status, assigned_to:a.assigned_to||'', location:a.location||'', purchase_date:a.purchase_date||'', warranty_expires:a.warranty_expires||'' })
     setShowForm(true)
   }
-
-  const filtered = assets.filter(a => a.name.toLowerCase().includes(search.toLowerCase()) || a.assigned_to?.toLowerCase().includes(search.toLowerCase()) || a.serial_number?.toLowerCase().includes(search.toLowerCase()))
 
   if (loading) return <div className="p-8 text-slate-500">Loading...</div>
 
