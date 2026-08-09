@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react'
 import { getSettings, saveSettings, importEmployees } from '@/lib/settings-store'
 import CsvImport from '@/components/csv-import'
 import ConfirmDialog from '@/components/confirm-dialog'
-import { Plus, Search, X, Upload, Ghost, Monitor } from 'lucide-react'
+import { Plus, Search, X, Upload, Ghost, Monitor, Download } from 'lucide-react'
+import { downloadCsv } from '@/lib/export'
 
 function getCounts(): Record<string, number> {
   try {
@@ -49,6 +50,7 @@ export default function EmployeesPage() {
       <h1 className="text-2xl font-semibold text-slate-900">Employees</h1>
       <div className="flex gap-2">
         <button onClick={() => setShowImport(true)} className="flex items-center gap-2 px-3 py-2 border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50"><Upload size={16}/>Import CSV</button>
+        <button onClick={() => downloadCsv(employees.map(e => ({ name: e, devices: counts[e] || 0 })), 'trackstack-employees.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50"><Download size={16}/>Export</button>
         <button onClick={() => { const inp = document.getElementById('emp-add-input') as HTMLInputElement; inp?.focus() }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700"><Plus size={16}/>Add Employee</button>
       </div>
     </div>

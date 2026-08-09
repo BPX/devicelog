@@ -1,12 +1,13 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { formatDate } from '@/lib/utils'
-import { Plus, Search, Pencil, Trash2, Package, Upload, Monitor, QrCode, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
+import { Plus, Search, Pencil, Trash2, Package, Upload, Monitor, QrCode, ArrowUpDown, ArrowUp, ArrowDown, Download } from 'lucide-react'
 import { getSettings, addEmployee as addEmp } from '@/lib/settings-store'
 import CsvImport from '@/components/csv-import'
 import EmployeeAutocomplete from '@/components/employee-autocomplete'
 import ScanDevice from '@/components/scan-device'
 import QrLabel from '@/components/qr-label'
+import { downloadCsv } from '@/lib/export'
 
 interface Asset { id: string; name: string; category: string; manufacturer: string; model: string; serial_number: string; status: string; assigned_to: string; location: string; purchase_date: string | null; warranty_expires: string | null }
 
@@ -21,6 +22,7 @@ export default function AssetsPage() {
   const [qrAsset, setQrAsset] = useState<Asset | null>(null)
   const [sortField, setSortField] = useState<string>('')
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
+  const [selected, setSelected] = useState<Set<string>>(new Set())
   const [form, setForm] = useState({ name:'', category:'laptop', manufacturer:'', model:'', serial_number:'', status:'active', assigned_to:'', location:'', purchase_date:'', warranty_expires:'' })
   const settings = getSettings()
 
@@ -75,7 +77,27 @@ export default function AssetsPage() {
     setForm({ name:'', category:'laptop', manufacturer:'', model:'', serial_number:'', status:'active', assigned_to:'', location:'', purchase_date:'', warranty_expires:'' })
   }
 
-  function startEdit(a: Asset) {
+  function toggleSelect(id: string) {
+    const next = new Set(selected)
+    if (next.has(id)) next.delete(id); else next.add(id)
+    setSelected(next)
+  }
+  function toggleAll() {
+    if (selected.size === sorted.length) setSelected(new Set())
+    else setSelected(new Set(sorted.map((a:Asset) => a.id)))
+  }
+  function bulkDelete() {
+    if (!confirm(`Delete ${selected.size} asset(s)?`)) return
+    saveAssets(assets.filter(a => !selected.has(a.id)))
+    setSelected(new Set()); reload()
+  }
+  function bulkReassign() {
+    const name = prompt(`Reassign ${selected.size} asset(s) to whom?`)
+    if (!name) return
+    const updated = assets.map(a => selected.has(a.id) ? { ...a, assigned_to: name } : a)
+    saveAssets(updated); setSelected(new Set()); reload()
+    if (name.trim()) addEmp(name.trim())
+  }
     setEditing(a); setForm({ name:a.name, category:a.category, manufacturer:a.manufacturer||'', model:a.model||'', serial_number:a.serial_number||'', status:a.status, assigned_to:a.assigned_to||'', location:a.location||'', purchase_date:a.purchase_date||'', warranty_expires:a.warranty_expires||'' })
     setShowForm(true)
   }
@@ -88,11 +110,19 @@ export default function AssetsPage() {
       <div className="flex gap-2">
         <button onClick={() => setShowCsvImport(true)} className="flex items-center gap-2 px-3 py-2 border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50"><Upload size={16}/>Import CSV</button>
         <button onClick={() => setShowScanner(true)} className="flex items-center gap-2 px-3 py-2 border border-cyan-300 text-cyan-700 bg-cyan-50 rounded-md text-sm font-medium hover:bg-cyan-100"><Monitor size={16}/>Scan Device</button>
+        <button onClick={() => downloadCsv(assets, 'trackstack-assets.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50"><Download size={16}/>Export</button>
         <button onClick={()=>{setEditing(null);setShowForm(true)}} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700"><Plus size={16}/>Add Asset</button>
       </div>
     </div>
 
     <div className="mb-4 relative"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/><input placeholder="Search by name, person, or serial..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"/></div>
+
+    {selected.size > 0 && <div className="mb-4 flex items-center gap-3 px-4 py-2 bg-cyan-50 border border-cyan-200 rounded-md text-sm">
+      <span className="text-cyan-800 font-medium">{selected.size} selected</span>
+      <button onClick={bulkReassign} className="px-3 py-1 bg-white border border-cyan-300 text-cyan-700 rounded text-xs font-medium hover:bg-cyan-100">Reassign</button>
+      <button onClick={bulkDelete} className="px-3 py-1 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700">Delete</button>
+      <button onClick={() => setSelected(new Set())} className="ml-auto text-xs text-slate-500 hover:text-slate-700">Clear</button>
+    </div>}
 
     {showCsvImport && <CsvImport
       title="Import Assets from CSV"
@@ -137,13 +167,16 @@ export default function AssetsPage() {
         <table className="w-full text-sm">
           <thead className="sticky top-0 z-10">
             <tr className="text-left text-slate-500 bg-slate-50 border-b">
+              <th className="py-3 px-4 w-8"><input type="checkbox" checked={selected.size > 0 && selected.size === sorted.length} onChange={toggleAll} className="rounded" /></th>
               {['name','category','assigned_to','status','warranty_expires'].map(f => (
                 <th key={f} onClick={() => toggleSort(f)} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700">
                   <span className="inline-flex items-center gap-1">{f==='warranty_expires' ? 'Warranty' : f==='assigned_to' ? 'Assigned To' : f.charAt(0).toUpperCase()+f.slice(1)}{sortIcon(f)}</span>
                 </th>
               ))}
               <th className="py-3 px-4 font-medium w-20"></th></tr></thead>
-          <tbody>{sorted.map(a=><tr key={a.id} className="border-b border-slate-100 hover:bg-slate-50"><td className="py-2.5 px-4 text-slate-900 font-medium">{a.name}</td><td className="py-2.5 px-4 text-slate-500 capitalize">{a.category}</td><td className="py-2.5 px-4 text-slate-600">{a.assigned_to||'—'}</td><td className="py-2.5 px-4"><span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${a.status==='active'?'bg-emerald-50 text-emerald-700':a.status==='maintenance'?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-600'}`}>{a.status}</span></td><td className="py-2.5 px-4 text-slate-500">{formatDate(a.warranty_expires)}</td><td className="py-2.5 px-4"><div className="flex gap-1"><button onClick={()=>startEdit(a)} className="p-1 hover:bg-slate-100 rounded"><Pencil size={14} className="text-slate-400"/></button><button onClick={()=>setQrAsset(a)} className="p-1 hover:bg-cyan-50 rounded"><QrCode size={14} className="text-cyan-500"/></button><button onClick={()=>{if(!confirm('Delete?'))return;saveAssets(getAssets().filter(x=>x.id!==a.id));reload()}} className="p-1 hover:bg-red-50 rounded"><Trash2 size={14} className="text-red-400"/></button></div></td></tr>)}</tbody></table>
+          <tbody>{sorted.map(a=><tr key={a.id} className={`border-b border-slate-100 ${selected.has(a.id) ? 'bg-cyan-50/50' : 'hover:bg-slate-50'}`}>
+            <td className="py-2.5 px-4"><input type="checkbox" checked={selected.has(a.id)} onChange={() => toggleSelect(a.id)} className="rounded" /></td>
+            <td className="py-2.5 px-4 text-slate-900 font-medium">{a.name}</td><td className="py-2.5 px-4 text-slate-500 capitalize">{a.category}</td><td className="py-2.5 px-4 text-slate-600">{a.assigned_to||'—'}</td><td className="py-2.5 px-4"><span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${a.status==='active'?'bg-emerald-50 text-emerald-700':a.status==='maintenance'?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-600'}`}>{a.status}</span></td><td className="py-2.5 px-4 text-slate-500">{formatDate(a.warranty_expires)}</td><td className="py-2.5 px-4"><div className="flex gap-1"><button onClick={()=>startEdit(a)} className="p-1 hover:bg-slate-100 rounded"><Pencil size={14} className="text-slate-400"/></button><button onClick={()=>setQrAsset(a)} className="p-1 hover:bg-cyan-50 rounded"><QrCode size={14} className="text-cyan-500"/></button><button onClick={()=>{if(!confirm('Delete?'))return;saveAssets(getAssets().filter(x=>x.id!==a.id));reload()}} className="p-1 hover:bg-red-50 rounded"><Trash2 size={14} className="text-red-400"/></button></div></td></tr>)}</tbody></table>
       </div>
     </div>}
   </div>)

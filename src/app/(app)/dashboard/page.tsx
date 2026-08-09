@@ -17,12 +17,30 @@ export default function DashboardPage() {
 
   const expiringSoon = certs.filter(c => daysUntil(c.expires_at) <= 30 && daysUntil(c.expires_at) > 0).length
   const expired = certs.filter(c => daysUntil(c.expires_at) <= 0).length
+  const warrantyExpiring = assets.filter(a => a.warranty_expires && daysUntil(a.warranty_expires) <= 30 && daysUntil(a.warranty_expires) > 0).length
+  const warrantyExpired = assets.filter(a => a.warranty_expires && daysUntil(a.warranty_expires) <= 0).length
 
   if (loading) return <div className="p-8 text-slate-500">Loading...</div>
 
   return (
     <div>
       <h1 className="text-2xl font-semibold text-slate-900 mb-6">Dashboard</h1>
+      {(expired > 0 || warrantyExpired > 0) && <div className="mb-4 flex items-center gap-3 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm">
+        <AlertTriangle size={16} className="text-red-500 flex-shrink-0" />
+        <span className="text-red-800">
+          {expired > 0 && <>{expired} cert{expired>1?'s':''} expired. </>}
+          {warrantyExpired > 0 && <>{warrantyExpired} warrant{warrantyExpired>1?'ies':'y'} expired. </>}
+          <Link href="/certificates" className="underline font-medium">Review now →</Link>
+        </span>
+      </div>}
+      {(expiringSoon > 0 || warrantyExpiring > 0) && (expired === 0 && warrantyExpired === 0) && <div className="mb-4 flex items-center gap-3 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg text-sm">
+        <AlertTriangle size={16} className="text-amber-500 flex-shrink-0" />
+        <span className="text-amber-800">
+          {expiringSoon > 0 && <>{expiringSoon} cert{expiringSoon>1?'s':''} expiring soon. </>}
+          {warrantyExpiring > 0 && <>{warrantyExpiring} warrant{warrantyExpiring>1?'ies':'y'} expiring soon. </>}
+          <Link href="/certificates" className="underline font-medium">Review now →</Link>
+        </span>
+      </div>}
       <div className="grid grid-cols-4 gap-4 mb-8">
         {[{ label: 'Total Assets', value: assets.length, icon: Package, color: 'text-cyan-600', bg: 'bg-cyan-50' },{ label: 'Active Certs', value: certs.length, icon: Shield, color: 'text-emerald-600', bg: 'bg-emerald-50' },{ label: 'Expiring Soon', value: expiringSoon, icon: AlertTriangle, color: 'text-amber-600', bg: 'bg-amber-50' },{ label: 'Expired', value: expired, icon: AlertTriangle, color: 'text-red-600', bg: 'bg-red-50' }].map(s => (
           <div key={s.label} className={`${s.bg} rounded-lg p-5 border border-slate-200`}>
