@@ -86,10 +86,6 @@ export default function AssetsPage() {
     if (next.has(id)) next.delete(id); else next.add(id)
     setSelected(next)
   }
-  function toggleAll() {
-    if (selected.size === sorted.length) setSelected(new Set())
-    else setSelected(new Set(sorted.map((a:Asset) => a.id)))
-  }
   function bulkDelete() {
     saveAssets(assets.filter(a => !selected.has(a.id)))
     setSelected(new Set()); setBulkDeleteOpen(false); reload()
@@ -190,7 +186,7 @@ export default function AssetsPage() {
         <table className="w-full text-sm">
           <thead className="sticky top-0 z-10">
             <tr className="text-left text-slate-500 bg-slate-50 border-b">
-              <th className="py-3 px-4 w-8"><input type="checkbox" checked={selected.size > 0 && selected.size === sorted.length} onChange={toggleAll} className="rounded" /></th>
+              <th className="py-3 px-4 w-8"></th>
               {['name','category','assigned_to','status','warranty_expires'].map(f => (
                 <th key={f} onClick={() => toggleSort(f)} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700">
                   <span className="inline-flex items-center gap-1">{f==='warranty_expires' ? 'Warranty' : f==='assigned_to' ? 'Assigned To' : f.charAt(0).toUpperCase()+f.slice(1)}{sortIcon(f)}</span>
