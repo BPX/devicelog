@@ -15,20 +15,18 @@ const navItems = [
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname(); const router = useRouter()
-  const [email, setEmail] = useState<string | null>(null)
+  const [email, setEmail] = useState<string | null | 'loading'>('loading')
 
   useEffect(() => {
+    // Register service worker
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js')
+    // Auth check
     const user = getCurrentUser()
-    if (!user) router.push('/login')
-    else setEmail(user)
-
-    // Register service worker for PWA
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-    }
+    if (!user) { router.replace('/login'); return }
+    setEmail(user)
   }, [])
 
-  if (!email) return <div className="p-8 text-slate-500">Checking auth...</div>
+  if (email === 'loading') return null // Don't flash "checking auth" — just wait silently
 
   return (
     <div className="flex h-screen">
@@ -44,7 +42,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </nav>
         <div className="p-3 border-t border-slate-200">
           <div className="text-xs text-slate-500 truncate px-3 mb-2">{email}</div>
-          <button onClick={() => { signOut(); router.push('/login') }} className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-slate-500 hover:bg-slate-100 w-full"><LogOut size={14} />Sign out</button>
+          <button onClick={() => { signOut(); router.replace('/login') }} className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-slate-500 hover:bg-slate-100 w-full"><LogOut size={14} />Sign out</button>
         </div>
       </aside>
       <main className="flex-1 overflow-auto p-8">{children}</main>
