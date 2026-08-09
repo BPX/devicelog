@@ -7,8 +7,7 @@ import Link from 'next/link'
 interface Asset { id: string; name: string; category: string; status: string; warranty_expires: string | null }
 interface Cert { id: string; name: string; type: string; expires_at: string }
 
-function getStore(key: string) { try { return JSON.parse(localStorage.getItem('trackstack_' + key) || '[]') } catch { return [] } }
-function setStore(key: string, data: any) { localStorage.setItem('trackstack_' + key, JSON.stringify(data)) }
+function getStore(key: string) { try { const v = localStorage.getItem('trackstack_' + key); return v ? JSON.parse(v) : []; } catch { return [] } }
 
 export default function DashboardPage() {
   const [assets, setAssets] = useState<Asset[]>([]); const [certs, setCerts] = useState<Cert[]>([])
