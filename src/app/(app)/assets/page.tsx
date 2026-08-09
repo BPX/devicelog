@@ -4,6 +4,7 @@ import { formatDate } from '@/lib/utils'
 import { Plus, Search, Pencil, Trash2, Package, Upload, Monitor, QrCode } from 'lucide-react'
 import { getSettings } from '@/lib/settings-store'
 import CsvImport from '@/components/csv-import'
+import EmployeeAutocomplete from '@/components/employee-autocomplete'
 import ScanDevice from '@/components/scan-device'
 import QrLabel from '@/components/qr-label'
 
@@ -104,8 +105,7 @@ export default function AssetsPage() {
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Status</label>
           <select value={form.status} onChange={e=>setForm({...form,status:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm">{settings.statuses.map(s=><option key={s} value={s}>{s}</option>)}</select></div>
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Assigned To</label>
-          {settings.employees.length > 0 ? <select value={form.assigned_to} onChange={e=>setForm({...form,assigned_to:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm"><option value="">— Unassigned —</option>{settings.employees.map(e=><option key={e} value={e}>{e}</option>)}</select>
-          : <input value={form.assigned_to} onChange={e=>setForm({...form,assigned_to:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" placeholder="Person name"/>}</div>
+          <EmployeeAutocomplete value={form.assigned_to} onChange={v => setForm({...form, assigned_to: v})} options={settings.employees} /></div>
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Location</label><input value={form.location} onChange={e=>setForm({...form,location:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" placeholder="Office / room"/></div>
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Purchase Date</label><input type="date" value={form.purchase_date} onChange={e=>setForm({...form,purchase_date:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm"/></div>
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Warranty Expires</label><input type="date" value={form.warranty_expires} onChange={e=>setForm({...form,warranty_expires:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm"/></div>
