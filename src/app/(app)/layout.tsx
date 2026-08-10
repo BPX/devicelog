@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Package, Shield, Settings, LogOut, LayoutDashboard, Users, User } from 'lucide-react'
 import { getCurrentUser, getCurrentUsername, signOut } from '@/lib/auth'
+import { getTeam } from '@/lib/data'
 import { useEffect, useState } from 'react'
 import InstallPrompt from '@/components/install-prompt'
 import QuickAdd from '@/components/quick-add'
@@ -22,19 +23,33 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [display, setDisplay] = useState<string | null | 'loading'>('loading')
 
   useEffect(() => {
-    const user = getCurrentUser()
-    if (!user) { router.replace('/login'); return }
-    // Extract username from JWT if not in localStorage yet
-    if (!getCurrentUsername()) {
-      const tok = localStorage.getItem('sb_token')
-      if (tok) {
-        try {
-          const meta = JSON.parse(atob(tok.split('.')[1])).user_metadata
-          if (meta?.username) localStorage.setItem('sb_username', meta.username)
-        } catch {}
+    async function init() {
+      const user = getCurrentUser()
+      if (!user) { router.replace('/login'); return }
+
+      // Extract username from JWT if not in localStorage yet
+      if (!getCurrentUsername()) {
+        const tok = localStorage.getItem('sb_token')
+        if (tok) {
+          try {
+            const meta = JSON.parse(atob(tok.split('.')[1])).user_metadata
+            if (meta?.username) localStorage.setItem('sb_username', meta.username)
+          } catch {}
+        }
       }
+
+      // New user without a team? Redirect to setup (unless already on setup/team)
+      if (pathname !== '/setup' && pathname !== '/team') {
+        const team = await getTeam()
+        if (!team) {
+          router.replace('/setup')
+          return
+        }
+      }
+
+      setDisplay(getCurrentUsername() || user)
     }
-    setDisplay(getCurrentUsername() || user)
+    init()
   }, [])
 
   if (display === 'loading') return null
