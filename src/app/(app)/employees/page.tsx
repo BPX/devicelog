@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { getSettings, saveSettings, importEmployees, type Employee } from '@/lib/settings-store'
 import CsvImport from '@/components/csv-import'
 import ConfirmDialog from '@/components/confirm-dialog'
-import { Plus, Search, X, Upload, Ghost, Monitor, Download, ArrowUpDown, ArrowUp, ArrowDown, Pencil, Mail, Briefcase, Building } from 'lucide-react'
+import { Plus, Search, X, Upload, Ghost, Monitor, Download, ArrowUpDown, ArrowUp, ArrowDown, Pencil, Copy } from 'lucide-react'
 import { downloadCsv } from '@/lib/export'
 
 function getCounts(): Record<string, number> {
@@ -91,6 +91,20 @@ export default function EmployeesPage() {
     setEditForm({ email: emp.email || '', job_title: emp.job_title || '', department: emp.department || '' })
   }
 
+  function copyInfo(emp: Employee) {
+    const parts = [emp.name]
+    if (emp.email) parts.push(emp.email)
+    if (emp.job_title) parts.push(emp.job_title)
+    if (emp.department) parts.push(emp.department)
+    const text = parts.join('\n')
+    navigator.clipboard.writeText(text).catch(() => {
+      // Fallback: select and copy
+      const ta = document.createElement('textarea')
+      ta.value = text; document.body.appendChild(ta); ta.select()
+      document.execCommand('copy'); document.body.removeChild(ta)
+    })
+  }
+
   const filtered = employees.filter(e => e.name.toLowerCase().includes(search.toLowerCase()) || e.email?.toLowerCase().includes(search.toLowerCase()) || e.department?.toLowerCase().includes(search.toLowerCase()))
 
   const sorted = sortField ? [...filtered].sort((a,b) => {
@@ -148,6 +162,7 @@ export default function EmployeesPage() {
                     <td className="py-2.5 px-4 text-slate-500">{count}</td>
                     <td className="py-2.5 px-4">
                       <div className="flex gap-1">
+                        <button onClick={() => copyInfo(e)} className="p-1 hover:bg-slate-100 rounded"><Copy size={14} className="text-slate-400"/></button>
                         <button onClick={() => startEdit(e)} className="p-1 hover:bg-slate-100 rounded"><Pencil size={14} className="text-slate-400"/></button>
                         <button onClick={() => remove(e.name)} className="p-1 hover:bg-red-50 rounded"><X size={14} className="text-slate-300 hover:text-red-500"/></button>
                       </div>
