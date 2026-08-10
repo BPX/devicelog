@@ -3,10 +3,12 @@ import Stripe from "https://esm.sh/stripe@13.11.0?target=deno"
 
 const STRIPE_KEY = Deno.env.get("STRIPE_SECRET_KEY")
 if (!STRIPE_KEY) throw new Error("STRIPE_SECRET_KEY not set")
+console.log("Stripe key loaded, length:", STRIPE_KEY.length, "prefix:", STRIPE_KEY.slice(0, 12))
 
 const stripe = new Stripe(STRIPE_KEY, {
   apiVersion: "2023-10-16",
   httpClient: Stripe.createFetchHttpClient(),
+  maxNetworkRetries: 1,
 })
 
 const corsHeaders = {
@@ -70,7 +72,8 @@ serve(async (req: Request) => {
       status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" }
     })
   } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), {
+    console.error("Checkout error:", err.message, err.type)
+    return new Response(JSON.stringify({ error: err.message, type: err.type, raw: String(err) }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" }
     })
   }
