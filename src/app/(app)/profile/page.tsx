@@ -112,8 +112,8 @@ export default function ProfilePage() {
     setCheckoutError('')
     // Replace these with your actual Stripe price IDs from the Stripe dashboard
     const priceIds: Record<string, string> = {
-      team: 'price_team_placeholder',
-      enterprise: 'price_enterprise_placeholder',
+      team: 'price_1U2zDrADDM2ycEh2PcdFsp1B',
+      enterprise: 'price_1U2zDrADDM2ycEh2PcdFsp1B', // same for now — create Enterprise price in Stripe later
     }
     const result = await startCheckout(
       priceIds[plan] || 'price_team_placeholder',
