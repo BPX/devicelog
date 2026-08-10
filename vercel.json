@@ -1,6 +1,12 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
+  "buildCommand": "NODE_ENV=development npm install && npm run build",
   "outputDirectory": "out",
-  "installCommand": "NODE_ENV=development npm install"
+  "framework": null,
+  "installCommand": "NODE_ENV=development npm install",
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/$1.html" },
+    { "src": "/(.*)/", "status": 301, "headers": { "Location": "/$1" } }
+  ]
 }
