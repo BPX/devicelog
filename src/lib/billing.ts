@@ -57,7 +57,7 @@ export async function getSubscription(): Promise<{
 
   try {
     const r = await fetch(
-      `${process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://mbsjxuymiuevankxrgmo.supabase.co'}/rest/v1/subscriptions?select=*&user_id=eq.${uid()}&limit=1`,
+      'https://mbsjxuymiuevankxrgmo.supabase.co/rest/v1/subscriptions?select=*&user_id=eq.' + uid() + '&limit=1',
       {
         headers: {
           apikey: SUPABASE_KEY,
