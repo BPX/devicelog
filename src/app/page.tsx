@@ -221,7 +221,7 @@ const featureTabs = [
     label: 'Import & Export',
     icon: FileSpreadsheet,
     title: 'Drop your spreadsheet, we\'ll handle the rest',
-    description: 'Import your existing inventory from Excel, Google Sheets, or Snipe-IT in seconds. Auto-column matching. Bulk QR code generation. Export anytime — CSV, JSON, or PDF. No lock-in.',
+    description: 'Import your existing inventory from Excel, Google Sheets, or Snipe-IT in seconds. Auto-column matching. Bulk QR code generation. Export anytime as CSV, JSON, or PDF. No lock-in.',
     image: (
       <div className="bg-slate-900 rounded-lg p-6 border border-slate-700 text-center">
         <div className="border-2 border-dashed border-slate-600 rounded-lg p-8 mb-4">
@@ -381,11 +381,11 @@ function CounterStat({ value, suffix = '', label }: { value: number, suffix?: st
 const faqs = [
   { 
     q: 'Is Trackstack really free?', 
-    a: 'Yes. The Free plan includes up to 50 assets and 2 team members — no credit card, no time limit, no hidden fees. We believe every team should have basic IT asset management, and charging for that doesn\'t sit right with us. Upgrade to Team ($19/mo) for unlimited everything.' 
+    a: 'Yes. The Free plan includes up to 50 assets and 2 team members. No credit card, no time limit, no hidden fees. We believe every team should have basic IT asset management, and charging for that doesn\'t sit right with us. Upgrade to Team ($19/mo) for unlimited everything.' 
   },
   { 
     q: 'How is this different from a spreadsheet?', 
-    a: 'Spreadsheets go stale the moment someone forgets to update them. Trackstack gives your whole team a shared, real-time view of your entire IT inventory. Plus you get automatic certificate expiry reminders, QR code labels, mobile barcode scanning, and team assignment tracking — things spreadsheets simply can\'t do. When Sarah leaves the company, you know exactly which laptop to recover.' 
+    a: 'Spreadsheets go stale the moment someone forgets to update them. Trackstack gives your whole team a shared, real-time view of your entire IT inventory. Plus you get automatic certificate expiry reminders, QR code labels, mobile barcode scanning, and team assignment tracking. Things spreadsheets simply can\'t do. When Sarah leaves the company, you know exactly which laptop to recover.' 
   },
   { 
     q: 'Can I import my existing inventory?', 
@@ -397,11 +397,11 @@ const faqs = [
   },
   { 
     q: 'What happens if I exceed the free limits?', 
-    a: 'We\'ll show a friendly notification in your dashboard when you\'re approaching the limit. Your existing data stays safe and accessible — you just can\'t add more assets or team members until you upgrade to Team. No data loss, no surprise bills.' 
+    a: 'We\'ll show a friendly notification in your dashboard when you\'re approaching the limit. Your existing data stays safe and accessible. You just can\'t add more assets or team members until you upgrade to Team. No data loss, no surprise bills.' 
   },
   { 
     q: 'Can I cancel my Team plan anytime?', 
-    a: 'Yes, with one click from your billing settings. Your data remains accessible on the Free plan. If you have more than 50 assets, you can still view and export everything — you just can\'t add new ones until you either upgrade again or reduce your inventory count.' 
+    a: 'Yes, with one click from your billing settings. Your data remains accessible on the Free plan. If you have more than 50 assets, you can still view and export everything. You just can\'t add new ones until you either upgrade again or reduce your inventory count.' 
   },
   { 
     q: 'Do you offer discounts for nonprofits or education?', 
@@ -453,7 +453,7 @@ export default function LandingPage() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-cyan-50 border border-cyan-200 rounded-full text-xs font-semibold text-cyan-700">
             <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-            Free tier — no credit card required
+            Free tier, no credit card required
           </div>
           <span className="hidden sm:inline text-slate-300">·</span>
           <span className="text-xs text-slate-400">Set up in under 2 minutes</span>
@@ -461,7 +461,7 @@ export default function LandingPage() {
 
         {/* Headline */}
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 tracking-tight leading-[1.05] max-w-5xl mx-auto text-center">
-          Track every laptop, license, and SSL cert —{' '}
+          Track every laptop, license, and SSL cert{' '}
           <span className="text-cyan-600">without the spreadsheet nightmare</span>
         </h1>
 
@@ -494,7 +494,7 @@ export default function LandingPage() {
           </div>
           <div className="flex items-center gap-2">
             <Globe size={14} className="text-cyan-500" /> 
-            <span className="font-medium text-slate-500">Browser-based</span> — no download
+            <span className="font-medium text-slate-500">Browser-based</span>, no download
           </div>
           <div className="flex items-center gap-2">
             <Download size={14} className="text-cyan-500" /> 
@@ -510,7 +510,7 @@ export default function LandingPage() {
               <div className="w-3 h-3 rounded-full bg-red-400" />
               <div className="w-3 h-3 rounded-full bg-amber-400" />
               <div className="w-3 h-3 rounded-full bg-emerald-400" />
-              <span className="ml-2 text-xs text-slate-400">Trackstack — Dashboard</span>
+              <span className="ml-2 text-xs text-slate-400">Trackstack · Dashboard</span>
             </div>
             {/* Dashboard stats */}
             <div className="p-6 sm:p-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -586,7 +586,7 @@ export default function LandingPage() {
             </Subtitle>
             <div className="mt-8 space-y-3">
               {[
-                '"Who has the spare monitor?" — every Slack thread ever',
+                '"Who has the spare monitor?" · every Slack thread ever',
                 '"The cert expired and now the site is down"',
                 '"I think we have 200 devices? Or maybe 190?"',
                 'Onboarding takes 3 days because gear availability is a mystery',
@@ -607,10 +607,10 @@ export default function LandingPage() {
             </p>
             <div className="space-y-3 mb-8">
               <CheckRow>Auto-discover devices on your network</CheckRow>
-              <CheckRow>QR code labels — scan from your phone</CheckRow>
+              <CheckRow>QR code labels, scan from your phone</CheckRow>
               <CheckRow>Certificate & license expiry alerts</CheckRow>
               <CheckRow>Import from Excel or Snipe-IT in seconds</CheckRow>
-              <CheckRow>Export anytime — no vendor lock-in</CheckRow>
+              <CheckRow>Export anytime, no vendor lock-in</CheckRow>
             </div>
             <PrimaryCTA href="/signup">Start tracking free</PrimaryCTA>
           </Card>
@@ -737,7 +737,7 @@ export default function LandingPage() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
             {
-              quote: 'We went from a shared Google Sheet nobody updated to full visibility in 10 minutes. The CSV import actually worked on the first try — that alone sold us.',
+              quote: 'We went from a shared Google Sheet nobody updated to full visibility in 10 minutes. The CSV import actually worked on the first try, and that alone sold us.',
               name: 'Alex Rivera',
               role: 'IT Manager, Fintech Startup (85 employees)',
             },
@@ -747,7 +747,7 @@ export default function LandingPage() {
               role: 'DevOps Lead, Digital Agency',
             },
             {
-              quote: 'We evaluated Snipe-IT and Asset Panda. Snipe required self-hosting, Asset Panda was overkill on pricing. Trackstack was the Goldilocks — simple enough to actually use, powerful enough to cover our needs.',
+              quote: 'We evaluated Snipe-IT and Asset Panda. Snipe required self-hosting, Asset Panda was overkill on pricing. Trackstack was the Goldilocks: simple enough to actually use, powerful enough to cover our needs.',
               name: 'Morgan Taylor',
               role: 'CTO, HealthTech (42 employees)',
             },
