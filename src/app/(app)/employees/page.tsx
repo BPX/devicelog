@@ -161,40 +161,23 @@ export default function EmployeesPage() {
       </div>
     )}
 
-    {showAddModal && <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/20" onClick={() => setShowAddModal(false)} />
-      <div className="relative bg-white rounded-lg shadow-xl border border-slate-200 p-6 max-w-md w-full mx-4">
-        <h3 className="text-sm font-semibold text-slate-900 mb-1">New Employee</h3>
-        <p className="text-sm text-slate-500 mb-4">Fill in the details. Name is required.</p>
-        <div className="space-y-3">
-          <div><label className="block text-xs font-medium text-slate-600 mb-1">Name *</label><input autoFocus value={addForm.name} onChange={e => setAddForm({...addForm, name: e.target.value})} placeholder="John Smith" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" onKeyDown={e => { if(e.key==='Enter') saveNew() }} /></div>
-          <div><label className="block text-xs font-medium text-slate-600 mb-1">Email</label><input value={addForm.email} onChange={e => setAddForm({...addForm, email: e.target.value})} placeholder="john@company.com" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
-          <div><label className="block text-xs font-medium text-slate-600 mb-1">Job Title</label><input value={addForm.job_title} onChange={e => setAddForm({...addForm, job_title: e.target.value})} placeholder="IT Manager" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
-          <div><label className="block text-xs font-medium text-slate-600 mb-1">Department</label><input value={addForm.department} onChange={e => setAddForm({...addForm, department: e.target.value})} placeholder="Engineering" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
-        </div>
-        <div className="flex gap-2 justify-end mt-4">
-          <button onClick={() => setShowAddModal(false)} className="px-4 py-1.5 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button>
-          <button onClick={saveNew} disabled={!addForm.name.trim()} className="px-4 py-1.5 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700 disabled:opacity-50">Add Employee</button>
-        </div>
+    {showAddModal && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"><div className="bg-white rounded-lg p-6 w-full max-w-lg border border-slate-200 shadow-xl"><h2 className="text-lg font-semibold mb-4">New Employee</h2>
+      <div className="space-y-3"><div className="grid grid-cols-2 gap-3">
+        <div><label className="block text-xs font-medium text-slate-600 mb-1">Name *</label><input autoFocus value={addForm.name} onChange={e => setAddForm({...addForm, name: e.target.value})} placeholder="John Smith" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" onKeyDown={e => { if(e.key==='Enter') saveNew() }} /></div>
+        <div><label className="block text-xs font-medium text-slate-600 mb-1">Email</label><input value={addForm.email} onChange={e => setAddForm({...addForm, email: e.target.value})} placeholder="john@company.com" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
+        <div><label className="block text-xs font-medium text-slate-600 mb-1">Job Title</label><input value={addForm.job_title} onChange={e => setAddForm({...addForm, job_title: e.target.value})} placeholder="IT Manager" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
+        <div><label className="block text-xs font-medium text-slate-600 mb-1">Department</label><input value={addForm.department} onChange={e => setAddForm({...addForm, department: e.target.value})} placeholder="Engineering" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
       </div>
-    </div>}
+      <div className="flex gap-2 pt-2"><button onClick={saveNew} disabled={!addForm.name.trim()} className="flex-1 py-2 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700 disabled:opacity-50">Add Employee</button><button onClick={() => setShowAddModal(false)} className="px-4 py-2 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button></div></div></div></div>}
 
-    {editEmp && <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/20" onClick={() => setEditEmp(null)} />
-      <div className="relative bg-white rounded-lg shadow-xl border border-slate-200 p-6 max-w-md w-full mx-4">
-        <h3 className="text-sm font-semibold text-slate-900 mb-1">Edit {editEmp.name}</h3>
-        <p className="text-sm text-slate-500 mb-4">Add job title, email, and department</p>
-        <div className="space-y-3">
-          <div><label className="block text-xs font-medium text-slate-600 mb-1">Email</label><input value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} placeholder="person@company.com" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
-          <div><label className="block text-xs font-medium text-slate-600 mb-1">Job Title</label><input value={editForm.job_title} onChange={e => setEditForm({...editForm, job_title: e.target.value})} placeholder="IT Manager" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
-          <div><label className="block text-xs font-medium text-slate-600 mb-1">Department</label><input value={editForm.department} onChange={e => setEditForm({...editForm, department: e.target.value})} placeholder="Engineering" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
-        </div>
-        <div className="flex gap-2 justify-end mt-4">
-          <button onClick={() => setEditEmp(null)} className="px-4 py-1.5 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button>
-          <button onClick={saveEdit} className="px-4 py-1.5 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700">Save</button>
-        </div>
+    {editEmp && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"><div className="bg-white rounded-lg p-6 w-full max-w-lg border border-slate-200 shadow-xl"><h2 className="text-lg font-semibold mb-4">Edit {editEmp.name}</h2>
+      <div className="grid grid-cols-2 gap-3">
+        <div><label className="block text-xs font-medium text-slate-600 mb-1">Email</label><input value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} placeholder="person@company.com" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
+        <div><label className="block text-xs font-medium text-slate-600 mb-1">Job Title</label><input value={editForm.job_title} onChange={e => setEditForm({...editForm, job_title: e.target.value})} placeholder="IT Manager" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
+        <div><label className="block text-xs font-medium text-slate-600 mb-1">Department</label><input value={editForm.department} onChange={e => setEditForm({...editForm, department: e.target.value})} placeholder="Engineering" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
+        <div className="flex items-end"><span className="text-xs text-slate-400">Name cannot be changed</span></div>
       </div>
-    </div>}
+      <div className="flex gap-2 pt-2"><button onClick={saveEdit} className="flex-1 py-2 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700">Save Changes</button><button onClick={() => setEditEmp(null)} className="px-4 py-2 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button></div></div></div>}
 
     {showImport && <CsvImport title="Import Employees" description="Upload a CSV with name, email, job title, department." sampleData={`name,email,job_title,department
 John Smith,john@company.com,IT Manager,IT
