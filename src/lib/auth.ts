@@ -4,7 +4,7 @@ const U = 'https://mbsjxuymiuevankxrgmo.supabase.co'
 const K = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ic2p4dXltaXVldmFua3hyZ21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNTcwOTQsImV4cCI6MjEwMTkzMzA5NH0.TUV0c2eIYkr00MTuzCiC84D9fThHeGEiMIvm4090DIs'
 
 export async function signUp(email: string, password: string) {
-  const r = await fetch(U + '/auth/v1/signup', {
+  const r = await window.fetch(U + '/auth/v1/signup', {
     method: 'POST',
     headers: { apikey: K, 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password })
@@ -21,7 +21,7 @@ export async function signUp(email: string, password: string) {
 }
 
 export async function signIn(email: string, password: string) {
-  const r = await fetch(U + '/auth/v1/token?grant_type=password', {
+  const r = await window.fetch(U + '/auth/v1/token?grant_type=password', {
     method: 'POST',
     headers: { apikey: K, 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password })
