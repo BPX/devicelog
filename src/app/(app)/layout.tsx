@@ -2,7 +2,8 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Package, Shield, Settings, LogOut, LayoutDashboard, Users } from 'lucide-react'
-import { getCurrentUser, signOut, onAuthChange } from '@/lib/auth'
+import { getCurrentUser, signOut } from '@/lib/auth'
+import { supabase } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 import InstallPrompt from '@/components/install-prompt'
 import QuickAdd from '@/components/quick-add'
@@ -12,6 +13,7 @@ const navItems = [
   { href: '/assets', label: 'Assets', icon: Package },
   { href: '/employees', label: 'Employees', icon: Users },
   { href: '/certificates', label: 'Certs & Licenses', icon: Shield },
+  { href: '/team', label: 'Team', icon: Users },
   { href: '/settings', label: 'Settings', icon: Settings },
 ]
 
@@ -23,6 +25,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     getCurrentUser().then(user => {
       if (!user) { router.replace('/login'); return }
       setEmail(user)
+      // Check team membership — redirect to setup if none
+      supabase.from('team_members').select('team_id').limit(1).then(({ data }) => {
+        if (!data?.length && window.location.pathname !== '/setup') router.replace('/setup')
+      })
     })
   }, [])
 
