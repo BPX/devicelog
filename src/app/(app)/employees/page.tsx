@@ -1,9 +1,9 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { getSettings, saveSettings, importEmployees } from '@/lib/settings-store'
+import { getSettings, saveSettings, importEmployees, type Employee } from '@/lib/settings-store'
 import CsvImport from '@/components/csv-import'
 import ConfirmDialog from '@/components/confirm-dialog'
-import { Plus, Search, X, Upload, Ghost, Monitor, Download, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
+import { Plus, Search, X, Upload, Ghost, Monitor, Download, ArrowUpDown, ArrowUp, ArrowDown, Pencil, Mail, Briefcase, Building } from 'lucide-react'
 import { downloadCsv } from '@/lib/export'
 
 function getCounts(): Record<string, number> {
@@ -15,8 +15,17 @@ function getCounts(): Record<string, number> {
   } catch { return {} }
 }
 
+function getCertCounts(): Record<string, number> {
+  try {
+    const certs = JSON.parse(localStorage.getItem('trackstack_certificates') || '[]')
+    const c: Record<string, number> = {}
+    for (const cert of certs) { if (cert.assigned_to) c[cert.assigned_to] = (c[cert.assigned_to] || 0) + 1 }
+    return c
+  } catch { return {} }
+}
+
 export default function EmployeesPage() {
-  const [employees, setEmployees] = useState<string[]>([])
+  const [employees, setEmployees] = useState<Employee[]>([])
   const [counts, setCounts] = useState<Record<string, number>>({})
   const [search, setSearch] = useState('')
   const [newEmp, setNewEmp] = useState('')
@@ -24,6 +33,8 @@ export default function EmployeesPage() {
   const [confirmRemove, setConfirmRemove] = useState<{name:string, count:number}|null>(null)
   const [sortField, setSortField] = useState<string>('')
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
+  const [editEmp, setEditEmp] = useState<Employee | null>(null)
+  const [editForm, setEditForm] = useState({ email:'', job_title:'', department:'' })
 
   useEffect(() => { setEmployees(getSettings().employees); setCounts(getCounts()) }, [])
 
@@ -36,7 +47,7 @@ export default function EmployeesPage() {
     return sortDir === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />
   }
 
-  function persist(list: string[]) {
+  function persist(list: Employee[]) {
     setEmployees(list)
     saveSettings({ ...getSettings(), employees: list })
     setCounts(getCounts())
@@ -44,21 +55,32 @@ export default function EmployeesPage() {
 
   function add() {
     if (!newEmp.trim()) return
-    if (!employees.includes(newEmp.trim())) persist([...employees, newEmp.trim()].sort())
+    if (!employees.find(e => e.name === newEmp.trim())) persist([...employees, { name: newEmp.trim(), email: '', job_title: '', department: '' }].sort((a,b) => a.name.localeCompare(b.name)))
     setNewEmp('')
   }
 
   function remove(name: string) {
     const count = counts[name] || 0
     if (count > 0) { setConfirmRemove({ name, count }); return }
-    persist(employees.filter(e => e !== name))
+    persist(employees.filter(e => e.name !== name))
   }
 
-  const filtered = employees.filter(e => e.toLowerCase().includes(search.toLowerCase()))
+  function saveEdit() {
+    if (!editEmp) return
+    const updated = employees.map(e => e.name === editEmp.name ? { ...e, ...editForm } : e)
+    persist(updated); setEditEmp(null)
+  }
+
+  function startEdit(emp: Employee) {
+    setEditEmp(emp)
+    setEditForm({ email: emp.email || '', job_title: emp.job_title || '', department: emp.department || '' })
+  }
+
+  const filtered = employees.filter(e => e.name.toLowerCase().includes(search.toLowerCase()) || e.email?.toLowerCase().includes(search.toLowerCase()) || e.department?.toLowerCase().includes(search.toLowerCase()))
 
   const sorted = sortField ? [...filtered].sort((a,b) => {
-    const av = sortField === 'devices' ? (counts[a]||0) : a.toLowerCase()
-    const bv = sortField === 'devices' ? (counts[b]||0) : b.toLowerCase()
+    const av = sortField === 'devices' ? (counts[a.name]||0) : (a[sortField as keyof Employee] || a.name).toString().toLowerCase()
+    const bv = sortField === 'devices' ? (counts[b.name]||0) : (b[sortField as keyof Employee] || b.name).toString().toLowerCase()
     if (typeof av === 'number') return sortDir === 'asc' ? av - (bv as number) : (bv as number) - av
     return sortDir === 'asc' ? av.localeCompare(bv as string) : (bv as string).localeCompare(av)
   }) : filtered
@@ -68,8 +90,7 @@ export default function EmployeesPage() {
       <h1 className="text-2xl font-semibold text-slate-900">Employees</h1>
       <div className="flex gap-2">
         <button onClick={() => setShowImport(true)} className="flex items-center gap-2 px-3 py-2 border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50"><Upload size={16}/>Import CSV</button>
-        <button onClick={() => downloadCsv(employees.map(e => ({ name: e, devices: counts[e] || 0 })), 'trackstack-employees.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50"><Download size={16}/>Export</button>
-        <button onClick={() => { const inp = document.getElementById('emp-add-input') as HTMLInputElement; inp?.focus() }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700"><Plus size={16}/>Add Employee</button>
+        <button onClick={() => downloadCsv(employees.map(e => ({ name: e.name, email: e.email, job_title: e.job_title, department: e.department, devices: counts[e.name]||0 })), 'trackstack-employees.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50"><Download size={16}/>Export</button>
       </div>
     </div>
 
@@ -83,29 +104,38 @@ export default function EmployeesPage() {
           <table className="w-full text-sm">
             <thead className="sticky top-0 z-10">
               <tr className="text-left text-slate-500 bg-slate-50 border-b">
-                <th onClick={() => toggleSort('name')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700">
-                  <span className="inline-flex items-center gap-1">Name{sortIcon('name')}</span>
-                </th>
-                <th onClick={() => toggleSort('devices')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700">
-                  <span className="inline-flex items-center gap-1">Devices{sortIcon('devices')}</span>
-                </th>
-                <th className="py-3 px-4 font-medium w-12"></th>
+                <th onClick={() => toggleSort('name')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700"><span className="inline-flex items-center gap-1">Name{sortIcon('name')}</span></th>
+                <th className="py-3 px-4 font-medium">Email / Role</th>
+                <th onClick={() => toggleSort('department')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700"><span className="inline-flex items-center gap-1">Department{sortIcon('department')}</span></th>
+                <th onClick={() => toggleSort('devices')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700"><span className="inline-flex items-center gap-1">Devices{sortIcon('devices')}</span></th>
+                <th className="py-3 px-4 font-medium w-20"></th>
               </tr>
             </thead>
             <tbody>
               {sorted.map(e => {
-                const count = counts[e] || 0
+                const count = counts[e.name] || 0
                 return (
-                  <tr key={e} className={`border-b border-slate-100 ${count === 0 ? 'bg-red-50/30' : 'hover:bg-slate-50'}`}>
+                  <tr key={e.name} className={`border-b border-slate-100 ${count === 0 ? 'bg-red-50/30' : 'hover:bg-slate-50'}`}>
                     <td className="py-2.5 px-4">
                       <div className="flex items-center gap-2">
                         <Monitor size={14} className={count > 0 ? 'text-slate-400' : 'text-red-300'} />
-                        <span className="text-slate-900 font-medium">{e}</span>
+                        <span className="text-slate-900 font-medium">{e.name}</span>
                         {count === 0 && <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-red-100 text-red-600 rounded text-xs font-medium"><Ghost size={10}/>0</span>}
                       </div>
                     </td>
+                    <td className="py-2.5 px-4">
+                      {e.email ? <div className="text-xs text-slate-500">{e.email}</div> : null}
+                      {e.job_title ? <div className="text-xs text-slate-400">{e.job_title}</div> : null}
+                      {!e.email && !e.job_title && <span className="text-xs text-slate-400 italic">No details</span>}
+                    </td>
+                    <td className="py-2.5 px-4 text-slate-500">{e.department || '—'}</td>
                     <td className="py-2.5 px-4 text-slate-500">{count}</td>
-                    <td className="py-2.5 px-4"><button onClick={() => remove(e)} className="p-1 hover:bg-red-50 rounded"><X size={14} className="text-slate-300 hover:text-red-500"/></button></td>
+                    <td className="py-2.5 px-4">
+                      <div className="flex gap-1">
+                        <button onClick={() => startEdit(e)} className="p-1 hover:bg-slate-100 rounded"><Pencil size={14} className="text-slate-400"/></button>
+                        <button onClick={() => remove(e.name)} className="p-1 hover:bg-red-50 rounded"><X size={14} className="text-slate-300 hover:text-red-500"/></button>
+                      </div>
+                    </td>
                   </tr>
                 )
               })}
@@ -115,21 +145,38 @@ export default function EmployeesPage() {
       </div>
     )}
 
-    {showImport && <CsvImport title="Import Employees" description="Upload a CSV with employee names." sampleData="John Smith\nJane Doe\nBob Wilson" sampleFilename="employees.csv" onImport={rows => { importEmployees(rows.map(r => Object.values(r)[0])); setEmployees(getSettings().employees); setCounts(getCounts()); setShowImport(false) }} onClose={() => setShowImport(false)} />}
+    {editEmp && <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/20" onClick={() => setEditEmp(null)} />
+      <div className="relative bg-white rounded-lg shadow-xl border border-slate-200 p-6 max-w-md w-full mx-4">
+        <h3 className="text-sm font-semibold text-slate-900 mb-1">Edit {editEmp.name}</h3>
+        <p className="text-sm text-slate-500 mb-4">Add job title, email, and department</p>
+        <div className="space-y-3">
+          <div><label className="block text-xs font-medium text-slate-600 mb-1">Email</label><input value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} placeholder="person@company.com" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
+          <div><label className="block text-xs font-medium text-slate-600 mb-1">Job Title</label><input value={editForm.job_title} onChange={e => setEditForm({...editForm, job_title: e.target.value})} placeholder="IT Manager" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
+          <div><label className="block text-xs font-medium text-slate-600 mb-1">Department</label><input value={editForm.department} onChange={e => setEditForm({...editForm, department: e.target.value})} placeholder="Engineering" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
+        </div>
+        <div className="flex gap-2 justify-end mt-4">
+          <button onClick={() => setEditEmp(null)} className="px-4 py-1.5 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button onClick={saveEdit} className="px-4 py-1.5 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700">Save</button>
+        </div>
+      </div>
+    </div>}
+
+    {showImport && <CsvImport title="Import Employees" description="Upload a CSV with name, email, job title, department." sampleData="name,email,job_title,department\nJohn Smith,john@company.com,IT Manager,IT\nJane Doe,jane@company.com,System Admin,IT" sampleFilename="employees.csv" onImport={rows => { importEmployees(rows); setEmployees(getSettings().employees); setCounts(getCounts()); setShowImport(false) }} onClose={() => setShowImport(false)} />}
 
     {confirmRemove && <ConfirmDialog
       title={`Remove ${confirmRemove.name}?`}
       message={`They have ${confirmRemove.count} device(s) assigned. Removing will unassign all their assets.`}
       confirmLabel="Remove"
-      onConfirm={() => { 
-        persist(employees.filter(e => e !== confirmRemove.name))
+      onConfirm={() => {
+        persist(employees.filter(e => e.name !== confirmRemove.name))
         try {
           const assets = JSON.parse(localStorage.getItem('trackstack_assets') || '[]')
           let changed = false
           for (const a of assets) { if (a.assigned_to === confirmRemove.name) { a.assigned_to = ''; changed = true } }
           if (changed) localStorage.setItem('trackstack_assets', JSON.stringify(assets))
         } catch {}
-        setConfirmRemove(null) 
+        setConfirmRemove(null)
       }}
       onCancel={() => setConfirmRemove(null)}
     />}

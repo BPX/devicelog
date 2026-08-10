@@ -26,6 +26,7 @@ export default function AssetsPage() {
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
   const [form, setForm] = useState({ name:'', category:'laptop', manufacturer:'', model:'', serial_number:'', status:'active', assigned_to:'', location:'', purchase_date:'', warranty_expires:'' })
   const settings = getSettings()
+  const employeeNames = settings.employees.map(e => e.name)
 
   function toggleSort(field: string) {
     if (sortField === field) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
@@ -136,7 +137,7 @@ export default function AssetsPage() {
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Status</label>
           <select value={form.status} onChange={e=>setForm({...form,status:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm">{settings.statuses.map(s=><option key={s} value={s}>{s}</option>)}</select></div>
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Assigned To</label>
-          <EmployeeAutocomplete value={form.assigned_to} onChange={v => setForm({...form, assigned_to: v})} options={settings.employees} /></div>
+          <EmployeeAutocomplete value={form.assigned_to} onChange={v => setForm({...form, assigned_to: v})} options={employeeNames} /></div>
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Location</label><input value={form.location} onChange={e=>setForm({...form,location:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" placeholder="Office / room"/></div>
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Purchase Date</label><input type="date" value={form.purchase_date} onChange={e=>setForm({...form,purchase_date:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm"/></div>
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Warranty Expires</label><input type="date" value={form.warranty_expires} onChange={e=>setForm({...form,warranty_expires:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm"/></div>

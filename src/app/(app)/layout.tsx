@@ -5,6 +5,7 @@ import { Package, Shield, Settings, LogOut, LayoutDashboard, Users } from 'lucid
 import { getCurrentUser, signOut } from '@/lib/demo-auth'
 import { useEffect, useState } from 'react'
 import InstallPrompt from '@/components/install-prompt'
+import QuickAdd from '@/components/quick-add'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -19,15 +20,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [email, setEmail] = useState<string | null | 'loading'>('loading')
 
   useEffect(() => {
-    // Register service worker
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js')
-    // Auth check
     const user = getCurrentUser()
     if (!user) { router.replace('/login'); return }
     setEmail(user)
   }, [])
 
-  if (email === 'loading') return null // Don't flash "checking auth" — just wait silently
+  if (email === 'loading') return null
 
   return (
     <div className="flex h-screen">
@@ -35,6 +34,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="p-5 border-b border-slate-200">
           <Link href="/dashboard" className="text-lg font-semibold text-slate-900 tracking-tight">Track<span className="text-cyan-600">stack</span></Link>
         </div>
+        <div className="px-3 pt-3"><QuickAdd /></div>
         <nav className="flex-1 p-3 space-y-1">
           {navItems.map(({ href, label, icon: Icon }) => {
             const active = pathname.startsWith(href)
