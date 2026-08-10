@@ -81,10 +81,25 @@ export async function signIn(login: string, password: string) {
   localStorage.setItem('sb_refresh', j.refresh_token || '')
   localStorage.setItem('sb_email', email)
   
-  // Username — try user_metadata first (always present from signup), then user_profiles
+  // Username — try user_metadata first, then user_profiles
   const metaUser = j.user?.user_metadata?.username
   if (metaUser) {
     localStorage.setItem('sb_username', metaUser)
+    // Backfill user_profiles so username login works
+    try {
+      const userId = j.user?.id || JSON.parse(atob(j.access_token.split('.')[1])).sub
+      // Upsert: insert if not exists
+      await window.fetch(REST + '/user_profiles', {
+        method: 'POST',
+        headers: {
+          apikey: K,
+          'Authorization': 'Bearer ' + j.access_token,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=ignore-duplicates',
+        },
+        body: JSON.stringify({ user_id: userId, username: metaUser, email }),
+      })
+    } catch { /* non-critical */ }
   } else {
     try {
       const userId = j.user?.id || ''
