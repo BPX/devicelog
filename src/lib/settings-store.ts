@@ -5,18 +5,20 @@ export interface AppSettings {
   categories: string[]
   statuses: string[]
   employees: string[]
+  cert_types: string[]
 }
 
 const defaults: AppSettings = {
   categories: ['laptop','desktop','monitor','phone','tablet','server','printer','network','software','license','other'],
   statuses: ['active','maintenance','retired','lost'],
   employees: [],
+  cert_types: ['ssl_cert','software_license','support_contract','domain','other'],
 }
 
 export function getSettings(): AppSettings {
   try {
     const stored = JSON.parse(localStorage.getItem(KEY) || '{}')
-    return { ...defaults, ...stored, categories: stored.categories || defaults.categories, statuses: stored.statuses || defaults.statuses, employees: stored.employees || defaults.employees }
+    return { ...defaults, ...stored }
   } catch { return { ...defaults } }
 }
 

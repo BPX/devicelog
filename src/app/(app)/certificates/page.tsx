@@ -5,9 +5,9 @@ import { Plus, Trash2, Upload, Download, Shield, Search, ArrowUpDown, ArrowUp, A
 import CsvImport from '@/components/csv-import'
 import ConfirmDialog from '@/components/confirm-dialog'
 import { downloadCsv } from '@/lib/export'
+import { getSettings } from '@/lib/settings-store'
 
 interface Cert { id: string; name: string; type: string; issuer: string; expires_at: string; notify_before_days: number }
-const types = ['ssl_cert','software_license','support_contract','domain','other']
 
 function getCerts(): Cert[] { try { return JSON.parse(localStorage.getItem('trackstack_certificates') || '[]') } catch { return [] } }
 function saveCerts(c: Cert[]) { localStorage.setItem('trackstack_certificates', JSON.stringify(c)) }
@@ -20,6 +20,7 @@ export default function CertsPage() {
   const [sortField, setSortField] = useState<string>('')
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
   const [form, setForm] = useState({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30 })
+  const certTypes = getSettings().cert_types || ['ssl_cert','software_license','support_contract','domain','other']
 
   useEffect(() => { setCerts(getCerts()); setLoading(false) }, [])
 
@@ -71,7 +72,7 @@ export default function CertsPage() {
       <form onSubmit={handleSubmit} className="space-y-3">
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Name *</label><input required value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" placeholder="e.g. trackstack.com SSL"/></div>
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="block text-xs font-medium text-slate-600 mb-1">Type</label><select value={form.type} onChange={e=>setForm({...form,type:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm">{types.map(t=><option key={t} value={t}>{t.replace('_',' ')}</option>)}</select></div>
+          <div><label className="block text-xs font-medium text-slate-600 mb-1">Type</label><select value={form.type} onChange={e=>setForm({...form,type:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm">{certTypes.map((t:string)=><option key={t} value={t}>{t.replace('_',' ')}</option>)}</select></div>
           <div><label className="block text-xs font-medium text-slate-600 mb-1">Issuer</label><input value={form.issuer} onChange={e=>setForm({...form,issuer:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" placeholder="e.g. Let's Encrypt"/></div>
         </div>
         <div className="grid grid-cols-2 gap-3">
