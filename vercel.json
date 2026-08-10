@@ -1,12 +1,11 @@
 {
   "version": 2,
-  "buildCommand": "NODE_ENV=development npm install && npm run build",
+  "installCommand": "npm install",
+  "buildCommand": "npm run build",
   "outputDirectory": "out",
   "framework": null,
-  "installCommand": "NODE_ENV=development npm install",
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/$1.html" },
-    { "src": "/(.*)/", "status": 301, "headers": { "Location": "/$1" } }
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/((?!_next|favicon|manifest|icon|sw|scanner|sample|stress).*)", "destination": "/$1.html" }
   ]
 }
