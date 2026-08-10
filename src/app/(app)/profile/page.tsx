@@ -1,9 +1,10 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { getCurrentUser, getCurrentUsername, signOut } from '@/lib/auth'
-import { Camera, Trash2 } from 'lucide-react'
+import { Camera, Trash2, CreditCard, Check, AlertTriangle } from 'lucide-react'
 import ConfirmDialog from '@/components/confirm-dialog'
+import { startCheckout, getSubscription } from '@/lib/billing'
 
 const U = 'https://mbsjxuymiuevankxrgmo.supabase.co'
 const REST = U + '/rest/v1'
@@ -22,12 +23,21 @@ export default function ProfilePage() {
   const [showDelete, setShowDelete] = useState(false)
   const router = useRouter()
 
+  // ── Billing ──
+  const [sub, setSub] = useState<{ plan: string; status: string; current_period_end: string | null } | null>(null)
+  const [checkoutLoading, setCheckoutLoading] = useState(false)
+  const [checkoutError, setCheckoutError] = useState('')
+
+  const loadSubscription = useCallback(async () => {
+    const s = await getSubscription()
+    setSub(s)
+  }, [])
+
   useEffect(() => {
     async function load() {
       const user = getCurrentUser()
       if (!user) { router.replace('/login'); return }
       setEmail(user)
-      // Try localStorage first, then user_metadata from JWT
       let uname = getCurrentUsername() || ''
       if (!uname) {
         const tok = localStorage.getItem('sb_token')
@@ -40,10 +50,11 @@ export default function ProfilePage() {
       }
       setUsername(uname)
       setNewUsername(uname)
+      loadSubscription()
       setLoading(false)
     }
     load()
-  }, [])
+  }, [loadSubscription])
 
   async function changeUsername() {
     if (!newUsername.trim() || newUsername.trim() === username) return
@@ -51,7 +62,6 @@ export default function ProfilePage() {
     try {
       const tok = localStorage.getItem('sb_token')
       if (!tok) { setError('Not authenticated'); setSaving(false); return }
-      // Update user_profiles table
       const userId = JSON.parse(atob(tok.split('.')[1])).sub
       const r = await window.fetch(REST + '/user_profiles?user_id=eq.' + userId, {
         method: 'PATCH',
@@ -95,6 +105,25 @@ export default function ProfilePage() {
       setSuccess('Confirmation email sent to ' + newEmail)
     }
     setSaving(false)
+  }
+
+  async function handleUpgrade(plan: string) {
+    setCheckoutLoading(true)
+    setCheckoutError('')
+    // Replace these with your actual Stripe price IDs from the Stripe dashboard
+    const priceIds: Record<string, string> = {
+      team: 'price_team_placeholder',
+      enterprise: 'price_enterprise_placeholder',
+    }
+    const result = await startCheckout(
+      priceIds[plan] || 'price_team_placeholder',
+      window.location.origin + '/dashboard?checkout=success',
+      window.location.origin + '/profile?checkout=canceled'
+    )
+    if (result.error) {
+      setCheckoutError(result.error)
+    }
+    setCheckoutLoading(false)
   }
 
   async function deleteAccount() {
@@ -149,6 +178,58 @@ export default function ProfilePage() {
           <div className="flex gap-2">
             <input value={newEmail} onChange={e => setNewEmail(e.target.value)} placeholder="new@email.com" className="flex-1 px-3 py-1.5 border border-slate-300 rounded text-sm" />
             <button onClick={changeEmail} disabled={saving} className="px-4 py-1.5 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700 disabled:opacity-50">{saving ? 'Sending...' : 'Change'}</button>
+          </div>
+        </div>
+
+        {/* Billing */}
+        <div className="bg-white border border-slate-200 rounded-lg p-5">
+          <h2 className="font-medium text-slate-900 mb-3 flex items-center gap-2">
+            <CreditCard size={16} className="text-cyan-600" /> Billing
+          </h2>
+          {checkoutError && (
+            <div className="mb-3 flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded border border-red-200">
+              <AlertTriangle size={14} /> {checkoutError}
+            </div>
+          )}
+          <div className="space-y-3">
+            <div className="flex justify-between items-center py-2">
+              <span className="text-sm text-slate-600">Current plan</span>
+              <span className="text-sm font-medium text-slate-900 capitalize">{sub?.plan || 'free'}</span>
+            </div>
+            {sub?.status && sub.status !== 'active' && (
+              <div className="flex justify-between items-center py-2">
+                <span className="text-sm text-slate-600">Status</span>
+                <span className={`text-sm font-medium capitalize ${sub.status === 'past_due' ? 'text-red-600' : 'text-amber-600'}`}>{sub.status.replace('_', ' ')}</span>
+              </div>
+            )}
+            {sub?.current_period_end && (
+              <div className="flex justify-between items-center py-2">
+                <span className="text-sm text-slate-600">Renews</span>
+                <span className="text-sm text-slate-700">{new Date(sub.current_period_end).toLocaleDateString()}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-4 pt-4 border-t border-slate-100">
+            {(!sub || sub.plan === 'free') ? (
+              <div className="space-y-3">
+                <p className="text-sm text-slate-500">Upgrade to unlock unlimited assets, team collaboration, and priority support.</p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleUpgrade('team')}
+                    disabled={checkoutLoading}
+                    className="flex-1 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700 disabled:opacity-50"
+                  >
+                    {checkoutLoading ? 'Redirecting...' : 'Upgrade to Team — $19/mo'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <p className="text-sm text-slate-500 mb-3">You're on the <strong className="text-slate-700 capitalize">{sub.plan}</strong> plan.</p>
+                <p className="text-xs text-slate-400">To manage your subscription (cancel, update payment method), visit the Stripe customer portal or contact support.</p>
+              </div>
+            )}
           </div>
         </div>
 
