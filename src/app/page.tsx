@@ -694,11 +694,11 @@ export default function LandingPage() {
             <div className="overflow-x-auto">
               <table className="w-full table-fixed text-sm">
                 <colgroup>
-                  <col className="w-[40%]" />
-                  <col className="w-[15%]" />
-                  <col className="w-[15%]" />
-                  <col className="w-[15%]" />
-                  <col className="w-[15%]" />
+                  <col className="w-[28%]" />
+                  <col className="w-[18%]" />
+                  <col className="w-[18%]" />
+                  <col className="w-[18%]" />
+                  <col className="w-[18%]" />
                 </colgroup>
                 <thead>
                   <tr className="border-b border-slate-200 bg-slate-50/50">
