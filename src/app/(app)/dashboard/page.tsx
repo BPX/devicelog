@@ -1,21 +1,39 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Package, Shield, AlertTriangle } from 'lucide-react'
+import { Package, Shield, AlertTriangle, RefreshCw } from 'lucide-react'
 import { daysUntil } from '@/lib/utils'
-import { getAssets, getCerts } from '@/lib/data'
+import { getTeam, queryAssets, queryCerts } from '@/lib/data'
+import type { Asset } from '@/lib/data'
 import Link from 'next/link'
 
-interface Asset { id: string; name: string; category: string; status: string; warranty_expires: string | null }
-interface Cert { id: string; name: string; type: string; expires_at: string }
+interface CertSummary { id: string; name: string; type: string; expires_at: string }
 
 export default function DashboardPage() {
-  const [assets, setAssets] = useState<Asset[]>([]); const [certs, setCerts] = useState<Cert[]>([])
+  const [teamId, setTeamId] = useState<string | null>(null)
+  const [assets, setAssets] = useState<Asset[]>([])
+  const [certs, setCerts] = useState<CertSummary[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function load() {
-      const [a, c] = await Promise.all([getAssets(), getCerts()])
-      setAssets(a || []); setCerts(c || []); setLoading(false)
+      try {
+        const team = await getTeam()
+        const tid = team?.id || null
+        setTeamId(tid)
+
+        if (tid) {
+          const [assetResult, certResult] = await Promise.all([
+            queryAssets({ teamId: tid, limit: 10000 }),
+            queryCerts({ teamId: tid, limit: 10000 }),
+          ])
+          setAssets(assetResult.data)
+          setCerts(certResult.data as CertSummary[])
+        }
+      } catch (e: any) {
+        setError(e?.message || 'Failed to load dashboard')
+      }
+      setLoading(false)
     }
     load()
   }, [])
@@ -26,6 +44,26 @@ export default function DashboardPage() {
   const warrantyExpired = assets.filter(a => a.warranty_expires && daysUntil(a.warranty_expires) <= 0).length
 
   if (loading) return <div className="p-8 text-slate-500">Loading...</div>
+
+  if (error) return (
+    <div className="p-8 text-center">
+      <AlertTriangle size={32} className="mx-auto mb-3 text-red-400" />
+      <p className="text-lg font-medium text-slate-600">Could not load dashboard</p>
+      <p className="text-sm text-slate-400 mt-1">{error}</p>
+      <button onClick={() => window.location.reload()} className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700">
+        <RefreshCw size={14} /> Retry
+      </button>
+    </div>
+  )
+
+  if (!teamId) return (
+    <div className="text-center py-20">
+      <Package size={48} className="mx-auto mb-3 text-slate-300" />
+      <p className="text-lg font-medium text-slate-600">No team set up</p>
+      <p className="text-sm text-slate-400 mt-1">Create or join a team to see your dashboard.</p>
+      <Link href="/team" className="inline-block mt-4 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700">Go to Team</Link>
+    </div>
+  )
 
   return (
     <div>

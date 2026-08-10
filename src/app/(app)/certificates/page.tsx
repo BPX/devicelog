@@ -1,16 +1,19 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { formatDate, daysUntil } from '@/lib/utils'
-import { Plus, Trash2, Upload, Download, Shield, Search, ArrowUpDown, ArrowUp, ArrowDown, Pencil, FileText } from 'lucide-react'
+import { Plus, Trash2, Upload, Download, Shield, Search, ArrowUpDown, ArrowUp, ArrowDown, Pencil } from 'lucide-react'
 import CsvImport from '@/components/csv-import'
 import ConfirmDialog from '@/components/confirm-dialog'
 import { downloadCsv } from '@/lib/export'
 import { getSettings } from '@/lib/settings-store'
-import { getCerts, saveCert, deleteCert } from '@/lib/data'
+import { getTeam, queryCerts, saveCert, deleteCert } from '@/lib/data'
+import Link from 'next/link'
 
 interface Cert { id: string; name: string; type: string; issuer: string; expires_at: string; notify_before_days: number; document?: string; docName?: string }
 
 export default function CertsPage() {
+  const [teamId, setTeamId] = useState<string | null>(null)
+  const [teamLoading, setTeamLoading] = useState(true)
   const [certs, setCerts] = useState<Cert[]>([]); const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false); const [showImport, setShowImport] = useState(false)
   const [editing, setEditing] = useState<Cert | null>(null)
@@ -22,13 +25,27 @@ export default function CertsPage() {
   const [uploading, setUploading] = useState(false)
   const certTypes = getSettings().cert_types || ['ssl_cert','software_license','support_contract','domain','other']
 
+  // ── Load team ──
+  useEffect(() => {
+    (async () => {
+      const team = await getTeam()
+      setTeamId(team?.id || null)
+      setTeamLoading(false)
+    })()
+  }, [])
+
   async function loadCerts() {
-    const data = await getCerts()
-    setCerts(data)
+    if (!teamId) { setCerts([]); setLoading(false); return }
+    const result = await queryCerts({ teamId, limit: 10000 })
+    setCerts(result.data as Cert[])
     setLoading(false)
   }
 
-  useEffect(() => { loadCerts()
+  useEffect(() => {
+    if (!teamLoading) loadCerts()
+  }, [teamLoading])
+
+  useEffect(() => {
     if (typeof window !== 'undefined' && window.location.search.includes('new=true')) {
       setShowForm(true); setEditing(null)
       window.history.replaceState({}, '', window.location.pathname)
@@ -37,10 +54,9 @@ export default function CertsPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (editing) {
-      await deleteCert(editing.id)
-    }
-    await saveCert(form)
+    if (!teamId) return
+    if (editing) await deleteCert(editing.id)
+    await saveCert(form, teamId)
     await loadCerts()
     setShowForm(false); setEditing(null)
     setForm({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30, document:'', docName:'' })
@@ -80,7 +96,16 @@ export default function CertsPage() {
     return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av)
   }) : filtered
 
-  if (loading) return <div className="p-8 text-slate-500">Loading...</div>
+  if (teamLoading || loading) return <div className="p-8 text-slate-500">Loading...</div>
+
+  if (!teamId) return (
+    <div className="text-center py-20">
+      <Shield size={48} className="mx-auto mb-3 text-slate-300" />
+      <p className="text-lg font-medium text-slate-600">No team set up</p>
+      <p className="text-sm text-slate-400 mt-1">Create or join a team to track certificates.</p>
+      <Link href="/team" className="inline-block mt-4 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700">Go to Team</Link>
+    </div>
+  )
 
   return (<div>
     <div className="flex justify-between items-center mb-6">
@@ -140,6 +165,7 @@ trackstack.com SSL,ssl_cert,Let's Encrypt,2027-06-15
 Office 365,software_license,Microsoft,2026-12-31`}
       sampleFilename="certs.csv"
       onImport={async rows => {
+        if (!teamId) return
         const newCerts = rows.map(r => ({
           name: r.name || r.cert_name || r.domain || 'Unknown',
           type: (r.type || 'ssl_cert').toLowerCase().replace(' ','_'),
@@ -147,9 +173,7 @@ Office 365,software_license,Microsoft,2026-12-31`}
           expires_at: r.expires_at || r.expires || r.expiry || '',
           notify_before_days: parseInt(r.notify_before_days) || 30,
         }))
-        for (const c of newCerts) {
-          await saveCert(c)
-        }
+        for (const c of newCerts) await saveCert(c, teamId)
         await loadCerts()
         setShowImport(false)
       }}

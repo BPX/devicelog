@@ -1,10 +1,11 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { getEmployees, saveEmployee, deleteEmployee } from '@/lib/data'
+import { getTeam, getEmployees, queryAssets, saveEmployee, deleteEmployee, saveAsset, deleteAsset } from '@/lib/data'
 import CsvImport from '@/components/csv-import'
 import ConfirmDialog from '@/components/confirm-dialog'
 import { Plus, Search, X, Upload, Ghost, Monitor, Download, ArrowUpDown, ArrowUp, ArrowDown, Pencil, Copy } from 'lucide-react'
 import { downloadCsv } from '@/lib/export'
+import Link from 'next/link'
 
 interface Employee {
   id?: string
@@ -15,25 +16,9 @@ interface Employee {
   department: string
 }
 
-function getCounts(): Record<string, number> {
-  try {
-    const assets = JSON.parse(localStorage.getItem('trackstack_assets') || '[]')
-    const c: Record<string, number> = {}
-    for (const a of assets) { if (a.assigned_to) c[a.assigned_to] = (c[a.assigned_to] || 0) + 1 }
-    return c
-  } catch { return {} }
-}
-
-function getCertCounts(): Record<string, number> {
-  try {
-    const certs = JSON.parse(localStorage.getItem('trackstack_certificates') || '[]')
-    const c: Record<string, number> = {}
-    for (const cert of certs) { if (cert.assigned_to) c[cert.assigned_to] = (c[cert.assigned_to] || 0) + 1 }
-    return c
-  } catch { return {} }
-}
-
 export default function EmployeesPage() {
+  const [teamId, setTeamId] = useState<string | null>(null)
+  const [teamLoading, setTeamLoading] = useState(true)
   const [employees, setEmployees] = useState<Employee[]>([])
   const [counts, setCounts] = useState<Record<string, number>>({})
   const [search, setSearch] = useState('')
@@ -47,14 +32,37 @@ export default function EmployeesPage() {
   const [showAddModal, setShowAddModal] = useState(false)
   const [addForm, setAddForm] = useState({ name:'', email:'', job_title:'', department:'' })
 
+  // ── Load team ──
+  useEffect(() => {
+    (async () => {
+      const team = await getTeam()
+      setTeamId(team?.id || null)
+      setTeamLoading(false)
+    })()
+  }, [])
+
+  // ── Compute asset counts from Supabase ──
+  async function loadCounts() {
+    if (!teamId) { setCounts({}); return }
+    const result = await queryAssets({ teamId, limit: 10000 })
+    const c: Record<string, number> = {}
+    for (const a of result.data) {
+      if (a.assigned_to) c[a.assigned_to] = (c[a.assigned_to] || 0) + 1
+    }
+    setCounts(c)
+  }
+
   async function loadEmployees() {
     const data = await getEmployees()
     setEmployees(data || [])
-    setCounts(getCounts())
+    await loadCounts()
   }
 
   useEffect(() => {
-    loadEmployees()
+    if (!teamLoading) loadEmployees()
+  }, [teamLoading])
+
+  useEffect(() => {
     if (typeof window !== 'undefined' && window.location.search.includes('new=true')) {
       setShowAddModal(true)
       window.history.replaceState({}, '', window.location.pathname)
@@ -71,9 +79,9 @@ export default function EmployeesPage() {
   }
 
   async function add() {
-    if (!newEmp.trim()) return
+    if (!newEmp.trim() || !teamId) return
     if (!employees.find(e => e.name === newEmp.trim())) {
-      await saveEmployee({ name: newEmp.trim(), email: '', job_title: '', department: '' })
+      await saveEmployee({ name: newEmp.trim(), email: '', job_title: '', department: '' }, teamId)
       await loadEmployees()
     }
     setNewEmp('')
@@ -88,39 +96,39 @@ export default function EmployeesPage() {
   }
 
   async function saveEdit() {
-    if (!editEmp) return
-    const match = editEmp.id
-      ? employees.find(e => e.id === editEmp.id)
-      : employees.find(e => e.name === editEmp.name)
-    const oldName = match?.name || ''
+    if (!editEmp || !teamId) return
+    const oldName = employees.find(e => e.id === editEmp.id || e.name === editEmp.name)?.name || ''
     if (editEmp.id) await deleteEmployee(editEmp.id)
     await saveEmployee({
       name: editEmp.name,
       email: editForm.email.trim(),
       job_title: editForm.job_title.trim(),
       department: editForm.department.trim(),
-    })
+    }, teamId)
+
+    // Rename all assets assigned to the old name
     if (editEmp.name !== oldName) {
-      try {
-        const assets = JSON.parse(localStorage.getItem('trackstack_assets') || '[]')
-        let changed = false
-        for (const a of assets) { if (a.assigned_to === oldName) { a.assigned_to = editEmp.name; changed = true } }
-        if (changed) localStorage.setItem('trackstack_assets', JSON.stringify(assets))
-      } catch {}
+      const result = await queryAssets({ teamId, limit: 10000 })
+      for (const a of result.data) {
+        if (a.assigned_to === oldName) {
+          await deleteAsset(a.id)
+          await saveAsset({ ...a, assigned_to: editEmp.name }, teamId)
+        }
+      }
     }
     setEditEmp(null)
     await loadEmployees()
   }
 
   async function saveNew() {
-    if (!addForm.name.trim()) return
+    if (!addForm.name.trim() || !teamId) return
     if (employees.find(e => e.name === addForm.name.trim())) return
     await saveEmployee({
       name: addForm.name.trim(),
       email: addForm.email.trim(),
       job_title: addForm.job_title.trim(),
       department: addForm.department.trim(),
-    })
+    }, teamId)
     setShowAddModal(false)
     setAddForm({ name:'', email:'', job_title:'', department:'' })
     await loadEmployees()
@@ -152,6 +160,17 @@ export default function EmployeesPage() {
     if (typeof av === 'number') return sortDir === 'asc' ? av - (bv as number) : (bv as number) - av
     return sortDir === 'asc' ? av.localeCompare(bv as string) : (bv as string).localeCompare(av)
   }) : filtered
+
+  if (teamLoading) return <div className="p-8 text-slate-500">Loading...</div>
+
+  if (!teamId) return (
+    <div className="text-center py-20">
+      <Monitor size={48} className="mx-auto mb-3 text-slate-300" />
+      <p className="text-lg font-medium text-slate-600">No team set up</p>
+      <p className="text-sm text-slate-400 mt-1">Create or join a team to manage employees.</p>
+      <Link href="/team" className="inline-block mt-4 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700">Go to Team</Link>
+    </div>
+  )
 
   return (<div>
     <div className="flex justify-between items-center mb-6">
@@ -230,13 +249,13 @@ export default function EmployeesPage() {
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Email</label><input value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} placeholder="person@company.com" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Job Title</label><input value={editForm.job_title} onChange={e => setEditForm({...editForm, job_title: e.target.value})} placeholder="IT Manager" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Department</label><input value={editForm.department} onChange={e => setEditForm({...editForm, department: e.target.value})} placeholder="Engineering" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
-        <div className="flex items-end"><span className="text-xs text-slate-400">Name cannot be changed</span></div>
       </div>
       <div className="flex gap-2 pt-2"><button onClick={saveEdit} className="flex-1 py-2 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700">Save Changes</button><button onClick={() => setEditEmp(null)} className="px-4 py-2 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button></div></div></div>}
 
     {showImport && <CsvImport title="Import Employees" description="Upload a CSV with name, email, job title, department." sampleData={`name,email,job_title,department
 John Smith,john@company.com,IT Manager,IT
 Jane Doe,jane@company.com,System Admin,IT`} sampleFilename="employees.csv" onImport={async rows => {
+      if (!teamId) return
       for (const r of rows) {
         const name = (r.name || r['name'] || r[Object.keys(r)[0]] || '').trim()
         if (name) {
@@ -245,7 +264,7 @@ Jane Doe,jane@company.com,System Admin,IT`} sampleFilename="employees.csv" onImp
             email: (r.email || '').trim(),
             job_title: (r.job_title || '').trim(),
             department: (r.department || '').trim(),
-          })
+          }, teamId)
         }
       }
       await loadEmployees()
@@ -259,12 +278,16 @@ Jane Doe,jane@company.com,System Admin,IT`} sampleFilename="employees.csv" onImp
       onConfirm={async () => {
         const emp = employees.find(e => e.name === confirmRemove.name)
         if (emp?.id) await deleteEmployee(emp.id)
-        try {
-          const assets = JSON.parse(localStorage.getItem('trackstack_assets') || '[]')
-          let changed = false
-          for (const a of assets) { if (a.assigned_to === confirmRemove.name) { a.assigned_to = ''; changed = true } }
-          if (changed) localStorage.setItem('trackstack_assets', JSON.stringify(assets))
-        } catch {}
+        // Unassign all assets for this employee
+        if (teamId) {
+          const result = await queryAssets({ teamId, limit: 10000 })
+          for (const a of result.data) {
+            if (a.assigned_to === confirmRemove.name) {
+              await deleteAsset(a.id)
+              await saveAsset({ ...a, assigned_to: '' }, teamId)
+            }
+          }
+        }
         setConfirmRemove(null)
         await loadEmployees()
       }}
