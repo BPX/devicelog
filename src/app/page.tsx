@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { Package, Shield, Users, BarChart3, Zap, Lock, ArrowRight, Check, ChevronRight, Star, Clock, Globe } from 'lucide-react'
+import { Package, Shield, Users, BarChart3, Zap, Lock, ArrowRight, Check, ChevronRight, Star, Clock, Globe, CreditCard, ShieldCheck, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
 
 // ── Features ──
@@ -145,6 +145,24 @@ export default function LandingPage() {
             {[1,2,3,4,5].map(i => <Star key={i} size={12} className="text-amber-400 fill-amber-400" />)}
             <span className="ml-1">Free forever tier</span>
           </div>
+        </div>
+      </section>
+
+      {/* ── Trust badges ── */}
+      <section className="border-b border-slate-100 py-8">
+        <div className="max-w-4xl mx-auto px-6 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+          {[
+            { icon: CreditCard, label: 'No credit card', sub: 'Start free instantly' },
+            { icon: ShieldCheck, label: 'TLS encrypted', sub: 'Your data is safe' },
+            { icon: RefreshCw, label: 'Cancel anytime', sub: 'No lock-in contracts' },
+            { icon: BarChart3, label: 'Set up in 2 min', sub: 'Import your spreadsheet' },
+          ].map(b => (
+            <div key={b.label} className="flex flex-col items-center gap-1.5 p-3">
+              <b.icon size={18} className="text-cyan-500" />
+              <span className="text-sm font-medium text-slate-700">{b.label}</span>
+              <span className="text-xs text-slate-400">{b.sub}</span>
+            </div>
+          ))}
         </div>
       </section>
 

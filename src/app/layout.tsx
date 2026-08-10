@@ -16,11 +16,13 @@ export const metadata: Metadata = {
     url: "https://trackstack.dev",
     siteName: "Trackstack",
     type: "website",
+    images: [{ url: "https://trackstack.dev/og-image.svg", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Trackstack — Simple IT Asset Management",
     description: "Track your company's laptops, monitors, SSL certs, and software licenses. Free for small teams.",
+    images: ["https://trackstack.dev/og-image.svg"],
   },
   robots: {
     index: true,
