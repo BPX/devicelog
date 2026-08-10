@@ -460,7 +460,7 @@ export default function LandingPage() {
         </div>
 
         {/* Headline */}
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 tracking-tight leading-[1.05] max-w-4xl mx-auto text-center">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 tracking-tight leading-[1.05] max-w-5xl mx-auto text-center">
           Track every laptop, license, and SSL cert —{' '}
           <span className="text-cyan-600">without the spreadsheet nightmare</span>
         </h1>
@@ -503,7 +503,7 @@ export default function LandingPage() {
         </div>
 
         {/* Dashboard preview */}
-        <div className="mt-16 max-w-4xl mx-auto">
+        <div className="mt-16 max-w-5xl mx-auto">
           <div className="bg-slate-900 rounded-xl overflow-hidden shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_4px_16px_rgba(0,0,0,0.08),0_16px_48px_rgba(0,0,0,0.06)]">
             {/* Browser chrome */}
             <div className="flex items-center gap-2 px-4 py-3 bg-slate-800 border-b border-slate-700">
@@ -679,7 +679,7 @@ export default function LandingPage() {
            COMPARISON TABLE
           ═══════════════════════════════════════════════ */}
       <section className="py-24 sm:py-32 bg-slate-50">
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
             <Label>HOW WE COMPARE</Label>
             <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900 leading-tight">
@@ -785,7 +785,7 @@ export default function LandingPage() {
             </Subtitle>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <div className="grid sm:grid-cols-3 gap-6">
             {plans.map(plan => (
               <div
                 key={plan.name}
