@@ -34,5 +34,4 @@ INSERT INTO public.user_profiles (user_id, username, email)
   FROM auth.users au
   LEFT JOIN public.user_profiles up ON up.user_id = au.id
   WHERE up.user_id IS NULL
-  ON CONFLICT (user_id) DO NOTHING
-  ON CONFLICT (username) DO UPDATE SET username = CONCAT(username, '_', LEFT(au.id::TEXT, 6));
+ON CONFLICT (user_id) DO NOTHING;
