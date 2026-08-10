@@ -5,8 +5,7 @@
   "framework": null,
   "installCommand": "npm install",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://mbsjxuymiuevankxrgmo.supabase.co/rest/v1/$1" },
     { "source": "/", "destination": "/index.html" },
-    { "source": "/((?!_next|favicon|manifest|icon|sw|scanner|sample|stress).*)", "destination": "/$1.html" }
+    { "source": "/((?!_next|favicon|manifest|icon|sw|scanner|sample|stress|api).*)", "destination": "/$1.html" }
   ]
 }

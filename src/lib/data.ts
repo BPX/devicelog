@@ -1,18 +1,14 @@
-// Trackstack data layer — direct Supabase REST API
-// No proxy needed — Supabase allows cross-origin from vercel.app
-
-import { K as SUPABASE_KEY } from './auth'
-
-const SUPABASE_URL = 'https://mbsjxuymiuevankxrgmo.supabase.co'
+// Trackstack data layer — via Vercel Function proxy
+// api/proxy.ts handles server-side → Supabase, zero CORS
 
 async function req(path: string, method: string, body?: any) {
-  const headers: Record<string, string> = { apikey: SUPABASE_KEY }
+  const headers: Record<string, string> = {}
   const token = localStorage.getItem('sb_token')
   if (token) headers['Authorization'] = 'Bearer ' + token
   if (body) headers['Content-Type'] = 'application/json'
 
   try {
-    const r = await fetch(SUPABASE_URL + '/rest/v1' + path, {
+    const r = await fetch('/api/proxy' + path, {
       method,
       headers,
       body: body ? JSON.stringify(body) : undefined
