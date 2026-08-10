@@ -4,10 +4,9 @@ const K = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6
 
 function authHeaders() {
   const token = localStorage.getItem('sb_token')
-  return {
-    apikey: K,
-    Authorization: token ? `Bearer ${token}` : '',
-  }
+  const h: Record<string, string> = { apikey: K }
+  if (token) h.Authorization = `Bearer ${token}`
+  return h
 }
 
 function postHeaders() {
