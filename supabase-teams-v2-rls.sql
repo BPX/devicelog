@@ -107,14 +107,17 @@ INSERT INTO storage.buckets (id, name, public, file_size_limit)
   ON CONFLICT (id) DO UPDATE SET public = true;
 
 -- Allow authenticated users to upload/delete their own images
+DROP POLICY IF EXISTS "assets_images_insert" ON storage.objects;
 CREATE POLICY "assets_images_insert" ON storage.objects FOR INSERT
   TO authenticated
   WITH CHECK (bucket_id = 'asset-images' AND auth.role() = 'authenticated');
 
+DROP POLICY IF EXISTS "assets_images_delete" ON storage.objects;
 CREATE POLICY "assets_images_delete" ON storage.objects FOR DELETE
   TO authenticated
   USING (bucket_id = 'asset-images' AND owner = auth.uid());
 
+DROP POLICY IF EXISTS "assets_images_select" ON storage.objects;
 -- Anyone can read (public bucket)
 CREATE POLICY "assets_images_select" ON storage.objects FOR SELECT
   USING (bucket_id = 'asset-images');
