@@ -1,13 +1,17 @@
-// Trackstack data layer — same-origin via Cloudflare Functions proxy
-// Zero CORS — all requests go to /api/* on the same domain
+// Trackstack data layer — direct Supabase REST API
+// No proxy needed — Supabase allows cross-origin from vercel.app
+
+import { K as SUPABASE_KEY } from './auth'
+
+const SUPABASE_URL = 'https://mbsjxuymiuevankxrgmo.supabase.co'
 
 async function req(path: string, method: string, body?: any) {
-  const headers: Record<string, string> = {}
+  const headers: Record<string, string> = { apikey: SUPABASE_KEY }
   const token = localStorage.getItem('sb_token')
   if (token) headers['Authorization'] = 'Bearer ' + token
   if (body) headers['Content-Type'] = 'application/json'
 
-  const r = await fetch('/api' + path, {
+  const r = await fetch(SUPABASE_URL + '/rest/v1' + path, {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined
