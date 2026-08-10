@@ -1,7 +1,8 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { formatDate, daysUntil } from '@/lib/utils'
-import { Plus, Trash2, Upload, Download, Shield, Search, ArrowUpDown, ArrowUp, ArrowDown, Pencil } from 'lucide-react'
+import { Plus, Trash2, Upload, Download, Shield, Search, ArrowUpDown, ArrowUp, ArrowDown, Pencil, X } from 'lucide-react'
 import CsvImport from '@/components/csv-import'
 import ConfirmDialog from '@/components/confirm-dialog'
 import { downloadCsv } from '@/lib/export'
@@ -27,6 +28,12 @@ export default function CertsPage() {
   const localSettings = getSettings()
   const settings = teamSettings || localSettings
   const certTypes = (settings.cert_types || ['ssl_cert','software_license','support_contract','domain','other']) as string[]
+
+  // ── URL filter params ──
+  const searchParams = useSearchParams()
+  const showExpired = searchParams.get('expired') === 'true'
+  const showExpiring = searchParams.get('expiring') === 'true'
+  const activeFilter = showExpired ? 'expired' : showExpiring ? 'expiring' : null
 
   // ── Load team ──
   useEffect(() => {
@@ -91,7 +98,13 @@ export default function CertsPage() {
     return sortDir === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />
   }
 
-  const filtered = certs.filter(c => c.name.toLowerCase().includes(search.toLowerCase()) || c.issuer.toLowerCase().includes(search.toLowerCase()))
+  const filtered = certs.filter(c => {
+    const matchesSearch = c.name.toLowerCase().includes(search.toLowerCase()) || c.issuer.toLowerCase().includes(search.toLowerCase())
+    if (!matchesSearch) return false
+    if (showExpired) return daysUntil(c.expires_at) <= 0
+    if (showExpiring) return daysUntil(c.expires_at) <= 30 && daysUntil(c.expires_at) > 0
+    return true
+  })
 
   const sorted = sortField ? [...filtered].sort((a:any,b:any) => {
     const av = (a[sortField] || '').toString().toLowerCase()
@@ -125,6 +138,16 @@ export default function CertsPage() {
     </div>
 
     <div className="mb-4 relative"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/><input placeholder="Search by name or issuer..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"/></div>
+
+    {activeFilter && (
+      <div className="mb-4 flex items-center gap-2">
+        <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${activeFilter === 'expired' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
+          {activeFilter === 'expired' ? '⏰ Expired' : '⏳ Expiring within 30 days'}
+          <Link href="/certificates" className="ml-1 hover:opacity-70"><X size={12} /></Link>
+        </span>
+        <span className="text-xs text-slate-400">{filtered.length} of {certs.length} certificates</span>
+      </div>
+    )}
 
     {showForm && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"><div className="bg-white rounded-lg p-6 w-full max-w-md border border-slate-200 shadow-xl"><h2 className="text-lg font-semibold mb-4">{editing ? 'Edit Certificate' : 'New Certificate'}</h2>
       <form onSubmit={handleSubmit} className="space-y-3">
