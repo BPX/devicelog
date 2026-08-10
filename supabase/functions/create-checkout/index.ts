@@ -66,6 +66,7 @@ serve(async (req: Request) => {
       metadata: { user_id: userId },
       allow_promotion_codes: true,
       automatic_tax: { enabled: true },
+      customer_update: { address: 'auto' },
     })
 
     return new Response(JSON.stringify({ url: session.url }), {
