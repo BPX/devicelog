@@ -1,19 +1,27 @@
-// Trackstack data layer — via Vercel Function proxy
-// Token embedded in URL path to avoid Vercel edge header limit (494)
+'use client'
+
+// Direct Supabase REST calls — works because JWT is ~500 bytes (avatar was stripped)
+import { K as SUPABASE_KEY } from './auth'
+
+const SUPABASE_URL = 'https://mbsjxuymiuevankxrgmo.supabase.co/rest/v1'
 
 function token(): string {
   return localStorage.getItem('sb_token') || 'anon'
 }
 
 async function req(path: string, method: string, body?: any) {
-  const headers: Record<string, string> = {}
+  const headers: Record<string, string> = {
+    apikey: SUPABASE_KEY,
+  }
+  const tok = token()
+  if (tok !== 'anon') headers['Authorization'] = 'Bearer ' + tok
   if (body) headers['Content-Type'] = 'application/json'
 
   try {
-    const r = await fetch('/api/proxy/' + token() + path, {
+    const r = await window.fetch(SUPABASE_URL + path, {
       method,
       headers,
-      body: body ? JSON.stringify(body) : undefined
+      body: body ? JSON.stringify(body) : undefined,
     })
     if (!r.ok) return method === 'GET' ? [] : null
     return r.json()
@@ -27,13 +35,10 @@ function post(path: string, body: any) { return req(path, 'POST', body) }
 function del(path: string) { return req(path, 'DELETE') }
 
 function uid(): string {
-  const token = localStorage.getItem('sb_token')
-  if (!token) return 'anon'
-  try {
-    return JSON.parse(atob(token.split('.')[1])).sub || 'anon'
-  } catch { return 'anon' }
+  const t = localStorage.getItem('sb_token')
+  if (!t) return 'anon'
+  try { return JSON.parse(atob(t.split('.')[1])).sub || 'anon' } catch { return 'anon' }
 }
-
 const u = () => uid()
 
 export async function getTeam() {
