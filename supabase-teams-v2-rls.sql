@@ -10,9 +10,9 @@ SECURITY DEFINER
 SET search_path = ''
 AS $$
   SELECT EXISTS (
-    SELECT 1 FROM team_members
-    WHERE team_members.team_id = _team_id
-      AND team_members.user_id = auth.uid()
+    SELECT 1 FROM public.team_members
+    WHERE public.team_members.team_id = _team_id
+      AND public.team_members.user_id = auth.uid()
   );
 $$;
 
