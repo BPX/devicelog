@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { formatDate } from '@/lib/utils'
 import { Plus, Search, Pencil, Trash2, Package, Upload, Monitor, QrCode, ArrowUpDown, ArrowUp, ArrowDown, Download, Camera, ChevronLeft, ChevronRight, AlertTriangle, RefreshCw } from 'lucide-react'
 import { getSettings, addEmployee as addEmp } from '@/lib/settings-store'
-import { getTeam, queryAssets, saveAsset, saveAssetsBatch, deleteAsset as deleteAssetDb } from '@/lib/data'
+import { getTeam, queryAssets, saveAsset, saveAssetsBatch, deleteAsset as deleteAssetDb, uploadAssetImage, getTeamSettings } from '@/lib/data'
 import type { Asset } from '@/lib/data'
 import CsvImport from '@/components/csv-import'
 import EmployeeAutocomplete from '@/components/employee-autocomplete'
@@ -28,8 +28,15 @@ export default function AssetsPage() {
 
   // ── Search & Sort ──
   const [search, setSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
   const [sortField, setSortField] = useState<string>('')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
+
+  // Debounce search input — only fire API call after 300ms of no typing
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 300)
+    return () => clearTimeout(timer)
+  }, [search])
 
   // ── Modals ──
   const [showForm, setShowForm] = useState(false)
@@ -43,9 +50,18 @@ export default function AssetsPage() {
   const [form, setForm] = useState({ name: '', category: 'laptop', manufacturer: '', model: '', serial_number: '', status: 'active', assigned_to: '', location: '', purchase_date: '', warranty_expires: '', image: '' })
   const [uploading, setUploading] = useState(false)
 
-  // ── Settings (localStorage — dropdown options) ──
-  const settings = getSettings()
-  const employeeNames = settings.employees.map(e => e.name)
+  // ── Settings (localStorage fallback, overridden by team settings from Supabase) ──
+  const localSettings = getSettings()
+  const [teamSettings, setTeamSettings] = useState<any>(null)
+  const settings = teamSettings || localSettings
+  const employeeNames = settings.employees?.map((e: any) => e.name) || []
+
+  // Load team settings from Supabase
+  useEffect(() => {
+    if (teamId) {
+      getTeamSettings(teamId).then(s => { if (s && Object.keys(s).length > 0) setTeamSettings(s) })
+    }
+  }, [teamId])
 
   // ── Load team ──
   useEffect(() => {
@@ -66,7 +82,7 @@ export default function AssetsPage() {
         teamId,
         page,
         limit: PAGE_SIZE,
-        search: search.trim() || undefined,
+        search: debouncedSearch.trim() || undefined,
         sortField: sortField || undefined,
         sortDir: sortField ? sortDir : undefined,
       })
@@ -76,7 +92,7 @@ export default function AssetsPage() {
       setError(e?.message || 'Failed to load assets')
     }
     setLoading(false)
-  }, [teamId, page, search, sortField, sortDir])
+  }, [teamId, page, debouncedSearch, sortField, sortDir])
 
   useEffect(() => {
     if (!teamLoading) fetchAssets()
@@ -90,10 +106,9 @@ export default function AssetsPage() {
     }
   }, [])
 
-  // ── Debounced search — refetch on change ──
   function handleSearchChange(value: string) {
     setSearch(value)
-    setPage(1) // reset to first page on new search
+    setPage(1)
   }
 
   // ── Sort ──
@@ -197,15 +212,22 @@ export default function AssetsPage() {
     await fetchAssets()
   }
 
-  // ── Photo upload (inline base64 for now; storage upload infra in data.ts ready) ──
-  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+  // ── Photo upload to Supabase Storage ──
+  async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0]
     if (!f) return
     if (f.size > 500 * 1024) { alert('Image too large. Max 500KB. Please resize.'); return }
     setUploading(true)
-    const reader = new FileReader()
-    reader.onload = () => { setForm({ ...form, image: reader.result as string }); setUploading(false) }
-    reader.readAsDataURL(f)
+    const url = await uploadAssetImage(f)
+    setUploading(false)
+    if (url) {
+      setForm({ ...form, image: url })
+    } else {
+      // Fallback to base64 if storage upload fails
+      const reader = new FileReader()
+      reader.onload = () => setForm({ ...form, image: reader.result as string })
+      reader.readAsDataURL(f)
+    }
   }
 
   // ── Pagination ──
@@ -302,12 +324,12 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
             <div className="grid grid-cols-2 gap-3">
               <div><label className="block text-xs font-medium text-slate-600 mb-1">Name *</label><input required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" placeholder="e.g. MacBook Pro 14" /></div>
               <div><label className="block text-xs font-medium text-slate-600 mb-1">Category</label>
-                <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm">{settings.categories.map(c => <option key={c} value={c}>{c}</option>)}</select></div>
+                <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm">{(settings.categories as string[]).map((c: string) => <option key={c} value={c}>{c}</option>)}</select></div>
               <div><label className="block text-xs font-medium text-slate-600 mb-1">Manufacturer</label><input value={form.manufacturer} onChange={e => setForm({ ...form, manufacturer: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" placeholder="Dell / Apple / Lenovo" /></div>
               <div><label className="block text-xs font-medium text-slate-600 mb-1">Model</label><input value={form.model} onChange={e => setForm({ ...form, model: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
               <div><label className="block text-xs font-medium text-slate-600 mb-1">Serial Number</label><input value={form.serial_number} onChange={e => setForm({ ...form, serial_number: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
               <div><label className="block text-xs font-medium text-slate-600 mb-1">Status</label>
-                <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm">{settings.statuses.map(s => <option key={s} value={s}>{s}</option>)}</select></div>
+                <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm">{(settings.statuses as string[]).map((s: string) => <option key={s} value={s}>{s}</option>)}</select></div>
               <div><label className="block text-xs font-medium text-slate-600 mb-1">Assigned To</label>
                 <EmployeeAutocomplete value={form.assigned_to} onChange={v => setForm({ ...form, assigned_to: v })} options={employeeNames} /></div>
               <div><label className="block text-xs font-medium text-slate-600 mb-1">Location</label><input value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" placeholder="Office / room" /></div>

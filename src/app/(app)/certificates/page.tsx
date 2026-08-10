@@ -6,7 +6,7 @@ import CsvImport from '@/components/csv-import'
 import ConfirmDialog from '@/components/confirm-dialog'
 import { downloadCsv } from '@/lib/export'
 import { getSettings } from '@/lib/settings-store'
-import { getTeam, queryCerts, saveCert, deleteCert } from '@/lib/data'
+import { getTeam, queryCerts, saveCert, deleteCert, getTeamSettings } from '@/lib/data'
 import Link from 'next/link'
 
 interface Cert { id: string; name: string; type: string; issuer: string; expires_at: string; notify_before_days: number; document?: string; docName?: string }
@@ -23,13 +23,20 @@ export default function CertsPage() {
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
   const [form, setForm] = useState({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30, document:'', docName:'' })
   const [uploading, setUploading] = useState(false)
-  const certTypes = getSettings().cert_types || ['ssl_cert','software_license','support_contract','domain','other']
+  const [teamSettings, setTeamSettings] = useState<any>(null)
+  const localSettings = getSettings()
+  const settings = teamSettings || localSettings
+  const certTypes = (settings.cert_types || ['ssl_cert','software_license','support_contract','domain','other']) as string[]
 
   // ── Load team ──
   useEffect(() => {
     (async () => {
       const team = await getTeam()
       setTeamId(team?.id || null)
+      if (team?.id) {
+        const s = await getTeamSettings(team.id)
+        if (s && Object.keys(s).length > 0) setTeamSettings(s)
+      }
       setTeamLoading(false)
     })()
   }, [])
