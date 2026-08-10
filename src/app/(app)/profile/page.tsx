@@ -98,11 +98,19 @@ export default function ProfilePage() {
   }
 
   async function deleteAccount() {
-    // Full account deletion requires a Supabase admin RPC — not available from client-only.
-    // This signs you out. Contact support to fully scrub your data.
+    setSaving(true); setError('')
+    try {
+      const tok = localStorage.getItem('sb_token')
+      if (!tok) { setError('Not authenticated'); setSaving(false); return }
+      const r = await window.fetch(U + '/rest/v1/rpc/delete_my_account', {
+        method: 'POST',
+        headers: { apikey: SUPABASE_KEY, 'Authorization': 'Bearer ' + tok },
+      })
+      if (!r.ok) { setError('Failed to delete account. Try again.'); setSaving(false); return }
+      await signOut()
+      router.replace('/login')
+    } catch { setError('Failed to delete account'); setSaving(false) }
     setShowDelete(false)
-    await signOut()
-    router.replace('/login')
   }
 
   if (loading) return <div className="p-8 text-slate-500">Loading...</div>

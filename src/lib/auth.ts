@@ -28,6 +28,13 @@ export async function signUp(email: string, password: string, username?: string)
   })
   if (!r.ok) { const j = await r.json(); return { error: j.msg || 'Signup failed' } }
   const j = await r.json()
+  
+  // Save username immediately (works even with email confirmation)
+  if (username) {
+    localStorage.setItem('sb_username', username)
+    localStorage.setItem('sb_email', email)
+  }
+  
   if (j.access_token) {
     localStorage.setItem('sb_token', j.access_token)
     localStorage.setItem('sb_refresh', j.refresh_token || '')
