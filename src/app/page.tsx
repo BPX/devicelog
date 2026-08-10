@@ -315,9 +315,17 @@ const comparison = [
 ]
 
 function CheckCell({ value }: { value: boolean | string }) {
-  if (value === true) return <Check size={16} className="text-cyan-500" />
-  if (value === false) return <span className="text-slate-300">—</span>
-  return <span className="text-xs text-slate-500">{value}</span>
+  return (
+    <span className="inline-flex items-center justify-center w-full">
+      {value === true ? (
+        <Check size={16} className="text-cyan-500" />
+      ) : value === false ? (
+        <span className="text-slate-300 text-sm leading-none">—</span>
+      ) : (
+        <span className="text-xs text-slate-500">{value}</span>
+      )}
+    </span>
+  )
 }
 
 // ── Counter animation hook ──
