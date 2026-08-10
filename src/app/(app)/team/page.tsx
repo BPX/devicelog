@@ -1,18 +1,19 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
-import { Users, Plus, X, Copy, Trash2, Mail } from 'lucide-react'
+import { Users, Plus, Copy, Trash2 } from 'lucide-react'
 
 interface Member { user_id: string; role: string; email?: string }
 
 export default function TeamPage() {
   const [team, setTeam] = useState<any>(null)
   const [members, setMembers] = useState<Member[]>([])
-  const [inviteEmail, setInviteEmail] = useState('')
-  const [inviteRole, setInviteRole] = useState('viewer')
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
+  const [showCreate, setShowCreate] = useState(false)
+  const [teamName, setTeamName] = useState('')
+  const [creating, setCreating] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     async function load() {
@@ -25,38 +26,32 @@ export default function TeamPage() {
       setTeam(t)
       
       const { data: m } = await supabase.from('team_members').select('user_id,role').eq('team_id', mem.team_id)
-      if (m) {
-        const enriched = m.map((mb: any) => ({ ...mb, email: mb.user_id?.slice(0,8) + '...' || 'Unknown' }))
-        setMembers(enriched)
-      }
+      if (m) setMembers(m.map((mb: any) => ({ ...mb, email: mb.user_id?.slice(0,8) + '...' })))
       setLoading(false)
     }
     load()
   }, [])
 
-  async function invite() {
-    if (!inviteEmail.trim()) return
-    setError('')
-    // Simple approach: user must sign up first, then we add them
-    const { data: existing } = await supabase.from('team_members').select('user_id').eq('team_id', team.id)
-    // Check if invited email is already a user
-    const { data: profiles } = await supabase.from('auth.users').select('id').eq('email', inviteEmail.trim())
-    
-    // For now, copy invite link
-    const link = `${window.location.origin}/signup`
-    await navigator.clipboard.writeText(`Join my Trackstack team: ${link}\nTeam: ${team.name}`)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-    setInviteEmail('')
+  async function createTeam() {
+    if (!teamName.trim()) return
+    setCreating(true); setError('')
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    const { data: t, error: e } = await supabase.from('teams').insert({ name: teamName.trim(), owner_id: user.id }).select('id').single()
+    if (e) { setError(e.message); setCreating(false); return }
+    await supabase.from('team_members').insert({ team_id: t.id, user_id: user.id, role: 'admin' })
+    await supabase.from('settings').insert({ user_id: user.id, team_id: t.id })
+    window.location.reload()
   }
 
   async function removeMember(userId: string) {
-    if (!confirm('Remove this member?')) return
     await supabase.from('team_members').delete().eq('team_id', team.id).eq('user_id', userId)
     setMembers(members.filter(m => m.user_id !== userId))
   }
 
   if (loading) return <div className="p-8 text-slate-500">Loading...</div>
+
+  // No team — show create prompt
   if (!team) return (
     <div>
       <h1 className="text-2xl font-semibold text-slate-900 mb-6">Team</h1>
@@ -64,26 +59,27 @@ export default function TeamPage() {
         <div className="bg-white border border-slate-200 rounded-lg p-8 text-center">
           <Users size={48} className="mx-auto mb-4 text-slate-300" />
           <h2 className="text-lg font-medium text-slate-900 mb-2">No team yet</h2>
-          <p className="text-sm text-slate-500 mb-6">Create a team to collaborate with your colleagues on asset management.</p>
-          <button onClick={async () => {
-            setLoading(true)
-            const teamName = prompt('Team name:')
-            if (!teamName) { setLoading(false); return }
-            const { data: { user } } = await supabase.auth.getUser()
-            if (!user) return
-            const { data: t, error: e } = await supabase.from('teams').insert({ name: teamName, owner_id: user.id }).select('id').single()
-            if (e) { setLoading(false); return }
-            await supabase.from('team_members').insert({ team_id: t.id, user_id: user.id, role: 'admin' })
-            await supabase.from('settings').insert({ user_id: user.id, team_id: t.id })
-            window.location.reload()
-          }} className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700">
+          <p className="text-sm text-slate-500 mb-6">Create a team to collaborate with your colleagues.</p>
+          <button onClick={() => { setShowCreate(true); setTeamName(''); setError('') }} className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700">
             <Plus size={16} /> Create Team
           </button>
         </div>
       </div>
+
+      {showCreate && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"><div className="bg-white rounded-lg p-6 w-full max-w-sm border border-slate-200 shadow-xl"><h2 className="text-lg font-semibold mb-4">Create Team</h2>
+        <div className="space-y-3">
+          {error && <div className="text-sm text-red-600 bg-red-50 p-3 rounded border border-red-200">{error}</div>}
+          <div><label className="block text-xs font-medium text-slate-600 mb-1">Team Name</label><input value={teamName} onChange={e => setTeamName(e.target.value)} placeholder="Acme Corp IT" className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" autoFocus /></div>
+          <div className="flex gap-2 pt-2">
+            <button onClick={createTeam} disabled={creating || !teamName.trim()} className="flex-1 py-2 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700 disabled:opacity-50">{creating ? 'Creating...' : 'Create Team'}</button>
+            <button onClick={() => setShowCreate(false)} className="px-4 py-2 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button>
+          </div>
+        </div>
+      </div></div>}
     </div>
   )
 
+  // Has team — show team management
   return (
     <div>
       <h1 className="text-2xl font-semibold text-slate-900 mb-6">Team</h1>
@@ -103,13 +99,13 @@ export default function TeamPage() {
 
         <div className="bg-white border border-slate-200 rounded-lg p-5">
           <h2 className="font-medium text-slate-900 mb-1">Invite Members</h2>
-          <p className="text-sm text-slate-500 mb-4">Share your signup link — they join automatically under your team.</p>
+          <p className="text-sm text-slate-500 mb-4">Share the signup link — they join your team automatically.</p>
           <div className="flex gap-2">
             <button onClick={async () => {
-              await navigator.clipboard.writeText(`${window.location.origin}/signup\nTeam code: ${team.id.slice(0,8)}`)
+              await navigator.clipboard.writeText(`${window.location.origin}/signup`)
               setCopied(true); setTimeout(() => setCopied(false), 2000)
             }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700">
-              <Copy size={14} /> {copied ? 'Copied!' : 'Copy Invite Link'}
+              <Copy size={14} /> {copied ? 'Copied!' : 'Copy Signup Link'}
             </button>
           </div>
         </div>
