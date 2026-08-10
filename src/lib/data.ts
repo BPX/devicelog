@@ -15,7 +15,10 @@ async function req(path: string, method: string, body?: any) {
   }
   const tok = token()
   if (tok !== 'anon') headers['Authorization'] = 'Bearer ' + tok
-  if (body) headers['Content-Type'] = 'application/json'
+  if (body) {
+    headers['Content-Type'] = 'application/json'
+    headers['Prefer'] = 'return=representation'
+  }
 
   try {
     const r = await window.fetch(SUPABASE_URL + path, {
@@ -24,7 +27,8 @@ async function req(path: string, method: string, body?: any) {
       body: body ? JSON.stringify(body) : undefined,
     })
     if (!r.ok) return method === 'GET' ? [] : null
-    return r.json()
+    const text = await r.text()
+    return text ? JSON.parse(text) : []
   } catch {
     return method === 'GET' ? [] : null
   }
