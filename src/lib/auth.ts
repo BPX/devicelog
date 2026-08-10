@@ -2,7 +2,7 @@
 
 const U = 'https://mbsjxuymiuevankxrgmo.supabase.co'
 const REST = U + '/rest/v1'
-export const K = 'eyJhbG...0DIs'
+export const K = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ic2p4dXltaXVldmFua3hyZ21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNTcwOTQsImV4cCI6MjEwMTkzMzA5NH0.TUV0c2eIYkr00MTuzCiC84D9fThHeGEiMIvm4090DIs'
 
 // Resolve username → email (queries public user_profiles table)
 async function resolveEmail(username: string): Promise<string | null> {
