@@ -74,8 +74,19 @@ export default function EmployeesPage() {
 
   function saveEdit() {
     if (!editEmp) return
-    const updated = employees.map(e => e.name === editEmp.name ? { ...e, ...editForm } : e)
-    persist(updated); setEditEmp(null)
+    const oldName = employees.find(e => editEmp && e.name === editEmp.name)?.name || ''
+    const updated = employees.map(e => e.name === oldName ? { ...e, ...editForm, name: editEmp.name } : e)
+    persist(updated)
+    // If name changed, update all assigned assets
+    if (editEmp.name !== oldName) {
+      try {
+        const assets = JSON.parse(localStorage.getItem('trackstack_assets') || '[]')
+        let changed = false
+        for (const a of assets) { if (a.assigned_to === oldName) { a.assigned_to = editEmp.name; changed = true } }
+        if (changed) localStorage.setItem('trackstack_assets', JSON.stringify(assets))
+      } catch {}
+    }
+    setEditEmp(null)
   }
 
   function saveNew() {
@@ -187,6 +198,7 @@ export default function EmployeesPage() {
 
     {editEmp && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"><div className="bg-white rounded-lg p-6 w-full max-w-lg border border-slate-200 shadow-xl"><h2 className="text-lg font-semibold mb-4">Edit {editEmp.name}</h2>
       <div className="grid grid-cols-2 gap-3">
+        <div><label className="block text-xs font-medium text-slate-600 mb-1">Name</label><input value={editEmp?.name || ''} onChange={e => { if (editEmp) setEditEmp({...editEmp, name: e.target.value}) }} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Email</label><input value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} placeholder="person@company.com" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Job Title</label><input value={editForm.job_title} onChange={e => setEditForm({...editForm, job_title: e.target.value})} placeholder="IT Manager" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Department</label><input value={editForm.department} onChange={e => setEditForm({...editForm, department: e.target.value})} placeholder="Engineering" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
