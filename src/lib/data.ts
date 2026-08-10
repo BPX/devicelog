@@ -1,5 +1,4 @@
-// Trackstack data layer — no Authorization header, no CORS
-// Uses user UUID from decoded JWT to filter queries
+// Trackstack data layer — window.fetch bypasses Next.js fetch wrapper
 const U = 'https://mbsjxuymiuevankxrgmo.supabase.co'
 const K = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ic2p4dXltaXVldmFua3hyZ21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNTcwOTQsImV4cCI6MjEwMTkzMzA5NH0.TUV0c2eIYkr00MTuzCiC84D9fThHeGEiMIvm4090DIs'
 
