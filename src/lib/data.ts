@@ -1,104 +1,84 @@
-// Unified data store — Supabase when available, localStorage fallback
-// Once Supabase migration SQL is run, data auto-syncs to the cloud
+// Direct Supabase data layer — no client library, no CORS issues
+const U = 'https://mbsjxuymiuevankxrgmo.supabase.co'
+const K = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ic2p4dXltaXVldmFua3hyZ21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNTcwOTQsImV4cCI6MjEwMTkzMzA5NH0.TUV0c2eIYkr00MTuzCiC84D9fThHeGEiMIvm4090DIs'
 
-const SUPABASE_READY = true // Flip to false to use localStorage-only
-
-// ---- Fallback to localStorage ----
-function localGet(key: string) { try { return JSON.parse(localStorage.getItem('trackstack_' + key) || '[]') } catch { return [] } }
-function localSet(key: string, data: any) { localStorage.setItem('trackstack_' + key, JSON.stringify(data)) }
-
-// ---- Assets ----
-export async function getAssets() {
-  if (!SUPABASE_READY) return localGet('assets')
-  try {
-    const { supabase } = await import('./supabase/client')
-    const { data } = await supabase.from('assets').select('*').order('created_at', { ascending: false })
-    return data || []
-  } catch { return localGet('assets') }
+function authHeaders() {
+  const token = localStorage.getItem('sb_token')
+  return {
+    apikey: K,
+    Authorization: token ? `Bearer ${token}` : '',
+    'Content-Type': 'application/json',
+    Prefer: 'return=representation'
+  }
 }
 
-export async function saveAsset(asset: Record<string, any>) {
-  localSet('assets', [...localGet('assets').filter((a: any) => a.id !== asset.id), asset])
-  if (!SUPABASE_READY) return
-  try {
-    const { supabase } = await import('./supabase/client')
-    await supabase.from('assets').upsert(asset, { onConflict: 'id' })
-  } catch {}
+async function get(path: string) {
+  const r = await fetch(U + path, { headers: authHeaders() })
+  if (!r.ok) return []
+  return r.json()
 }
 
-export async function deleteAsset(id: string) {
-  localSet('assets', localGet('assets').filter((a: any) => a.id !== id))
-  if (!SUPABASE_READY) return
-  try {
-    const { supabase } = await import('./supabase/client')
-    await supabase.from('assets').delete().eq('id', id)
-  } catch {}
+async function post(path: string, body: any) {
+  await fetch(U + path, {
+    method: 'POST', headers: authHeaders(), body: JSON.stringify(body)
+  })
 }
 
-// ---- Certificates ----
-export async function getCerts() {
-  if (!SUPABASE_READY) return localGet('certificates')
-  try {
-    const { supabase } = await import('./supabase/client')
-    const { data } = await supabase.from('certificates').select('*').order('created_at', { ascending: false })
-    return data || []
-  } catch { return localGet('certificates') }
+async function patch(path: string, body: any) {
+  await fetch(U + path, {
+    method: 'PATCH', headers: authHeaders(), body: JSON.stringify(body)
+  })
 }
 
-export async function saveCert(cert: Record<string, any>) {
-  localSet('certificates', [...localGet('certificates').filter((c: any) => c.id !== cert.id), cert])
-  if (!SUPABASE_READY) return
-  try {
-    const { supabase } = await import('./supabase/client')
-    await supabase.from('certificates').upsert(cert, { onConflict: 'id' })
-  } catch {}
+async function del(path: string) {
+  await fetch(U + path, { method: 'DELETE', headers: authHeaders() })
 }
 
-export async function deleteCert(id: string) {
-  localSet('certificates', localGet('certificates').filter((c: any) => c.id !== id))
-  if (!SUPABASE_READY) return
-  try {
-    const { supabase } = await import('./supabase/client')
-    await supabase.from('certificates').delete().eq('id', id)
-  } catch {}
-}
+// ---- ASSETS ----
+export async function getAssets() { return get('/rest/v1/assets?select=*&order=created_at.desc') }
+export async function saveAsset(a: any) { return post('/rest/v1/assets', a) }
+export async function deleteAsset(id: string) { return del('/rest/v1/assets?id=eq.' + id) }
 
-// ---- Employees ----
-export async function getEmployees() {
-  if (!SUPABASE_READY) return []
-  try {
-    const { supabase } = await import('./supabase/client')
-    const { data } = await supabase.from('employees').select('*').order('name')
-    return data || []
-  } catch { return [] }
-}
+// ---- CERTIFICATES ----
+export async function getCerts() { return get('/rest/v1/certificates?select=*&order=created_at.desc') }
+export async function saveCert(c: any) { return post('/rest/v1/certificates', c) }
+export async function deleteCert(id: string) { return del('/rest/v1/certificates?id=eq.' + id) }
 
-export async function saveEmployees(emps: Record<string, any>[]) {
-  // Employees are stored in settings for now
-  if (!SUPABASE_READY) return
-  try {
-    const { supabase } = await import('./supabase/client')
-    const { data: existing } = await supabase.from('employees').select('id')
-    const ids = (existing || []).map((e: any) => e.id)
-    if (ids.length) await supabase.from('employees').delete().in('id', ids)
-    if (emps.length) await supabase.from('employees').upsert(emps)
-  } catch {}
-}
+// ---- EMPLOYEES ----
+export async function getEmployees() { return get('/rest/v1/employees?select=*&order=name') }
+export async function saveEmployee(e: any) { return post('/rest/v1/employees', e) }
+export async function deleteEmployee(id: string) { return del('/rest/v1/employees?id=eq.' + id) }
 
-// ---- Settings ----
+// ---- SETTINGS ----
 export async function getSettings() {
-  if (!SUPABASE_READY) return { categories: [], statuses: [], cert_types: [] }
-  try {
-    const { supabase } = await import('./supabase/client')
-    const { data } = await supabase.from('settings').select('*').single()
-    return data || {}
-  } catch { return {} }
+  const r = await get('/rest/v1/settings?select=*&limit=1')
+  return r?.[0] || { categories: ['laptop','desktop','monitor'], statuses: ['active','maintenance','retired','lost'], cert_types: ['ssl_cert','software_license'] }
 }
+export async function saveSettings(s: any) { return post('/rest/v1/settings', s) }
 
-export async function saveSettings(settings: Record<string, any>) {
-  if (!SUPABASE_READY) return
-  try {
-    const { supabase } = await import('./supabase/client')
-    await supabase.from('settings').upsert(settings, { onConflict: 'user_id' })
-  } catch {}
+// ---- TEAMS ----
+export async function getTeam() {
+  const data = await get('/rest/v1/team_members?select=team_id&limit=1')
+  if (!data?.length) return null
+  const teams = await get('/rest/v1/teams?select=*&id=eq.' + data[0].team_id)
+  return teams?.[0] || null
+}
+export async function getTeamMembers(teamId: string) {
+  return get('/rest/v1/team_members?select=*&team_id=eq.' + teamId)
+}
+export async function createTeam(name: string): Promise<{ error?: string }> {
+  const r = await fetch(U + '/rest/v1/teams', {
+    method: 'POST', headers: { ...authHeaders(), Prefer: 'return=representation' },
+    body: JSON.stringify({ name, owner_id: 'me' })
+  })
+  if (!r.ok) return { error: 'Failed to create team' }
+  const [team] = await r.json()
+  // Add self as admin
+  await post('/rest/v1/team_members', { team_id: team.id, user_id: 'me', role: 'admin' })
+  // Create default settings
+  await post('/rest/v1/settings', { user_id: 'me', team_id: team.id })
+  return {}
+}
+export async function removeMember(teamId: string, userId: string) {
+  return del('/rest/v1/team_members?team_id=eq.' + teamId + '&user_id=eq.' + userId)
 }
