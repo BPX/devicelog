@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { signIn } from '@/lib/demo-auth'
+import { signIn } from '@/lib/auth'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -13,7 +13,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); setLoading(true); setError('')
-    const result = signIn(email.trim(), password)
+    const result = await signIn(email.trim(), password)
     if (result.error) setError(result.error)
     else router.push('/dashboard')
     setLoading(false)
@@ -46,7 +46,6 @@ export default function LoginPage() {
         <p className="text-center text-sm text-slate-500 mt-4">
           Don&apos;t have an account? <Link href="/signup" className="text-cyan-600 hover:underline">Sign up</Link>
         </p>
-        <p className="text-center text-xs text-slate-400 mt-2">Demo mode — data stored in your browser</p>
       </div>
     </div>
   )
