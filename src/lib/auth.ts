@@ -1,36 +1,92 @@
 'use client'
 
 const U = 'https://mbsjxuymiuevankxrgmo.supabase.co'
-export const K = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ic2p4dXltaXVldmFua3hyZ21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNTcwOTQsImV4cCI6MjEwMTkzMzA5NH0.TUV0c2eIYkr00MTuzCiC84D9fThHeGEiMIvm4090DIs'
+const REST = U + '/rest/v1'
+export const K = 'eyJhbG...0DIs'
 
-export async function signUp(email: string, password: string) {
+// Resolve username → email (queries public user_profiles table)
+async function resolveEmail(username: string): Promise<string | null> {
+  try {
+    const r = await window.fetch(
+      REST + '/user_profiles?select=email&username=eq.' + encodeURIComponent(username),
+      { headers: { apikey: K } }
+    )
+    if (!r.ok) return null
+    const data = await r.json()
+    return data?.[0]?.email || null
+  } catch { return null }
+}
+
+export async function signUp(email: string, password: string, username?: string) {
+  const body: any = { email, password }
+  if (username) body.data = { username }
+
   const r = await window.fetch(U + '/auth/v1/signup', {
     method: 'POST',
     headers: { apikey: K, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify(body),
   })
   if (!r.ok) { const j = await r.json(); return { error: j.msg || 'Signup failed' } }
-  // Store email immediately so getCurrentUser works
   const j = await r.json()
   if (j.access_token) {
     localStorage.setItem('sb_token', j.access_token)
     localStorage.setItem('sb_refresh', j.refresh_token || '')
     localStorage.setItem('sb_email', email)
+    if (username) localStorage.setItem('sb_username', username)
+    
+    // Insert into user_profiles for login lookup
+    if (username) {
+      try {
+        const userId = j.user?.id || JSON.parse(atob(j.access_token.split('.')[1])).sub
+        await window.fetch(REST + '/user_profiles', {
+          method: 'POST',
+          headers: {
+            apikey: K,
+            'Authorization': 'Bearer ' + j.access_token,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal',
+          },
+          body: JSON.stringify({ user_id: userId, username, email }),
+        })
+      } catch { /* non-critical */ }
+    }
   }
   return {}
 }
 
-export async function signIn(email: string, password: string) {
+export async function signIn(login: string, password: string) {
+  // If no '@', treat as username → resolve to email
+  let email = login
+  if (!login.includes('@')) {
+    const resolved = await resolveEmail(login)
+    if (!resolved) return { error: 'Username not found' }
+    email = resolved
+  }
+
   const r = await window.fetch(U + '/auth/v1/token?grant_type=password', {
     method: 'POST',
     headers: { apikey: K, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({ email, password }),
   })
   if (!r.ok) { const j = await r.json(); return { error: j.error_description || 'Invalid email or password' } }
   const j = await r.json()
   localStorage.setItem('sb_token', j.access_token)
   localStorage.setItem('sb_refresh', j.refresh_token || '')
   localStorage.setItem('sb_email', email)
+  
+  // Fetch username from user_profiles
+  try {
+    const userId = j.user?.id || ''
+    const r2 = await window.fetch(
+      REST + '/user_profiles?select=username&user_id=eq.' + userId,
+      { headers: { apikey: K, 'Authorization': 'Bearer ' + j.access_token } }
+    )
+    const profiles = await r2.json()
+    if (profiles?.[0]?.username) {
+      localStorage.setItem('sb_username', profiles[0].username)
+    }
+  } catch { /* non-critical */ }
+
   return {}
 }
 
@@ -38,9 +94,13 @@ export async function signOut() {
   localStorage.removeItem('sb_token')
   localStorage.removeItem('sb_refresh')
   localStorage.removeItem('sb_email')
+  localStorage.removeItem('sb_username')
 }
 
-// No API call needed — just check localStorage
 export function getCurrentUser(): string | null {
   return localStorage.getItem('sb_email')
+}
+
+export function getCurrentUsername(): string | null {
+  return localStorage.getItem('sb_username')
 }

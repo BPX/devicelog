@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { signIn } from '@/lib/auth'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
+  const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -13,7 +13,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); setLoading(true); setError('')
-    const result = await signIn(email.trim(), password)
+    const result = await signIn(login.trim(), password)
     if (result.error) setError(result.error)
     else router.push('/dashboard')
     setLoading(false)
@@ -29,8 +29,8 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm space-y-4">
           {error && <div className="text-sm text-red-600 bg-red-50 p-3 rounded border border-red-200">{error}</div>}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="you@company.com"
+            <label className="block text-sm font-medium text-slate-700 mb-1">Username or Email</label>
+            <input type="text" value={login} onChange={e => setLogin(e.target.value)} required placeholder="johndoe or you@company.com"
               className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
           </div>
           <div>
