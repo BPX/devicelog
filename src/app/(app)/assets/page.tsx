@@ -108,7 +108,9 @@ export default function AssetsPage() {
     {showCsvImport && <CsvImport
       title="Import Assets from CSV"
       description="Upload your existing inventory spreadsheet. We'll try to match columns like name, model, serial, category, assigned_to, etc."
-      sampleData="name,model,serial_number,category,assigned_to,location\nMacBook Pro,MBP 14 M3,SN123456,laptop,John Smith,Zurich Office\nDell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office"
+      sampleData={`name,model,serial_number,category,assigned_to,location
+MacBook Pro,MBP 14 M3,SN123456,laptop,John Smith,Zurich Office
+Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
       sampleFilename="inventory.csv"
       onImport={rows => { const newAssets = rows.map(makeAsset); saveAssets([...getAssets(), ...newAssets]); reload() }}
       onClose={() => setShowCsvImport(false)}

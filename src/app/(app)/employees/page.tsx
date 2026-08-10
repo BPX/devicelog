@@ -196,7 +196,9 @@ export default function EmployeesPage() {
       </div>
     </div>}
 
-    {showImport && <CsvImport title="Import Employees" description="Upload a CSV with name, email, job title, department." sampleData="name,email,job_title,department\nJohn Smith,john@company.com,IT Manager,IT\nJane Doe,jane@company.com,System Admin,IT" sampleFilename="employees.csv" onImport={rows => { importEmployees(rows); setEmployees(getSettings().employees); setCounts(getCounts()); setShowImport(false) }} onClose={() => setShowImport(false)} />}
+    {showImport && <CsvImport title="Import Employees" description="Upload a CSV with name, email, job title, department." sampleData={`name,email,job_title,department
+John Smith,john@company.com,IT Manager,IT
+Jane Doe,jane@company.com,System Admin,IT`} sampleFilename="employees.csv" onImport={rows => { importEmployees(rows); setEmployees(getSettings().employees); setCounts(getCounts()); setShowImport(false) }} onClose={() => setShowImport(false)} />}
 
     {confirmRemove && <ConfirmDialog
       title={`Remove ${confirmRemove.name}?`}

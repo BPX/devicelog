@@ -90,7 +90,9 @@ export default function CertsPage() {
     {showImport && <CsvImport
       title="Import Certificates"
       description="Upload a CSV with name, type, issuer, expiry. We'll try to match columns."
-      sampleData="name,type,issuer,expires_at\ntrackstack.com SSL,ssl_cert,Let's Encrypt,2027-06-15\nOffice 365,software_license,Microsoft,2026-12-31"
+      sampleData={`name,type,issuer,expires_at
+trackstack.com SSL,ssl_cert,Let's Encrypt,2027-06-15
+Office 365,software_license,Microsoft,2026-12-31`}
       sampleFilename="certs.csv"
       onImport={rows => {
         const newCerts = rows.map(r => ({
