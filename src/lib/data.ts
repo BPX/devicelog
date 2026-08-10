@@ -11,13 +11,17 @@ async function req(path: string, method: string, body?: any) {
   if (token) headers['Authorization'] = 'Bearer ' + token
   if (body) headers['Content-Type'] = 'application/json'
 
-  const r = await fetch(SUPABASE_URL + '/rest/v1' + path, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined
-  })
-  if (!r.ok) return method === 'GET' ? [] : null
-  return r.json()
+  try {
+    const r = await fetch(SUPABASE_URL + '/rest/v1' + path, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined
+    })
+    if (!r.ok) return method === 'GET' ? [] : null
+    return r.json()
+  } catch {
+    return method === 'GET' ? [] : null
+  }
 }
 
 function get(path: string) { return req(path, 'GET') }
