@@ -20,7 +20,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [email, setEmail] = useState<string | null | 'loading'>('loading')
 
   useEffect(() => {
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js')
     const user = getCurrentUser()
     if (!user) { router.replace('/login'); return }
     setEmail(user)
