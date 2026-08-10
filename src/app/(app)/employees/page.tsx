@@ -35,11 +35,12 @@ export default function EmployeesPage() {
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
   const [editEmp, setEditEmp] = useState<Employee | null>(null)
   const [editForm, setEditForm] = useState({ email:'', job_title:'', department:'' })
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [addForm, setAddForm] = useState({ name:'', email:'', job_title:'', department:'' })
 
   useEffect(() => { setEmployees(getSettings().employees); setCounts(getCounts())
     if (typeof window !== 'undefined' && window.location.search.includes('new=true')) {
-      const inp = document.getElementById('emp-add-input') as HTMLInputElement
-      if (inp) inp.focus()
+      setShowAddModal(true)
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [])
@@ -77,6 +78,14 @@ export default function EmployeesPage() {
     persist(updated); setEditEmp(null)
   }
 
+  function saveNew() {
+    if (!addForm.name.trim()) return
+    if (employees.find(e => e.name === addForm.name.trim())) return
+    persist([...employees, { name: addForm.name.trim(), email: addForm.email.trim(), job_title: addForm.job_title.trim(), department: addForm.department.trim() }].sort((a,b) => a.name.localeCompare(b.name)))
+    setShowAddModal(false)
+    setAddForm({ name:'', email:'', job_title:'', department:'' })
+  }
+
   function startEdit(emp: Employee) {
     setEditEmp(emp)
     setEditForm({ email: emp.email || '', job_title: emp.job_title || '', department: emp.department || '' })
@@ -97,11 +106,11 @@ export default function EmployeesPage() {
       <div className="flex gap-2">
         <button onClick={() => setShowImport(true)} className="flex items-center gap-2 px-3 py-2 border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50"><Upload size={16}/>Import CSV</button>
         <button onClick={() => downloadCsv(employees.map(e => ({ name: e.name, email: e.email, job_title: e.job_title, department: e.department, devices: counts[e.name]||0 })), 'trackstack-employees.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50"><Download size={16}/>Export</button>
-        <button onClick={() => { const inp = document.getElementById('emp-add-input') as HTMLInputElement; inp?.focus() }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700"><Plus size={16}/>Add Employee</button>
+        <button onClick={() => { setAddForm({ name:'', email:'', job_title:'', department:'' }); setShowAddModal(true) }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700"><Plus size={16}/>Add Employee</button>
       </div>
     </div>
 
-    <div className="mb-4 relative"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/><input placeholder="Search or add employee..." value={newEmp || search} onChange={e => { setSearch(e.target.value); setNewEmp(e.target.value) }} className="w-full pl-10 pr-[72px] py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" onKeyDown={e => { if(e.key==='Enter'){ add(); setSearch('') } }} /><button onClick={() => { add(); setSearch('') }} className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 bg-cyan-600 text-white rounded text-xs font-medium hover:bg-cyan-700">Add</button></div>
+    <div className="mb-4 relative"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/><input placeholder="Search employees..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"/></div>
 
     {filtered.length === 0 ? (
       <div className="text-center py-16 text-slate-400"><Monitor size={48} className="mx-auto mb-3 opacity-50"/><p className="text-lg font-medium">No employees yet</p><p className="text-sm mt-1">Import a CSV, add manually, or type a name when assigning an asset — it auto-adds here.</p></div>
@@ -151,6 +160,24 @@ export default function EmployeesPage() {
         </div>
       </div>
     )}
+
+    {showAddModal && <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/20" onClick={() => setShowAddModal(false)} />
+      <div className="relative bg-white rounded-lg shadow-xl border border-slate-200 p-6 max-w-md w-full mx-4">
+        <h3 className="text-sm font-semibold text-slate-900 mb-1">New Employee</h3>
+        <p className="text-sm text-slate-500 mb-4">Fill in the details. Name is required.</p>
+        <div className="space-y-3">
+          <div><label className="block text-xs font-medium text-slate-600 mb-1">Name *</label><input autoFocus value={addForm.name} onChange={e => setAddForm({...addForm, name: e.target.value})} placeholder="John Smith" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" onKeyDown={e => { if(e.key==='Enter') saveNew() }} /></div>
+          <div><label className="block text-xs font-medium text-slate-600 mb-1">Email</label><input value={addForm.email} onChange={e => setAddForm({...addForm, email: e.target.value})} placeholder="john@company.com" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
+          <div><label className="block text-xs font-medium text-slate-600 mb-1">Job Title</label><input value={addForm.job_title} onChange={e => setAddForm({...addForm, job_title: e.target.value})} placeholder="IT Manager" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
+          <div><label className="block text-xs font-medium text-slate-600 mb-1">Department</label><input value={addForm.department} onChange={e => setAddForm({...addForm, department: e.target.value})} placeholder="Engineering" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
+        </div>
+        <div className="flex gap-2 justify-end mt-4">
+          <button onClick={() => setShowAddModal(false)} className="px-4 py-1.5 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button onClick={saveNew} disabled={!addForm.name.trim()} className="px-4 py-1.5 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700 disabled:opacity-50">Add Employee</button>
+        </div>
+      </div>
+    </div>}
 
     {editEmp && <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/20" onClick={() => setEditEmp(null)} />
