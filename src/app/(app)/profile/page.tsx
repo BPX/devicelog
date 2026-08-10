@@ -141,83 +141,83 @@ export default function ProfilePage() {
     setShowDelete(false)
   }
 
-  if (loading) return <div className="p-8 text-slate-500">Loading...</div>
+  if (loading) return <div className="p-8 text-slate-500 dark:text-slate-400">Loading...</div>
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-slate-900 mb-6">Profile</h1>
+      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">Profile</h1>
 
       <div className="max-w-lg space-y-6">
         {/* Avatar */}
-        <div className="bg-white border border-slate-200 rounded-lg p-5">
-          <h2 className="font-medium text-slate-900 mb-3">Profile Picture</h2>
+        <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-5">
+          <h2 className="font-medium text-slate-900 dark:text-slate-100 mb-3">Profile Picture</h2>
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-cyan-100 flex items-center justify-center overflow-hidden border border-slate-200">
-              {avatarUrl ? <img src={avatarUrl} alt="" className="w-full h-full object-cover" /> : <span className="text-xl font-medium text-cyan-600">{(username || email)[0]?.toUpperCase()}</span>}
+            <div className="w-16 h-16 rounded-full bg-cyan-100 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-slate-800">
+              {avatarUrl ? <img src={avatarUrl} alt="" className="w-full h-full object-cover" /> : <span className="text-xl font-medium text-cyan-600 dark:text-cyan-400">{(username || email)[0]?.toUpperCase()}</span>}
             </div>
           </div>
         </div>
 
         {/* Username */}
-        <div className="bg-white border border-slate-200 rounded-lg p-5">
-          <h2 className="font-medium text-slate-900 mb-3">Username</h2>
-          <p className="text-sm text-slate-500 mb-3">Current: <span className="text-slate-700 font-medium">{username || '(not set)'}</span></p>
-          {error && <div className="mb-3 text-sm text-red-600 bg-red-50 p-2 rounded">{error}</div>}
-          {success && <div className="mb-3 text-sm text-emerald-600 bg-emerald-50 p-2 rounded">{success}</div>}
+        <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-5">
+          <h2 className="font-medium text-slate-900 dark:text-slate-100 mb-3">Username</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Current: <span className="text-slate-700 dark:text-slate-200 font-medium">{username || '(not set)'}</span></p>
+          {error && <div className="mb-3 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 p-2 rounded">{error}</div>}
+          {success && <div className="mb-3 text-sm text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 p-2 rounded">{success}</div>}
           <div className="flex gap-2">
-            <input value={newUsername} onChange={e => setNewUsername(e.target.value)} placeholder="newusername" className="flex-1 px-3 py-1.5 border border-slate-300 rounded text-sm" />
-            <button onClick={changeUsername} disabled={saving} className="px-4 py-1.5 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700 disabled:opacity-50">{saving ? 'Saving...' : 'Change'}</button>
+            <input value={newUsername} onChange={e => setNewUsername(e.target.value)} placeholder="newusername" className="flex-1 px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" />
+            <button onClick={changeUsername} disabled={saving} className="px-4 py-1.5 bg-cyan-600 dark:bg-cyan-500 text-white rounded text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400 disabled:opacity-50">{saving ? 'Saving...' : 'Change'}</button>
           </div>
         </div>
 
         {/* Email */}
-        <div className="bg-white border border-slate-200 rounded-lg p-5">
-          <h2 className="font-medium text-slate-900 mb-3">Email</h2>
-          <p className="text-sm text-slate-500 mb-3">Current: <span className="text-slate-700">{email}</span></p>
+        <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-5">
+          <h2 className="font-medium text-slate-900 dark:text-slate-100 mb-3">Email</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Current: <span className="text-slate-700 dark:text-slate-200">{email}</span></p>
           <div className="flex gap-2">
-            <input value={newEmail} onChange={e => setNewEmail(e.target.value)} placeholder="new@email.com" className="flex-1 px-3 py-1.5 border border-slate-300 rounded text-sm" />
-            <button onClick={changeEmail} disabled={saving} className="px-4 py-1.5 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700 disabled:opacity-50">{saving ? 'Sending...' : 'Change'}</button>
+            <input value={newEmail} onChange={e => setNewEmail(e.target.value)} placeholder="new@email.com" className="flex-1 px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" />
+            <button onClick={changeEmail} disabled={saving} className="px-4 py-1.5 bg-cyan-600 dark:bg-cyan-500 text-white rounded text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400 disabled:opacity-50">{saving ? 'Sending...' : 'Change'}</button>
           </div>
         </div>
 
         {/* Billing */}
-        <div className="bg-white border border-slate-200 rounded-lg p-5">
-          <h2 className="font-medium text-slate-900 mb-3 flex items-center gap-2">
-            <CreditCard size={16} className="text-cyan-600" /> Billing
+        <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-5">
+          <h2 className="font-medium text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">
+            <CreditCard size={16} className="text-cyan-600 dark:text-cyan-400" /> Billing
           </h2>
           {checkoutError && (
-            <div className="mb-3 flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded border border-red-200">
+            <div className="mb-3 flex items-center gap-2 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 p-3 rounded border border-red-200 dark:border-red-800">
               <AlertTriangle size={14} /> {checkoutError}
             </div>
           )}
           <div className="space-y-3">
             <div className="flex justify-between items-center py-2">
-              <span className="text-sm text-slate-600">Current plan</span>
-              <span className="text-sm font-medium text-slate-900 capitalize">{sub?.plan || 'free'}</span>
+              <span className="text-sm text-slate-600 dark:text-slate-400">Current plan</span>
+              <span className="text-sm font-medium text-slate-900 dark:text-slate-100 capitalize">{sub?.plan || 'free'}</span>
             </div>
             {sub?.status && sub.status !== 'active' && (
               <div className="flex justify-between items-center py-2">
-                <span className="text-sm text-slate-600">Status</span>
-                <span className={`text-sm font-medium capitalize ${sub.status === 'past_due' ? 'text-red-600' : 'text-amber-600'}`}>{sub.status.replace('_', ' ')}</span>
+                <span className="text-sm text-slate-600 dark:text-slate-400">Status</span>
+                <span className={`text-sm font-medium capitalize ${sub.status === 'past_due' ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`}>{sub.status.replace('_', ' ')}</span>
               </div>
             )}
             {sub?.current_period_end && (
               <div className="flex justify-between items-center py-2">
-                <span className="text-sm text-slate-600">Renews</span>
-                <span className="text-sm text-slate-700">{new Date(sub.current_period_end).toLocaleDateString()}</span>
+                <span className="text-sm text-slate-600 dark:text-slate-400">Renews</span>
+                <span className="text-sm text-slate-700 dark:text-slate-200">{new Date(sub.current_period_end).toLocaleDateString()}</span>
               </div>
             )}
           </div>
 
-          <div className="mt-4 pt-4 border-t border-slate-100">
+          <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
             {(!sub || sub.plan === 'free') ? (
               <div className="space-y-3">
-                <p className="text-sm text-slate-500">Upgrade to unlock unlimited assets, team collaboration, and priority support.</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Upgrade to unlock unlimited assets, team collaboration, and priority support.</p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleUpgrade('team')}
                     disabled={checkoutLoading}
-                    className="flex-1 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700 disabled:opacity-50"
+                    className="flex-1 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400 disabled:opacity-50"
                   >
                     {checkoutLoading ? 'Redirecting...' : 'Upgrade to Team — $19/mo'}
                   </button>
@@ -225,17 +225,17 @@ export default function ProfilePage() {
               </div>
             ) : (
               <div>
-                <p className="text-sm text-slate-500 mb-3">You're on the <strong className="text-slate-700 capitalize">{sub.plan}</strong> plan.</p>
-                <p className="text-xs text-slate-400">To manage your subscription (cancel, update payment method), visit the Stripe customer portal or contact support.</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">You're on the <strong className="text-slate-700 dark:text-slate-200 capitalize">{sub.plan}</strong> plan.</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500">To manage your subscription (cancel, update payment method), visit the Stripe customer portal or contact support.</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Danger Zone */}
-        <div className="bg-white border border-red-200 rounded-lg p-5">
-          <h2 className="font-medium text-red-700 mb-1">Delete Account</h2>
-          <p className="text-sm text-slate-500 mb-3">Permanently delete your account and all data. This cannot be undone.</p>
+        <div className="bg-white dark:bg-slate-950 border border-red-200 dark:border-red-800 rounded-lg p-5">
+          <h2 className="font-medium text-red-700 dark:text-red-300 mb-1">Delete Account</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Permanently delete your account and all data. This cannot be undone.</p>
           <button onClick={() => setShowDelete(true)} className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded text-sm font-medium hover:bg-red-700">
             <Trash2 size={14} /> Delete my account
           </button>

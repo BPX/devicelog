@@ -7,27 +7,7 @@ import {
   Sun, Moon
 } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
-
-// ═══════════════════════════════════════════════
-// Dark mode hook — defaults to dark
-// ═══════════════════════════════════════════════
-function useTheme() {
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
-
-  useEffect(() => {
-    const stored = localStorage.getItem('trackstack-theme')
-    if (stored === 'light' || stored === 'dark') {
-      setTheme(stored)
-    }
-  }, [])
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark')
-    localStorage.setItem('trackstack-theme', theme)
-  }, [theme])
-
-  return { theme, toggle: () => setTheme(t => t === 'dark' ? 'light' : 'dark') }
-}
+import { useTheme } from '@/lib/theme'
 
 // ── Section wrapper ──
 function Section({ children, className = '', alt = false, id }: { children: React.ReactNode, className?: string, alt?: boolean, id?: string }) {

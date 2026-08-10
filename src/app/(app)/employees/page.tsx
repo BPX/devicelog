@@ -161,41 +161,41 @@ export default function EmployeesPage() {
     return sortDir === 'asc' ? av.localeCompare(bv as string) : (bv as string).localeCompare(av)
   }) : filtered
 
-  if (teamLoading) return <div className="p-8 text-slate-500">Loading...</div>
+  if (teamLoading) return <div className="p-8 text-slate-500 dark:text-slate-400">Loading...</div>
 
   if (!teamId) return (
     <div className="text-center py-20">
-      <Monitor size={48} className="mx-auto mb-3 text-slate-300" />
-      <p className="text-lg font-medium text-slate-600">No team set up</p>
-      <p className="text-sm text-slate-400 mt-1">Create or join a team to manage employees.</p>
-      <Link href="/team" className="inline-block mt-4 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700">Go to Team</Link>
+      <Monitor size={48} className="mx-auto mb-3 text-slate-300 dark:text-slate-600" />
+      <p className="text-lg font-medium text-slate-600 dark:text-slate-400">No team set up</p>
+      <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Create or join a team to manage employees.</p>
+      <Link href="/team" className="inline-block mt-4 px-4 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400">Go to Team</Link>
     </div>
   )
 
   return (<div>
     <div className="flex justify-between items-center mb-6">
-      <h1 className="text-2xl font-semibold text-slate-900">Employees</h1>
+      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Employees</h1>
       <div className="flex gap-2">
-        <button onClick={() => setShowImport(true)} className="flex items-center gap-2 px-3 py-2 border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50"><Upload size={16}/>Import CSV</button>
-        <button onClick={() => downloadCsv(employees.map(e => ({ name: e.name, email: e.email, job_title: e.job_title, department: e.department, devices: counts[e.name]||0 })), 'trackstack-employees.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50"><Download size={16}/>Export</button>
-        <button onClick={() => { setAddForm({ name:'', email:'', job_title:'', department:'' }); setShowAddModal(true) }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700"><Plus size={16}/>Add Employee</button>
+        <button onClick={() => setShowImport(true)} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Upload size={16}/>Import CSV</button>
+        <button onClick={() => downloadCsv(employees.map(e => ({ name: e.name, email: e.email, job_title: e.job_title, department: e.department, devices: counts[e.name]||0 })), 'trackstack-employees.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Download size={16}/>Export</button>
+        <button onClick={() => { setAddForm({ name:'', email:'', job_title:'', department:'' }); setShowAddModal(true) }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400"><Plus size={16}/>Add Employee</button>
       </div>
     </div>
 
-    <div className="mb-4 relative"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/><input placeholder="Search employees..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"/></div>
+    <div className="mb-4 relative"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"/><input placeholder="Search employees..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-700 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"/></div>
 
     {filtered.length === 0 ? (
-      <div className="text-center py-16 text-slate-400"><Monitor size={48} className="mx-auto mb-3 opacity-50"/><p className="text-lg font-medium">No employees yet</p><p className="text-sm mt-1">Import a CSV, add manually, or type a name when assigning an asset — it auto-adds here.</p></div>
+      <div className="text-center py-16 text-slate-400 dark:text-slate-500"><Monitor size={48} className="mx-auto mb-3 opacity-50"/><p className="text-lg font-medium">No employees yet</p><p className="text-sm mt-1">Import a CSV, add manually, or type a name when assigning an asset — it auto-adds here.</p></div>
     ) : (
-      <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+      <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
         <div className="max-h-[calc(100vh-260px)] overflow-auto">
           <table className="w-full text-sm">
             <thead className="sticky top-0 z-10">
-              <tr className="text-left text-slate-500 bg-slate-50 border-b">
-                <th onClick={() => toggleSort('name')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700"><span className="inline-flex items-center gap-1">Name{sortIcon('name')}</span></th>
+              <tr className="text-left text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 border-b">
+                <th onClick={() => toggleSort('name')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700 dark:text-slate-200"><span className="inline-flex items-center gap-1">Name{sortIcon('name')}</span></th>
                 <th className="py-3 px-4 font-medium">Email / Role</th>
-                <th onClick={() => toggleSort('department')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700"><span className="inline-flex items-center gap-1">Department{sortIcon('department')}</span></th>
-                <th onClick={() => toggleSort('devices')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700"><span className="inline-flex items-center gap-1">Devices{sortIcon('devices')}</span></th>
+                <th onClick={() => toggleSort('department')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700 dark:text-slate-200"><span className="inline-flex items-center gap-1">Department{sortIcon('department')}</span></th>
+                <th onClick={() => toggleSort('devices')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700 dark:text-slate-200"><span className="inline-flex items-center gap-1">Devices{sortIcon('devices')}</span></th>
                 <th className="py-3 px-4 font-medium w-20"></th>
               </tr>
             </thead>
@@ -203,26 +203,26 @@ export default function EmployeesPage() {
               {sorted.map(e => {
                 const count = counts[e.name] || 0
                 return (
-                  <tr key={e.id || e.name} className={`border-b border-slate-100 ${count === 0 ? 'bg-red-50/30' : 'hover:bg-slate-50'}`}>
+                  <tr key={e.id || e.name} className={`border-b border-slate-100 dark:border-slate-800 ${count === 0 ? 'bg-red-50 dark:bg-red-950/30' : 'hover:bg-slate-50 dark:hover:bg-slate-800'}`}>
                     <td className="py-2.5 px-4">
                       <div className="flex items-center gap-2">
-                        <Monitor size={14} className={count > 0 ? 'text-slate-400' : 'text-red-300'} />
-                        <span className="text-slate-900 font-medium">{e.name}</span>
-                        {count === 0 && <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-red-100 text-red-600 rounded text-xs font-medium"><Ghost size={10}/>0</span>}
+                        <Monitor size={14} className={count > 0 ? 'text-slate-400 dark:text-slate-500' : 'text-red-300'} />
+                        <span className="text-slate-900 dark:text-slate-100 font-medium">{e.name}</span>
+                        {count === 0 && <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 rounded text-xs font-medium"><Ghost size={10}/>0</span>}
                       </div>
                     </td>
                     <td className="py-2.5 px-4">
-                      {e.email ? <div className="text-xs text-slate-500">{e.email}</div> : null}
-                      {e.job_title ? <div className="text-xs text-slate-400">{e.job_title}</div> : null}
-                      {!e.email && !e.job_title && <span className="text-xs text-slate-400 italic">No details</span>}
+                      {e.email ? <div className="text-xs text-slate-500 dark:text-slate-400">{e.email}</div> : null}
+                      {e.job_title ? <div className="text-xs text-slate-400 dark:text-slate-500">{e.job_title}</div> : null}
+                      {!e.email && !e.job_title && <span className="text-xs text-slate-400 dark:text-slate-500 italic">No details</span>}
                     </td>
-                    <td className="py-2.5 px-4 text-slate-500">{e.department || '—'}</td>
-                    <td className="py-2.5 px-4 text-slate-500">{count}</td>
+                    <td className="py-2.5 px-4 text-slate-500 dark:text-slate-400">{e.department || '—'}</td>
+                    <td className="py-2.5 px-4 text-slate-500 dark:text-slate-400">{count}</td>
                     <td className="py-2.5 px-4">
                       <div className="flex gap-1">
-                        <button onClick={() => copyInfo(e)} className="p-1 hover:bg-slate-100 rounded"><Copy size={14} className="text-slate-400"/></button>
-                        <button onClick={() => startEdit(e)} className="p-1 hover:bg-slate-100 rounded"><Pencil size={14} className="text-slate-400"/></button>
-                        <button onClick={() => removeEmp(e.name)} className="p-1 hover:bg-red-50 rounded"><X size={14} className="text-slate-300 hover:text-red-500"/></button>
+                        <button onClick={() => copyInfo(e)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"><Copy size={14} className="text-slate-400 dark:text-slate-500"/></button>
+                        <button onClick={() => startEdit(e)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"><Pencil size={14} className="text-slate-400 dark:text-slate-500"/></button>
+                        <button onClick={() => removeEmp(e.name)} className="p-1 hover:bg-red-50 dark:bg-red-950 rounded"><X size={14} className="text-slate-300 dark:text-slate-600 hover:text-red-500"/></button>
                       </div>
                     </td>
                   </tr>
@@ -234,23 +234,23 @@ export default function EmployeesPage() {
       </div>
     )}
 
-    {showAddModal && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"><div className="bg-white rounded-lg p-6 w-full max-w-lg border border-slate-200 shadow-xl"><h2 className="text-lg font-semibold mb-4">New Employee</h2>
+    {showAddModal && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"><div className="bg-white dark:bg-slate-950 rounded-lg p-6 w-full max-w-lg border border-slate-200 dark:border-slate-800 shadow-xl"><h2 className="text-lg font-semibold mb-4">New Employee</h2>
       <div className="space-y-3"><div className="grid grid-cols-2 gap-3">
-        <div><label className="block text-xs font-medium text-slate-600 mb-1">Name *</label><input autoFocus value={addForm.name} onChange={e => setAddForm({...addForm, name: e.target.value})} placeholder="John Smith" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" onKeyDown={e => { if(e.key==='Enter') saveNew() }} /></div>
-        <div><label className="block text-xs font-medium text-slate-600 mb-1">Email</label><input value={addForm.email} onChange={e => setAddForm({...addForm, email: e.target.value})} placeholder="john@company.com" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
-        <div><label className="block text-xs font-medium text-slate-600 mb-1">Job Title</label><input value={addForm.job_title} onChange={e => setAddForm({...addForm, job_title: e.target.value})} placeholder="IT Manager" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
-        <div><label className="block text-xs font-medium text-slate-600 mb-1">Department</label><input value={addForm.department} onChange={e => setAddForm({...addForm, department: e.target.value})} placeholder="Engineering" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
+        <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Name *</label><input autoFocus value={addForm.name} onChange={e => setAddForm({...addForm, name: e.target.value})} placeholder="John Smith" className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" onKeyDown={e => { if(e.key==='Enter') saveNew() }} /></div>
+        <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Email</label><input value={addForm.email} onChange={e => setAddForm({...addForm, email: e.target.value})} placeholder="john@company.com" className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
+        <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Job Title</label><input value={addForm.job_title} onChange={e => setAddForm({...addForm, job_title: e.target.value})} placeholder="IT Manager" className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
+        <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Department</label><input value={addForm.department} onChange={e => setAddForm({...addForm, department: e.target.value})} placeholder="Engineering" className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
       </div>
-      <div className="flex gap-2 pt-2"><button onClick={saveNew} disabled={!addForm.name.trim()} className="flex-1 py-2 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700 disabled:opacity-50">Add Employee</button><button onClick={() => setShowAddModal(false)} className="px-4 py-2 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button></div></div></div></div>}
+      <div className="flex gap-2 pt-2"><button onClick={saveNew} disabled={!addForm.name.trim()} className="flex-1 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400 disabled:opacity-50">Add Employee</button><button onClick={() => setShowAddModal(false)} className="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800">Cancel</button></div></div></div></div>}
 
-    {editEmp && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"><div className="bg-white rounded-lg p-6 w-full max-w-lg border border-slate-200 shadow-xl"><h2 className="text-lg font-semibold mb-4">Edit {editEmp.name}</h2>
+    {editEmp && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"><div className="bg-white dark:bg-slate-950 rounded-lg p-6 w-full max-w-lg border border-slate-200 dark:border-slate-800 shadow-xl"><h2 className="text-lg font-semibold mb-4">Edit {editEmp.name}</h2>
       <div className="grid grid-cols-2 gap-3">
-        <div><label className="block text-xs font-medium text-slate-600 mb-1">Name</label><input value={editEmp?.name || ''} onChange={e => { if (editEmp) setEditEmp({...editEmp, name: e.target.value}) }} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
-        <div><label className="block text-xs font-medium text-slate-600 mb-1">Email</label><input value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} placeholder="person@company.com" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
-        <div><label className="block text-xs font-medium text-slate-600 mb-1">Job Title</label><input value={editForm.job_title} onChange={e => setEditForm({...editForm, job_title: e.target.value})} placeholder="IT Manager" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
-        <div><label className="block text-xs font-medium text-slate-600 mb-1">Department</label><input value={editForm.department} onChange={e => setEditForm({...editForm, department: e.target.value})} placeholder="Engineering" className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
+        <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Name</label><input value={editEmp?.name || ''} onChange={e => { if (editEmp) setEditEmp({...editEmp, name: e.target.value}) }} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
+        <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Email</label><input value={editForm.email} onChange={e => setEditForm({...editForm, email: e.target.value})} placeholder="person@company.com" className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
+        <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Job Title</label><input value={editForm.job_title} onChange={e => setEditForm({...editForm, job_title: e.target.value})} placeholder="IT Manager" className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
+        <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Department</label><input value={editForm.department} onChange={e => setEditForm({...editForm, department: e.target.value})} placeholder="Engineering" className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
       </div>
-      <div className="flex gap-2 pt-2"><button onClick={saveEdit} className="flex-1 py-2 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700">Save Changes</button><button onClick={() => setEditEmp(null)} className="px-4 py-2 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button></div></div></div>}
+      <div className="flex gap-2 pt-2"><button onClick={saveEdit} className="flex-1 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400">Save Changes</button><button onClick={() => setEditEmp(null)} className="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800">Cancel</button></div></div></div>}
 
     {showImport && <CsvImport title="Import Employees" description="Upload a CSV with name, email, job title, department." sampleData={`name,email,job_title,department
 John Smith,john@company.com,IT Manager,IT

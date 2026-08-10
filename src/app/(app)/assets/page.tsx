@@ -247,47 +247,47 @@ export default function AssetsPage() {
   const showingEnd = Math.min(page * PAGE_SIZE, total)
 
   // ── Loading state ──
-  if (teamLoading) return <div className="p-8 text-slate-500">Loading...</div>
+  if (teamLoading) return <div className="p-8 text-slate-500 dark:text-slate-400">Loading...</div>
 
   // ── No team state ──
   if (!teamId) {
     return (
       <div className="text-center py-20">
-        <Package size={48} className="mx-auto mb-3 text-slate-300" />
-        <p className="text-lg font-medium text-slate-600">No team set up</p>
-        <p className="text-sm text-slate-400 mt-1">Create or join a team to start tracking assets.</p>
-        <a href="/team" className="inline-block mt-4 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700">Go to Team</a>
+        <Package size={48} className="mx-auto mb-3 text-slate-300 dark:text-slate-600" />
+        <p className="text-lg font-medium text-slate-600 dark:text-slate-400">No team set up</p>
+        <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Create or join a team to start tracking assets.</p>
+        <a href="/team" className="inline-block mt-4 px-4 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400">Go to Team</a>
       </div>
     )
   }
 
   return (<div>
     <div className="flex justify-between items-center mb-6">
-      <h1 className="text-2xl font-semibold text-slate-900">Assets</h1>
+      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Assets</h1>
       <div className="flex gap-2">
-        <button onClick={() => setShowCsvImport(true)} className="flex items-center gap-2 px-3 py-2 border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50"><Upload size={16} />Import CSV</button>
-        <button onClick={() => setShowScanner(true)} className="flex items-center gap-2 px-3 py-2 border border-cyan-300 text-cyan-700 bg-cyan-50 rounded-md text-sm font-medium hover:bg-cyan-100"><Monitor size={16} />Scan Device</button>
-        <button onClick={() => downloadCsv(assets, 'trackstack-assets.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50"><Download size={16} />Export</button>
-        <button onClick={() => { setEditing(null); setForm({ name: '', category: 'laptop', manufacturer: '', model: '', serial_number: '', status: 'active', assigned_to: '', location: '', purchase_date: '', warranty_expires: '', image: '' }); setShowForm(true) }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700"><Plus size={16} />Add Asset</button>
+        <button onClick={() => setShowCsvImport(true)} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Upload size={16} />Import CSV</button>
+        <button onClick={() => setShowScanner(true)} className="flex items-center gap-2 px-3 py-2 border border-cyan-300 text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-950 rounded-md text-sm font-medium hover:bg-cyan-100"><Monitor size={16} />Scan Device</button>
+        <button onClick={() => downloadCsv(assets, 'trackstack-assets.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Download size={16} />Export</button>
+        <button onClick={() => { setEditing(null); setForm({ name: '', category: 'laptop', manufacturer: '', model: '', serial_number: '', status: 'active', assigned_to: '', location: '', purchase_date: '', warranty_expires: '', image: '' }); setShowForm(true) }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400"><Plus size={16} />Add Asset</button>
       </div>
     </div>
 
     <div className="mb-4 relative">
-      <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+      <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
       <input
         placeholder="Search by name, person, or serial..."
         value={search}
         onChange={e => handleSearchChange(e.target.value)}
-        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+        className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-700 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
       />
     </div>
 
     {/* ── Error state ── */}
     {error && (
-      <div className="mb-4 flex items-center gap-3 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm">
+      <div className="mb-4 flex items-center gap-3 px-4 py-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg text-sm">
         <AlertTriangle size={16} className="text-red-500 flex-shrink-0" />
         <span className="text-red-800 flex-1">{error}</span>
-        <button onClick={fetchAssets} className="flex items-center gap-1 px-3 py-1 bg-red-100 text-red-700 rounded text-xs font-medium hover:bg-red-200">
+        <button onClick={fetchAssets} className="flex items-center gap-1 px-3 py-1 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded text-xs font-medium hover:bg-red-200">
           <RefreshCw size={12} /> Retry
         </button>
       </div>
@@ -329,33 +329,33 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
     {/* ── Add / Edit modal ── */}
     {showForm && (
       <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-auto border border-slate-200 shadow-xl">
+        <div className="bg-white dark:bg-slate-950 rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-auto border border-slate-200 dark:border-slate-800 shadow-xl">
           <h2 className="text-lg font-semibold mb-4">{editing ? 'Edit Asset' : 'New Asset'}</h2>
           <form onSubmit={handleSubmit} className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
-              <div><label className="block text-xs font-medium text-slate-600 mb-1">Name *</label><input required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" placeholder="e.g. MacBook Pro 14" /></div>
-              <div><label className="block text-xs font-medium text-slate-600 mb-1">Category</label>
-                <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm">{(settings.categories as string[]).map((c: string) => <option key={c} value={c}>{c}</option>)}</select></div>
-              <div><label className="block text-xs font-medium text-slate-600 mb-1">Manufacturer</label><input value={form.manufacturer} onChange={e => setForm({ ...form, manufacturer: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" placeholder="Dell / Apple / Lenovo" /></div>
-              <div><label className="block text-xs font-medium text-slate-600 mb-1">Model</label><input value={form.model} onChange={e => setForm({ ...form, model: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
-              <div><label className="block text-xs font-medium text-slate-600 mb-1">Serial Number</label><input value={form.serial_number} onChange={e => setForm({ ...form, serial_number: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
-              <div><label className="block text-xs font-medium text-slate-600 mb-1">Status</label>
-                <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm">{(settings.statuses as string[]).map((s: string) => <option key={s} value={s}>{s}</option>)}</select></div>
-              <div><label className="block text-xs font-medium text-slate-600 mb-1">Assigned To</label>
+              <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Name *</label><input required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" placeholder="e.g. MacBook Pro 14" /></div>
+              <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Category</label>
+                <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm">{(settings.categories as string[]).map((c: string) => <option key={c} value={c}>{c}</option>)}</select></div>
+              <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Manufacturer</label><input value={form.manufacturer} onChange={e => setForm({ ...form, manufacturer: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" placeholder="Dell / Apple / Lenovo" /></div>
+              <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Model</label><input value={form.model} onChange={e => setForm({ ...form, model: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
+              <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Serial Number</label><input value={form.serial_number} onChange={e => setForm({ ...form, serial_number: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
+              <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Status</label>
+                <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm">{(settings.statuses as string[]).map((s: string) => <option key={s} value={s}>{s}</option>)}</select></div>
+              <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Assigned To</label>
                 <EmployeeAutocomplete value={form.assigned_to} onChange={v => setForm({ ...form, assigned_to: v })} options={employeeNames} /></div>
-              <div><label className="block text-xs font-medium text-slate-600 mb-1">Location</label><input value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" placeholder="Office / room" /></div>
-              <div><label className="block text-xs font-medium text-slate-600 mb-1">Purchase Date</label><input type="date" value={form.purchase_date} onChange={e => setForm({ ...form, purchase_date: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
-              <div><label className="block text-xs font-medium text-slate-600 mb-1">Warranty Expires</label><input type="date" value={form.warranty_expires} onChange={e => setForm({ ...form, warranty_expires: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" /></div>
+              <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Location</label><input value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" placeholder="Office / room" /></div>
+              <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Purchase Date</label><input type="date" value={form.purchase_date} onChange={e => setForm({ ...form, purchase_date: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
+              <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Warranty Expires</label><input type="date" value={form.warranty_expires} onChange={e => setForm({ ...form, warranty_expires: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
             </div>
             <div className="pt-2">
-              <label className="block text-xs font-medium text-slate-600 mb-1">Photo</label>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Photo</label>
               {form.image ? (
                 <div className="relative inline-block">
-                  <img src={form.image} alt="Preview" className="h-24 rounded border border-slate-200" />
+                  <img src={form.image} alt="Preview" className="h-24 rounded border border-slate-200 dark:border-slate-800" />
                   <button onClick={() => setForm({ ...form, image: '' })} className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">×</button>
                 </div>
               ) : (
-                <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-slate-300 rounded text-sm text-slate-500 cursor-pointer hover:border-cyan-300 hover:text-cyan-600">
+                <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-slate-300 dark:border-slate-700 rounded text-sm text-slate-500 dark:text-slate-400 cursor-pointer hover:border-cyan-300 hover:text-cyan-600 dark:text-cyan-400">
                   <Camera size={14} /> {uploading ? 'Uploading...' : 'Add photo'}
                   <input type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
                 </label>
@@ -363,8 +363,8 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
               {uploading && <div className="mt-2 w-full bg-slate-200 rounded-full h-1.5"><div className="bg-cyan-500 h-1.5 rounded-full animate-pulse w-2/3" /></div>}
             </div>
             <div className="flex gap-2 pt-2">
-              <button type="submit" className="flex-1 py-2 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700">{editing ? 'Save Changes' : 'Add Asset'}</button>
-              <button type="button" onClick={() => { setShowForm(false); setEditing(null) }} className="px-4 py-2 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button>
+              <button type="submit" className="flex-1 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400">{editing ? 'Save Changes' : 'Add Asset'}</button>
+              <button type="button" onClick={() => { setShowForm(false); setEditing(null) }} className="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800">Cancel</button>
             </div>
           </form>
         </div>
@@ -373,21 +373,21 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
 
     {/* ── Table ── */}
     {loading && assets.length === 0 ? (
-      <div className="text-center py-16 text-slate-400"><RefreshCw size={32} className="mx-auto mb-3 animate-spin opacity-50" /><p className="text-sm">Loading assets...</p></div>
+      <div className="text-center py-16 text-slate-400 dark:text-slate-500"><RefreshCw size={32} className="mx-auto mb-3 animate-spin opacity-50" /><p className="text-sm">Loading assets...</p></div>
     ) : assets.length === 0 ? (
-      <div className="text-center py-16 text-slate-400">
+      <div className="text-center py-16 text-slate-400 dark:text-slate-500">
         <Package size={48} className="mx-auto mb-3 opacity-50" />
         <p className="text-lg font-medium">{search ? 'No assets match your search' : 'No assets yet'}</p>
         <p className="text-sm mt-1">{search ? 'Try a different search term.' : 'Add manually, import a CSV, or drop a file anywhere on this page.'}</p>
       </div>
     ) : (
-      <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+      <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
         <div className="max-h-[calc(100vh-260px)] overflow-auto">
           <table className="w-full text-sm">
             <thead className="sticky top-0 z-10">
-              <tr className="text-left text-slate-500 bg-slate-50 border-b">
+              <tr className="text-left text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 border-b">
                 {['name', 'category', 'assigned_to', 'status', 'warranty_expires'].map(f => (
-                  <th key={f} onClick={() => toggleSort(f)} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700">
+                  <th key={f} onClick={() => toggleSort(f)} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700 dark:text-slate-200">
                     <span className="inline-flex items-center gap-1">
                       {f === 'warranty_expires' ? 'Warranty' : f === 'assigned_to' ? 'Assigned To' : f.charAt(0).toUpperCase() + f.slice(1)}
                       {sortIcon(f)}
@@ -399,24 +399,24 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
             </thead>
             <tbody>
               {assets.map(a => (
-                <tr key={a.id} className="border-b border-slate-100 hover:bg-slate-50">
-                  <td className="py-2.5 px-4 text-slate-900 font-medium">
+                <tr key={a.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800">
+                  <td className="py-2.5 px-4 text-slate-900 dark:text-slate-100 font-medium">
                     <div className="flex items-center gap-2">
-                      {a.image ? <img src={a.image} alt="" className="w-8 h-8 rounded object-cover border border-slate-200" /> : <Package size={16} className="text-slate-300" />}
+                      {a.image ? <img src={a.image} alt="" className="w-8 h-8 rounded object-cover border border-slate-200 dark:border-slate-800" /> : <Package size={16} className="text-slate-300 dark:text-slate-600" />}
                       {a.name}
                     </div>
                   </td>
-                  <td className="py-2.5 px-4 text-slate-500 capitalize">{a.category}</td>
-                  <td className="py-2.5 px-4 text-slate-600">{a.assigned_to || '—'}</td>
+                  <td className="py-2.5 px-4 text-slate-500 dark:text-slate-400 capitalize">{a.category}</td>
+                  <td className="py-2.5 px-4 text-slate-600 dark:text-slate-400">{a.assigned_to || '—'}</td>
                   <td className="py-2.5 px-4">
-                    <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${a.status === 'active' ? 'bg-emerald-50 text-emerald-700' : a.status === 'maintenance' ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-600'}`}>{a.status}</span>
+                    <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${a.status === 'active' ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300' : a.status === 'maintenance' ? 'bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}>{a.status}</span>
                   </td>
-                  <td className="py-2.5 px-4 text-slate-500">{formatDate(a.warranty_expires)}</td>
+                  <td className="py-2.5 px-4 text-slate-500 dark:text-slate-400">{formatDate(a.warranty_expires)}</td>
                   <td className="py-2.5 px-4">
                     <div className="flex gap-1">
-                      <button onClick={() => startEdit(a)} className="p-1 hover:bg-slate-100 rounded"><Pencil size={14} className="text-slate-400" /></button>
-                      <button onClick={() => setQrAsset(a)} className="p-1 hover:bg-cyan-50 rounded"><QrCode size={14} className="text-cyan-500" /></button>
-                      <button onClick={() => setDeletingAsset(a)} className="p-1 hover:bg-red-50 rounded"><Trash2 size={14} className="text-red-400" /></button>
+                      <button onClick={() => startEdit(a)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"><Pencil size={14} className="text-slate-400 dark:text-slate-500" /></button>
+                      <button onClick={() => setQrAsset(a)} className="p-1 hover:bg-cyan-50 dark:bg-cyan-950 rounded"><QrCode size={14} className="text-cyan-500 dark:text-cyan-400" /></button>
+                      <button onClick={() => setDeletingAsset(a)} className="p-1 hover:bg-red-50 dark:bg-red-950 rounded"><Trash2 size={14} className="text-red-400" /></button>
                     </div>
                   </td>
                 </tr>
@@ -426,7 +426,7 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
         </div>
 
         {/* ── Pagination ── */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-slate-50 text-sm text-slate-600">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm text-slate-600 dark:text-slate-400">
           <span>{total} asset{total !== 1 ? 's' : ''} · Showing {showingStart}–{showingEnd}</span>
           <div className="flex items-center gap-1">
             <button
@@ -452,7 +452,7 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
                 <button
                   key={pageNum}
                   onClick={() => setPage(pageNum)}
-                  className={`w-8 h-8 rounded text-sm font-medium ${pageNum === page ? 'bg-cyan-600 text-white' : 'hover:bg-slate-200 text-slate-600'}`}
+                  className={`w-8 h-8 rounded text-sm font-medium ${pageNum === page ? 'bg-cyan-600 dark:bg-cyan-500 text-white' : 'hover:bg-slate-200 text-slate-600 dark:text-slate-400'}`}
                 >
                   {pageNum}
                 </button>

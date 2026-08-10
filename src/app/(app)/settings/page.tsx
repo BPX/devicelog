@@ -26,58 +26,58 @@ export default function SettingsPage() {
   function save() { saveSettings(settings); setSaved(true); setTimeout(() => setSaved(false), 2000) }
 
   return (<div>
-    <h1 className="text-2xl font-semibold text-slate-900 mb-6">Settings</h1>
+    <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">Settings</h1>
     <div className="max-w-2xl space-y-8">
 
-      <div className="bg-white border border-slate-200 rounded-lg p-5">
-        <h2 className="font-medium text-slate-900 mb-1">Asset Categories</h2>
-        <p className="text-sm text-slate-500 mb-4">Customize the categories you track</p>
+      <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-5">
+        <h2 className="font-medium text-slate-900 dark:text-slate-100 mb-1">Asset Categories</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Customize the categories you track</p>
         <div className="flex flex-wrap gap-2 mb-4">
           {settings.categories.map(c => (
-            <span key={c} className="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 rounded-full text-sm text-slate-700">
+            <span key={c} className="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-sm text-slate-700 dark:text-slate-200">
               {c} <button onClick={() => removeItem('categories', c)} className="hover:text-red-500"><X size={12} /></button>
             </span>
           ))}
         </div>
         <div className="flex gap-2">
-          <input value={newCat} onChange={e => setNewCat(e.target.value)} placeholder="New category..." className="flex-1 px-3 py-1.5 border border-slate-300 rounded text-sm" onKeyDown={e => { if(e.key==='Enter'){addItem('categories',newCat);setNewCat('')} }} />
-          <button onClick={() => { addItem('categories', newCat); setNewCat('') }} className="px-3 py-1.5 bg-cyan-600 text-white rounded text-sm hover:bg-cyan-700"><Plus size={14} /></button>
+          <input value={newCat} onChange={e => setNewCat(e.target.value)} placeholder="New category..." className="flex-1 px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" onKeyDown={e => { if(e.key==='Enter'){addItem('categories',newCat);setNewCat('')} }} />
+          <button onClick={() => { addItem('categories', newCat); setNewCat('') }} className="px-3 py-1.5 bg-cyan-600 dark:bg-cyan-500 text-white rounded text-sm hover:bg-cyan-700 dark:hover:bg-cyan-400"><Plus size={14} /></button>
         </div>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-lg p-5">
-        <h2 className="font-medium text-slate-900 mb-1">Asset Statuses</h2>
-        <p className="text-sm text-slate-500 mb-4">Custom statuses like "In Repair", "Decommissioned", "Ready to Deploy"</p>
+      <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-5">
+        <h2 className="font-medium text-slate-900 dark:text-slate-100 mb-1">Asset Statuses</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Custom statuses like "In Repair", "Decommissioned", "Ready to Deploy"</p>
         <div className="flex flex-wrap gap-2 mb-4">
           {settings.statuses.map(s => (
-            <span key={s} className="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 rounded-full text-sm text-slate-700">
+            <span key={s} className="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-sm text-slate-700 dark:text-slate-200">
               {s} <button onClick={() => removeItem('statuses', s)} className="hover:text-red-500"><X size={12} /></button>
             </span>
           ))}
         </div>
         <div className="flex gap-2">
-          <input value={newStatus} onChange={e => setNewStatus(e.target.value)} placeholder="New status..." className="flex-1 px-3 py-1.5 border border-slate-300 rounded text-sm" onKeyDown={e => { if(e.key==='Enter'){addItem('statuses',newStatus);setNewStatus('')} }} />
-          <button onClick={() => { addItem('statuses', newStatus); setNewStatus('') }} className="px-3 py-1.5 bg-cyan-600 text-white rounded text-sm hover:bg-cyan-700"><Plus size={14} /></button>
+          <input value={newStatus} onChange={e => setNewStatus(e.target.value)} placeholder="New status..." className="flex-1 px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" onKeyDown={e => { if(e.key==='Enter'){addItem('statuses',newStatus);setNewStatus('')} }} />
+          <button onClick={() => { addItem('statuses', newStatus); setNewStatus('') }} className="px-3 py-1.5 bg-cyan-600 dark:bg-cyan-500 text-white rounded text-sm hover:bg-cyan-700 dark:hover:bg-cyan-400"><Plus size={14} /></button>
         </div>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-lg p-5">
-        <h2 className="font-medium text-slate-900 mb-1">Certificate Types</h2>
-        <p className="text-sm text-slate-500 mb-4">Custom types for tracking (SSL certs, software licenses, support contracts, etc.)</p>
+      <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-5">
+        <h2 className="font-medium text-slate-900 dark:text-slate-100 mb-1">Certificate Types</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Custom types for tracking (SSL certs, software licenses, support contracts, etc.)</p>
         <div className="flex flex-wrap gap-2 mb-4">
           {settings.cert_types.map(t => (
-            <span key={t} className="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 rounded-full text-sm text-slate-700">
+            <span key={t} className="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-sm text-slate-700 dark:text-slate-200">
               {t.replace('_',' ')} <button onClick={() => removeItem('cert_types', t)} className="hover:text-red-500"><X size={12} /></button>
             </span>
           ))}
         </div>
         <div className="flex gap-2">
-          <input value={newCertType} onChange={e => setNewCertType(e.target.value)} placeholder="ssl_cert / software_license..." className="flex-1 px-3 py-1.5 border border-slate-300 rounded text-sm" onKeyDown={e => { if(e.key==='Enter'){addItem('cert_types',newCertType);setNewCertType('')} }} />
-          <button onClick={() => { addItem('cert_types', newCertType); setNewCertType('') }} className="px-3 py-1.5 bg-cyan-600 text-white rounded text-sm hover:bg-cyan-700"><Plus size={14} /></button>
+          <input value={newCertType} onChange={e => setNewCertType(e.target.value)} placeholder="ssl_cert / software_license..." className="flex-1 px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" onKeyDown={e => { if(e.key==='Enter'){addItem('cert_types',newCertType);setNewCertType('')} }} />
+          <button onClick={() => { addItem('cert_types', newCertType); setNewCertType('') }} className="px-3 py-1.5 bg-cyan-600 dark:bg-cyan-500 text-white rounded text-sm hover:bg-cyan-700 dark:hover:bg-cyan-400"><Plus size={14} /></button>
         </div>
       </div>
 
-      <button onClick={save} className="px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700">{saved ? 'Saved!' : 'Save Settings'}</button>
+      <button onClick={save} className="px-4 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400">{saved ? 'Saved!' : 'Save Settings'}</button>
     </div>
   </div>)
 }

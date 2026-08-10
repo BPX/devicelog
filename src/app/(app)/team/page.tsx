@@ -106,28 +106,28 @@ export default function TeamPage() {
     setMembers(enriched)
   }
 
-  if (loading) return <div className="p-8 text-slate-500">Loading...</div>
+  if (loading) return <div className="p-8 text-slate-500 dark:text-slate-400">Loading...</div>
 
   if (!team) return (
     <div>
-      <h1 className="text-2xl font-semibold text-slate-900 mb-6">Team</h1>
+      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">Team</h1>
       <div className="max-w-md">
-        <div className="bg-white border border-slate-200 rounded-lg p-8 text-center">
-          <Users size={48} className="mx-auto mb-4 text-slate-300" />
-          <h2 className="text-lg font-medium text-slate-900 mb-2">No team yet</h2>
-          <p className="text-sm text-slate-500 mb-6">Create a team to collaborate with your colleagues.</p>
-          <button onClick={() => { setShowCreate(true); setTeamName(''); setError('') }} className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700">
+        <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-8 text-center">
+          <Users size={48} className="mx-auto mb-4 text-slate-300 dark:text-slate-600" />
+          <h2 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">No team yet</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">Create a team to collaborate with your colleagues.</p>
+          <button onClick={() => { setShowCreate(true); setTeamName(''); setError('') }} className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400">
             <Plus size={16} /> Create Team
           </button>
         </div>
       </div>
-      {showCreate && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"><div className="bg-white rounded-lg p-6 w-full max-w-sm border border-slate-200 shadow-xl"><h2 className="text-lg font-semibold mb-4">Create Team</h2>
+      {showCreate && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"><div className="bg-white dark:bg-slate-950 rounded-lg p-6 w-full max-w-sm border border-slate-200 dark:border-slate-800 shadow-xl"><h2 className="text-lg font-semibold mb-4">Create Team</h2>
         <div className="space-y-3">
-          {error && <div className="text-sm text-red-600 bg-red-50 p-3 rounded border border-red-200">{error}</div>}
-          <div><label className="block text-xs font-medium text-slate-600 mb-1">Team Name</label><input value={teamName} onChange={e => setTeamName(e.target.value)} placeholder="Acme Corp IT" className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" autoFocus /></div>
+          {error && <div className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 p-3 rounded border border-red-200 dark:border-red-800">{error}</div>}
+          <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Team Name</label><input value={teamName} onChange={e => setTeamName(e.target.value)} placeholder="Acme Corp IT" className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" autoFocus /></div>
           <div className="flex gap-2 pt-2">
-            <button onClick={handleCreate} disabled={creating || !teamName.trim()} className="flex-1 py-2 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700 disabled:opacity-50">{creating ? 'Creating...' : 'Create Team'}</button>
-            <button onClick={() => setShowCreate(false)} className="px-4 py-2 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button>
+            <button onClick={handleCreate} disabled={creating || !teamName.trim()} className="flex-1 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400 disabled:opacity-50">{creating ? 'Creating...' : 'Create Team'}</button>
+            <button onClick={() => setShowCreate(false)} className="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800">Cancel</button>
           </div>
         </div>
       </div></div>}
@@ -136,53 +136,53 @@ export default function TeamPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-slate-900 mb-6">Team</h1>
+      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">Team</h1>
       <div className="max-w-2xl space-y-6">
-        <div className="bg-white border border-slate-200 rounded-lg p-5">
+        <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-5">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
-              <Users size={18} className="text-cyan-600" />
+              <Users size={18} className="text-cyan-600 dark:text-cyan-400" />
             </div>
             <div>
-              <h2 className="font-medium text-slate-900">{team.name}</h2>
-              <p className="text-sm text-slate-500">{members.length} member{members.length !== 1 ? 's' : ''}</p>
+              <h2 className="font-medium text-slate-900 dark:text-slate-100">{team.name}</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">{members.length} member{members.length !== 1 ? 's' : ''}</p>
             </div>
           </div>
         </div>
 
         {/* ── Invite by email ── */}
-        <div className="bg-white border border-slate-200 rounded-lg p-5">
-          <h2 className="font-medium text-slate-900 mb-1">Invite Members</h2>
-          <p className="text-sm text-slate-500 mb-4">Enter the email of someone who already has a Trackstack account.</p>
+        <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-5">
+          <h2 className="font-medium text-slate-900 dark:text-slate-100 mb-1">Invite Members</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Enter the email of someone who already has a Trackstack account.</p>
 
           {inviteError && (
-            <div className="mb-3 flex items-start gap-2 px-3 py-2 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+            <div className="mb-3 flex items-start gap-2 px-3 py-2 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded text-sm text-red-700 dark:text-red-300">
               <AlertTriangle size={14} className="mt-0.5 flex-shrink-0" />
               <span>{inviteError}</span>
             </div>
           )}
           {inviteSuccess && (
-            <div className="mb-3 px-3 py-2 bg-emerald-50 border border-emerald-200 rounded text-sm text-emerald-700">
+            <div className="mb-3 px-3 py-2 bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800 rounded text-sm text-emerald-700 dark:text-emerald-300">
               {inviteSuccess}
             </div>
           )}
 
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
               <input
                 type="email"
                 placeholder="colleague@company.com"
                 value={inviteEmail}
                 onChange={e => { setInviteEmail(e.target.value); setInviteError(''); setInviteSuccess('') }}
                 onKeyDown={e => { if (e.key === 'Enter') handleInvite() }}
-                className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className="w-full pl-9 pr-3 py-2 border border-slate-300 dark:border-slate-700 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
               />
             </div>
             <button
               onClick={handleInvite}
               disabled={inviting || !inviteEmail.trim()}
-              className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700 disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400 disabled:opacity-50"
             >
               <UserPlus size={14} /> {inviting ? 'Inviting...' : 'Invite'}
             </button>
@@ -190,21 +190,21 @@ export default function TeamPage() {
         </div>
 
         {/* ── Members list ── */}
-        <div className="bg-white border border-slate-200 rounded-lg p-5">
-          <h2 className="font-medium text-slate-900 mb-1">Members</h2>
+        <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-5">
+          <h2 className="font-medium text-slate-900 dark:text-slate-100 mb-1">Members</h2>
           <div className="space-y-1 mt-3">
             {members.map(m => (
-              <div key={m.user_id} className="flex items-center justify-between px-3 py-2 rounded hover:bg-slate-50">
+              <div key={m.user_id} className="flex items-center justify-between px-3 py-2 rounded hover:bg-slate-50 dark:hover:bg-slate-800">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-xs font-medium text-slate-600">
+                  <div className="w-8 h-8 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-xs font-medium text-slate-600 dark:text-slate-400">
                     {(m.username || '?')[0].toUpperCase()}
                   </div>
                   <div>
-                    <div className="text-sm text-slate-700">{m.username || m.user_id.slice(0, 8) + '...'}</div>
-                    <div className="text-xs text-slate-400 capitalize">{m.role}</div>
+                    <div className="text-sm text-slate-700 dark:text-slate-200">{m.username || m.user_id.slice(0, 8) + '...'}</div>
+                    <div className="text-xs text-slate-400 dark:text-slate-500 capitalize">{m.role}</div>
                   </div>
                 </div>
-                <button onClick={() => handleRemove(m.user_id)} className="p-1 hover:bg-red-50 rounded">
+                <button onClick={() => handleRemove(m.user_id)} className="p-1 hover:bg-red-50 dark:bg-red-950 rounded">
                   <Trash2 size={14} className="text-red-400" />
                 </button>
               </div>
