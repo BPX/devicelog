@@ -684,28 +684,31 @@ export default function LandingPage() {
 
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-[0_0_0_1px_rgba(0,0,0,0.04),0_4px_16px_rgba(0,0,0,0.04)]">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full table-fixed text-sm">
+                <colgroup>
+                  <col className="w-[40%]" />
+                  <col className="w-[15%]" />
+                  <col className="w-[15%]" />
+                  <col className="w-[15%]" />
+                  <col className="w-[15%]" />
+                </colgroup>
                 <thead>
                   <tr className="border-b border-slate-200 bg-slate-50/50">
                     <th className="text-left py-3.5 px-5 font-semibold text-slate-700">Feature</th>
-                    <th className="text-center py-3.5 px-5 font-semibold text-cyan-600 bg-cyan-50/30">
-                      <span className="flex items-center justify-center gap-1.5">
-                        Trackstack
-                      </span>
-                    </th>
-                    <th className="text-center py-3.5 px-5 font-medium text-slate-500">Spreadsheets</th>
-                    <th className="text-center py-3.5 px-5 font-medium text-slate-500">Snipe-IT</th>
-                    <th className="text-center py-3.5 px-5 font-medium text-slate-500">Freshservice</th>
+                    <th className="text-center py-3.5 px-4 font-semibold text-cyan-600 bg-cyan-50/30">Trackstack</th>
+                    <th className="text-center py-3.5 px-4 font-medium text-slate-500">Spreadsheets</th>
+                    <th className="text-center py-3.5 px-4 font-medium text-slate-500">Snipe-IT</th>
+                    <th className="text-center py-3.5 px-4 font-medium text-slate-500">Freshservice</th>
                   </tr>
                 </thead>
                 <tbody>
                   {comparison.map((row, i) => (
                     <tr key={row.feature} className={`border-b border-slate-50 ${i % 2 === 0 ? 'bg-slate-50/30' : ''}`}>
                       <td className="py-3 px-5 text-slate-700 font-medium">{row.feature}</td>
-                      <td className="py-3 px-5 text-center bg-cyan-50/20"><CheckCell value={row.trackstack} /></td>
-                      <td className="py-3 px-5 text-center"><CheckCell value={row.spreadsheet} /></td>
-                      <td className="py-3 px-5 text-center"><CheckCell value={row.snipeit} /></td>
-                      <td className="py-3 px-5 text-center"><CheckCell value={row.freshservice} /></td>
+                      <td className="py-3 px-4 text-center bg-cyan-50/20"><CheckCell value={row.trackstack} /></td>
+                      <td className="py-3 px-4 text-center"><CheckCell value={row.spreadsheet} /></td>
+                      <td className="py-3 px-4 text-center"><CheckCell value={row.snipeit} /></td>
+                      <td className="py-3 px-4 text-center"><CheckCell value={row.freshservice} /></td>
                     </tr>
                   ))}
                 </tbody>
