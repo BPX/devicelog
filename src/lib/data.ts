@@ -121,12 +121,12 @@ export async function getTeam() {
   return teams?.[0] || null
 }
 
-export async function getTeamMembers(teamId: string) {
-  const { data } = await req(
-    '/team_members?select=*&team_id=eq.' + teamId,
-    'GET'
+export async function removeMember(teamId: string, userId: string) {
+  const { error } = await req(
+    '/team_members?team_id=eq.' + teamId + '&user_id=eq.' + userId,
+    'DELETE'
   )
-  return data
+  return { error }
 }
 
 export async function createTeam(name: string): Promise<{ error?: string }> {
@@ -138,11 +138,26 @@ export async function createTeam(name: string): Promise<{ error?: string }> {
   return {}
 }
 
-export async function removeMember(teamId: string, userId: string) {
-  const { error } = await req(
-    '/team_members?team_id=eq.' + teamId + '&user_id=eq.' + userId,
-    'DELETE'
+export async function getTeamMembers(teamId: string) {
+  const { data } = await req(
+    '/team_members?select=user_id,role&team_id=eq.' + teamId,
+    'GET'
   )
+  return data
+}
+
+/** Look up a user by email via user_profiles (publicly readable). */
+export async function lookupUserByEmail(email: string): Promise<{ user_id: string; username: string } | null> {
+  const { data } = await req(
+    '/user_profiles?select=user_id,username&email=eq.' + encodeURIComponent(email.toLowerCase().trim()),
+    'GET'
+  )
+  return data?.[0] || null
+}
+
+/** Invite a user to the team by user_id. Only the team owner should call this (enforced by RLS). */
+export async function inviteMember(teamId: string, userId: string) {
+  const { error } = await req('/team_members', 'POST', { team_id: teamId, user_id: userId, role: 'viewer' })
   return { error }
 }
 

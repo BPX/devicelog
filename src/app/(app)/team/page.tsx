@@ -1,35 +1,59 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { getTeam, getTeamMembers, createTeam, removeMember } from '@/lib/data'
-import { getCurrentUser } from '@/lib/auth'
-import { Users, Plus, Copy, Trash2 } from 'lucide-react'
+import { getTeam, getTeamMembers, createTeam, removeMember, lookupUserByEmail, inviteMember } from '@/lib/data'
+import { Users, Plus, Trash2, UserPlus, Mail, AlertTriangle } from 'lucide-react'
 
-interface Member { user_id: string; role: string }
+interface Member { user_id: string; role: string; username?: string }
 
 export default function TeamPage() {
   const [team, setTeam] = useState<any>(null)
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
-  const [copied, setCopied] = useState(false)
   const [showCreate, setShowCreate] = useState(false)
   const [teamName, setTeamName] = useState('')
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState('')
 
+  // ── Invite ──
+  const [inviteEmail, setInviteEmail] = useState('')
+  const [inviting, setInviting] = useState(false)
+  const [inviteError, setInviteError] = useState('')
+  const [inviteSuccess, setInviteSuccess] = useState('')
+
   useEffect(() => {
     async function load() {
-      const user = getCurrentUser()
-      if (!user) return
       const t = await getTeam()
       if (t) {
         setTeam(t)
         const m = await getTeamMembers(t.id)
-        setMembers(m || [])
+        // Fetch usernames for display
+        const enriched = await Promise.all(
+          (m || []).map(async (member: Member) => {
+            try {
+              const profiles = await fetchUserProfile(member.user_id)
+              return { ...member, username: profiles?.username }
+            } catch {
+              return member
+            }
+          })
+        )
+        setMembers(enriched)
       }
       setLoading(false)
     }
     load()
   }, [])
+
+  async function fetchUserProfile(userId: string) {
+    try {
+      const r = await window.fetch(
+        'https://mbsjxuymiuevankxrgmo.supabase.co/rest/v1/user_profiles?select=username&user_id=eq.' + userId,
+        { headers: { apikey: 'eyJhbG...0DIs' } }
+      )
+      const data = await r.json()
+      return data?.[0] || null
+    } catch { return null }
+  }
 
   async function handleCreate() {
     if (!teamName.trim()) return
@@ -43,6 +67,54 @@ export default function TeamPage() {
     if (!team) return
     await removeMember(team.id, userId)
     setMembers(members.filter(m => m.user_id !== userId))
+  }
+
+  async function handleInvite() {
+    const email = inviteEmail.trim().toLowerCase()
+    if (!email) return
+    setInviting(true)
+    setInviteError('')
+    setInviteSuccess('')
+
+    // Already a member?
+    if (members.some(m => m.user_id)) {
+      const user = await lookupUserByEmail(email)
+      if (user && members.some(m => m.user_id === user.user_id)) {
+        setInviteError('This person is already a team member.')
+        setInviting(false)
+        return
+      }
+    }
+
+    const user = await lookupUserByEmail(email)
+    if (!user) {
+      setInviteError('No account found with that email. Ask them to sign up first at /signup.')
+      setInviting(false)
+      return
+    }
+
+    const result = await inviteMember(team.id, user.user_id)
+    if (result.error) {
+      setInviteError(typeof result.error === 'string' ? result.error : 'Failed to invite.')
+      setInviting(false)
+      return
+    }
+
+    setInviteSuccess(`Invited ${user.username || email}`)
+    setInviteEmail('')
+    setInviting(false)
+
+    // Refresh members
+    const m = await getTeamMembers(team.id)
+    const enriched = await Promise.all(
+      (m || []).map(async (member: Member) => {
+        try {
+          const profiles = await fetchUserProfile(member.user_id)
+          return { ...member, username: profiles?.username }
+        } catch { return member }
+      })
+    )
+    setMembers(enriched)
   }
 
   if (loading) return <div className="p-8 text-slate-500">Loading...</div>
@@ -88,25 +160,58 @@ export default function TeamPage() {
             </div>
           </div>
         </div>
+
+        {/* ── Invite by email ── */}
         <div className="bg-white border border-slate-200 rounded-lg p-5">
           <h2 className="font-medium text-slate-900 mb-1">Invite Members</h2>
-          <p className="text-sm text-slate-500 mb-4">Share the signup link — they join your team automatically.</p>
-          <button onClick={async () => {
-            await navigator.clipboard.writeText(window.location.origin + '/signup')
-            setCopied(true); setTimeout(() => setCopied(false), 2000)
-          }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700">
-            <Copy size={14} /> {copied ? 'Copied!' : 'Copy Signup Link'}
-          </button>
+          <p className="text-sm text-slate-500 mb-4">Enter the email of someone who already has a Trackstack account.</p>
+
+          {inviteError && (
+            <div className="mb-3 flex items-start gap-2 px-3 py-2 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+              <AlertTriangle size={14} className="mt-0.5 flex-shrink-0" />
+              <span>{inviteError}</span>
+            </div>
+          )}
+          {inviteSuccess && (
+            <div className="mb-3 px-3 py-2 bg-emerald-50 border border-emerald-200 rounded text-sm text-emerald-700">
+              {inviteSuccess}
+            </div>
+          )}
+
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="email"
+                placeholder="colleague@company.com"
+                value={inviteEmail}
+                onChange={e => { setInviteEmail(e.target.value); setInviteError(''); setInviteSuccess('') }}
+                onKeyDown={e => { if (e.key === 'Enter') handleInvite() }}
+                className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
+            </div>
+            <button
+              onClick={handleInvite}
+              disabled={inviting || !inviteEmail.trim()}
+              className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700 disabled:opacity-50"
+            >
+              <UserPlus size={14} /> {inviting ? 'Inviting...' : 'Invite'}
+            </button>
+          </div>
         </div>
+
+        {/* ── Members list ── */}
         <div className="bg-white border border-slate-200 rounded-lg p-5">
           <h2 className="font-medium text-slate-900 mb-1">Members</h2>
           <div className="space-y-1 mt-3">
             {members.map(m => (
               <div key={m.user_id} className="flex items-center justify-between px-3 py-2 rounded hover:bg-slate-50">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-xs font-medium text-slate-600">?</div>
+                  <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-xs font-medium text-slate-600">
+                    {(m.username || '?')[0].toUpperCase()}
+                  </div>
                   <div>
-                    <div className="text-sm text-slate-700">{m.user_id.slice(0, 8) + '...'}</div>
+                    <div className="text-sm text-slate-700">{m.username || m.user_id.slice(0, 8) + '...'}</div>
                     <div className="text-xs text-slate-400 capitalize">{m.role}</div>
                   </div>
                 </div>
