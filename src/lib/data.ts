@@ -59,7 +59,7 @@ export async function getTeam() {
 export async function getTeamMembers(teamId: string) { return get('/rest/v1/team_members?select=*&team_id=eq.' + teamId) }
 export async function createTeam(name: string): Promise<{ error?: string }> {
   const token = localStorage.getItem('sb_token')
-  const headers: Record<string, string> = { 'Content-Type': 'application/json', Prefer: 'return=representation' }
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
   if (token) headers['Authorization'] = 'Bearer ' + token
   const r = await window.fetch(api('/rest/v1/teams'), {
     method: 'POST', headers,
