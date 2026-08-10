@@ -18,7 +18,7 @@ function api(path: string) {
 }
 
 async function get(path: string) {
-  const r = await fetch(api(path))
+  const r = await window.fetch(api(path))
   if (!r.ok) return []
   return r.json()
 }
@@ -28,11 +28,11 @@ async function post(path: string, body: any) {
   const token = localStorage.getItem('sb_token')
   const headers: Record<string, string> = { 'Content-Type': 'application/json' }
   if (token) headers['Authorization'] = 'Bearer ' + token
-  await fetch(api(path), { method: 'POST', headers, body: JSON.stringify(body) })
+  await window.fetch(api(path), { method: 'POST', headers, body: JSON.stringify(body) })
 }
 
 async function del(path: string) {
-  await fetch(api(path), { method: 'DELETE' })
+  await window.fetch(api(path), { method: 'DELETE' })
 }
 
 const uid = () => userId()
@@ -61,7 +61,7 @@ export async function createTeam(name: string): Promise<{ error?: string }> {
   const token = localStorage.getItem('sb_token')
   const headers: Record<string, string> = { 'Content-Type': 'application/json', Prefer: 'return=representation' }
   if (token) headers['Authorization'] = 'Bearer ' + token
-  const r = await fetch(api('/rest/v1/teams'), {
+  const r = await window.fetch(api('/rest/v1/teams'), {
     method: 'POST', headers,
     body: JSON.stringify({ name, owner_id: uid() })
   })
