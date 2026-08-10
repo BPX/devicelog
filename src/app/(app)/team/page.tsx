@@ -30,8 +30,13 @@ export default function TeamPage() {
         const enriched = await Promise.all(
           (m || []).map(async (member: Member) => {
             try {
-              const profiles = await fetchUserProfile(member.user_id)
-              return { ...member, username: profiles?.username }
+              const tok = localStorage.getItem('sb_token')
+              const r = await window.fetch(
+                'https://mbsjxuymiuevankxrgmo.supabase.co/rest/v1/user_profiles?select=username&user_id=eq.' + member.user_id,
+                { headers: { apikey: 'eyJhbGci...9MDA2MTg3fQ.iGBihjfQH_sGuQkDdkgYI9UWNQ66tJ_wKiq6RZ-0DIs', Authorization: 'Bearer ' + (tok || '') } }
+              )
+              const data = await r.json()
+              return { ...member, username: data?.[0]?.username }
             } catch {
               return member
             }
@@ -43,17 +48,6 @@ export default function TeamPage() {
     }
     load()
   }, [])
-
-  async function fetchUserProfile(userId: string) {
-    try {
-      const r = await window.fetch(
-        'https://mbsjxuymiuevankxrgmo.supabase.co/rest/v1/user_profiles?select=username&user_id=eq.' + userId,
-        { headers: { apikey: 'eyJhbG...0DIs' } }
-      )
-      const data = await r.json()
-      return data?.[0] || null
-    } catch { return null }
-  }
 
   async function handleCreate() {
     if (!teamName.trim()) return
@@ -106,11 +100,16 @@ export default function TeamPage() {
 
     // Refresh members
     const m = await getTeamMembers(team.id)
+    const tok = localStorage.getItem('sb_token')
     const enriched = await Promise.all(
       (m || []).map(async (member: Member) => {
         try {
-          const profiles = await fetchUserProfile(member.user_id)
-          return { ...member, username: profiles?.username }
+          const r = await window.fetch(
+            'https://mbsjxuymiuevankxrgmo.supabase.co/rest/v1/user_profiles?select=username&user_id=eq.' + member.user_id,
+            { headers: { apikey: 'eyJhbGci...9MDA2MTg3fQ.iGBihjfQH_sGuQkDdkgYI9UWNQ66tJ_wKiq6RZ-0DIs', Authorization: 'Bearer ' + (tok || '') } }
+          )
+          const data = await r.json()
+          return { ...member, username: data?.[0]?.username }
         } catch { return member }
       })
     )

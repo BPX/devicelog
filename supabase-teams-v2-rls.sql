@@ -39,10 +39,19 @@ CREATE POLICY "teams_owner" ON teams FOR ALL
 CREATE POLICY "teams_member_read" ON teams FOR SELECT
   USING (is_team_member(id));
 
--- 3. TEAM MEMBERS — self-manage, members can read roster
+-- 3. TEAM MEMBERS — self-manage, members can read roster, owner can add
 CREATE POLICY "team_members_self" ON team_members FOR ALL
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY "team_members_owner_insert" ON team_members FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.teams
+      WHERE public.teams.id = team_members.team_id
+        AND public.teams.owner_id = auth.uid()
+    )
+  );
 
 CREATE POLICY "team_members_roster_read" ON team_members FOR SELECT
   USING (is_team_member(team_id));
