@@ -1,39 +1,56 @@
-// Supabase auth — real auth, email verification, session management
+// Supabase auth — direct API calls, no library issues on Vercel
 'use client'
-import { supabase } from './supabase/client'
 
-export type { User } from '@supabase/supabase-js'
+const SUPABASE_URL = 'https://mbsjxuymiuevankxrgmo.supabase.co'
+const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ic2p4dXltaXVldmFua3hyZ21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNTcwOTQsImV4cCI6MjEwMTkzMzA5NH0.TUV0c2eIYkr00MTuzCiC84D9fThHeGEiMIvm4090DIs'
+
+const headers = { apikey: ANON_KEY, 'Content-Type': 'application/json' }
 
 export async function signUp(email: string, password: string): Promise<{ error?: string }> {
-  const { error } = await supabase.auth.signUp({ email, password })
-  if (error) return { error: error.message }
-  return {}
-}
-
-export async function signIn(email: string, password: string): Promise<{ error?: string }> {
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
-  if (error) {
-    if (error.message.includes('Invalid login')) return { error: 'Invalid email or password.' }
-    return { error: error.message }
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+    method: 'POST', headers,
+    body: JSON.stringify({ email, password })
+  })
+  if (!res.ok) {
+    const { msg } = await res.json()
+    return { error: msg || 'Signup failed' }
   }
   return {}
 }
 
+export async function signIn(email: string, password: string): Promise<{ error?: string }> {
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+    method: 'POST', headers,
+    body: JSON.stringify({ email, password })
+  })
+  if (!res.ok) {
+    const { error_description } = await res.json()
+    return { error: error_description || 'Invalid login' }
+  }
+  const { access_token, refresh_token } = await res.json()
+  localStorage.setItem('sb_token', access_token)
+  localStorage.setItem('sb_refresh', refresh_token)
+  return {}
+}
+
 export async function signOut() {
-  await supabase.auth.signOut()
+  localStorage.removeItem('sb_token')
+  localStorage.removeItem('sb_refresh')
+  // Also call Supabase to revoke
+  await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+    method: 'POST', headers: { ...headers, Authorization: `Bearer ${localStorage.getItem('sb_token')}` }
+  })
 }
 
 export async function getCurrentUser(): Promise<string | null> {
-  const { data: { user } } = await supabase.auth.getUser()
-  return user?.email || null
-}
-
-export async function getSession() {
-  return supabase.auth.getSession()
-}
-
-export function onAuthChange(callback: (user: string | null) => void) {
-  supabase.auth.onAuthStateChange((_, session) => {
-    callback(session?.user?.email || null)
-  })
+  const token = localStorage.getItem('sb_token')
+  if (!token) return null
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: { ...headers, Authorization: `Bearer ${token}` }
+    })
+    if (!res.ok) return null
+    const { email } = await res.json()
+    return email || null
+  } catch { return null }
 }
