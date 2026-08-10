@@ -4,8 +4,14 @@ const U = 'https://mbsjxuymiuevankxrgmo.supabase.co'
 const REST = U + '/rest/v1'
 export const K = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ic2p4dXltaXVldmFua3hyZ21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNTcwOTQsImV4cCI6MjEwMTkzMzA5NH0.TUV0c2eIYkr00MTuzCiC84D9fThHeGEiMIvm4090DIs'
 
-// Resolve username → email (queries public user_profiles table)
+// Resolve username → email (localStorage first, then API)
 async function resolveEmail(username: string): Promise<string | null> {
+  // Fast path: check localStorage from signup/login
+  const storedUser = localStorage.getItem('sb_username')
+  const storedEmail = localStorage.getItem('sb_email')
+  if (storedUser === username && storedEmail) return storedEmail
+
+  // API fallback: query user_profiles table
   try {
     const r = await window.fetch(
       REST + '/user_profiles?select=email&username=eq.' + encodeURIComponent(username),
