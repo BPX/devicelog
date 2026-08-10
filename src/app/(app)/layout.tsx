@@ -24,6 +24,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const user = getCurrentUser()
     if (!user) { router.replace('/login'); return }
+    // Extract username from JWT if not in localStorage yet
+    if (!getCurrentUsername()) {
+      const tok = localStorage.getItem('sb_token')
+      if (tok) {
+        try {
+          const meta = JSON.parse(atob(tok.split('.')[1])).user_metadata
+          if (meta?.username) localStorage.setItem('sb_username', meta.username)
+        } catch {}
+      }
+    }
     setDisplay(getCurrentUsername() || user)
   }, [])
 
