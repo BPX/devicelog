@@ -53,64 +53,64 @@ export default function DemoEmployees() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-slate-900 mb-6">Employees</h1>
+      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">Employees</h1>
 
       <div className="mb-4 relative">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
         <input placeholder="Search employees..." value={search} onChange={e => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+          className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
       </div>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-16 text-slate-400">
+        <div className="text-center py-16 text-slate-400 dark:text-slate-500">
           <Monitor size={48} className="mx-auto mb-3 opacity-50" />
           <p className="text-lg font-medium">No employees match your search</p>
         </div>
       ) : (
-        <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+        <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
           <div className="max-h-[calc(100vh-260px)] overflow-auto">
             <table className="w-full text-sm">
               <thead className="sticky top-0 z-10">
-                <tr className="text-left text-slate-500 bg-slate-50 border-b">
-                  <th onClick={() => toggleSort('name')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700">
+                <tr className="text-left text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 border-b">
+                  <th onClick={() => toggleSort('name')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700 dark:hover:text-slate-200">
                     <span className="inline-flex items-center gap-1">Name{sortIcon('name')}</span>
                   </th>
                   <th className="py-3 px-4 font-medium">Email / Role</th>
-                  <th onClick={() => toggleSort('department')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700">
+                  <th onClick={() => toggleSort('department')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700 dark:hover:text-slate-200">
                     <span className="inline-flex items-center gap-1">Department{sortIcon('department')}</span>
                   </th>
-                  <th onClick={() => toggleSort('devices')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700">
+                  <th onClick={() => toggleSort('devices')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700 dark:hover:text-slate-200">
                     <span className="inline-flex items-center gap-1">Devices{sortIcon('devices')}</span>
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {sorted.map(e => (
-                  <tr key={e.name} className={`border-b border-slate-100 ${e.devices === 0 ? 'bg-red-50/30' : 'hover:bg-slate-50'}`}>
+                  <tr key={e.name} className={`border-b border-slate-100 dark:border-slate-800 ${e.devices === 0 ? 'bg-red-50/30 dark:bg-red-950/30' : 'hover:bg-slate-50 dark:hover:bg-slate-800'}`}>
                     <td className="py-2.5 px-4">
                       <div className="flex items-center gap-2">
-                        <Monitor size={14} className={e.devices > 0 ? 'text-slate-400' : 'text-red-300'} />
-                        <span className="text-slate-900 font-medium">{e.name}</span>
+                        <Monitor size={14} className={e.devices > 0 ? 'text-slate-400 dark:text-slate-500' : 'text-red-300 dark:text-red-600'} />
+                        <span className="text-slate-900 dark:text-slate-100 font-medium">{e.name}</span>
                         {e.devices === 0 && (
-                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-red-100 text-red-600 rounded text-xs font-medium">
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 rounded text-xs font-medium">
                             <Ghost size={10} />0
                           </span>
                         )}
                       </div>
                     </td>
                     <td className="py-2.5 px-4">
-                      {e.email ? <div className="text-xs text-slate-500">{e.email}</div> : null}
-                      {e.job_title ? <div className="text-xs text-slate-400">{e.job_title}</div> : null}
-                      {!e.email && !e.job_title && <span className="text-xs text-slate-400 italic">No details</span>}
+                      {e.email ? <div className="text-xs text-slate-500 dark:text-slate-400">{e.email}</div> : null}
+                      {e.job_title ? <div className="text-xs text-slate-400 dark:text-slate-500">{e.job_title}</div> : null}
+                      {!e.email && !e.job_title && <span className="text-xs text-slate-400 dark:text-slate-500 italic">No details</span>}
                     </td>
-                    <td className="py-2.5 px-4 text-slate-500">{e.department || '—'}</td>
-                    <td className="py-2.5 px-4 text-slate-500">{e.devices}</td>
+                    <td className="py-2.5 px-4 text-slate-500 dark:text-slate-400">{e.department || '—'}</td>
+                    <td className="py-2.5 px-4 text-slate-500 dark:text-slate-400">{e.devices}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-slate-50 text-sm text-slate-600">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm text-slate-600 dark:text-slate-400">
             <span>{sampleEmployees.length} employees</span>
           </div>
         </div>

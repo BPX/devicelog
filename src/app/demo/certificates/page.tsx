@@ -59,27 +59,27 @@ export default function DemoCertificates() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-slate-900 mb-6">Certs &amp; Licenses</h1>
+      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">Certs &amp; Licenses</h1>
 
       <div className="mb-4 relative">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
         <input placeholder="Search by name or issuer..." value={search} onChange={e => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+          className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
       </div>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-16 text-slate-400">
+        <div className="text-center py-16 text-slate-400 dark:text-slate-500">
           <Shield size={48} className="mx-auto mb-3 opacity-50" />
           <p className="text-lg font-medium">No certificates match your search</p>
         </div>
       ) : (
-        <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+        <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
           <div className="max-h-[calc(100vh-220px)] overflow-auto">
             <table className="w-full text-sm">
               <thead className="sticky top-0 z-10">
-                <tr className="text-left text-slate-500 bg-slate-50 border-b">
+                <tr className="text-left text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 border-b">
                   {['name', 'type', 'issuer', 'expires_at'].map(f => (
-                    <th key={f} onClick={() => toggleSort(f)} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700">
+                    <th key={f} onClick={() => toggleSort(f)} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700 dark:hover:text-slate-200">
                       <span className="inline-flex items-center gap-1">
                         {f === 'expires_at' ? 'Expires' : f.charAt(0).toUpperCase() + f.slice(1)}
                         {sortIcon(f)}
@@ -92,13 +92,13 @@ export default function DemoCertificates() {
                 {sorted.map(c => {
                   const d = daysUntil(c.expires_at)
                   return (
-                    <tr key={c.id} className="border-b border-slate-100 hover:bg-slate-50">
-                      <td className="py-2.5 px-4 text-slate-900 font-medium">{c.name}</td>
-                      <td className="py-2.5 px-4 text-slate-500 capitalize">{c.type.replace('_', ' ')}</td>
-                      <td className="py-2.5 px-4 text-slate-500">{c.issuer || '—'}</td>
+                    <tr key={c.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800">
+                      <td className="py-2.5 px-4 text-slate-900 dark:text-slate-100 font-medium">{c.name}</td>
+                      <td className="py-2.5 px-4 text-slate-500 dark:text-slate-400 capitalize">{c.type.replace('_', ' ')}</td>
+                      <td className="py-2.5 px-4 text-slate-500 dark:text-slate-400">{c.issuer || '—'}</td>
                       <td className="py-2.5 px-4">
                         <span className={`inline-flex items-center gap-1 text-xs font-medium ${
-                          d <= 0 ? 'text-red-600' : d <= 30 ? 'text-amber-600' : 'text-slate-600'
+                          d <= 0 ? 'text-red-600 dark:text-red-400' : d <= 30 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-600 dark:text-slate-400'
                         }`}>
                           {d <= 0 ? 'EXPIRED' : d <= 30 ? `${d}d left` : formatDate(c.expires_at)}
                         </span>
@@ -109,7 +109,7 @@ export default function DemoCertificates() {
               </tbody>
             </table>
           </div>
-          <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-slate-50 text-sm text-slate-600">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm text-slate-600 dark:text-slate-400">
             <span>{sampleCerts.length} certificates</span>
           </div>
         </div>

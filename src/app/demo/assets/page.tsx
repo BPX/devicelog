@@ -28,12 +28,12 @@ const sampleAssets: Asset[] = [
 
 function categoryIcon(cat: string) {
   switch (cat) {
-    case 'laptop': return <Laptop size={16} className="text-slate-300" />
-    case 'desktop': return <Monitor size={16} className="text-slate-300" />
-    case 'server': return <Server size={16} className="text-slate-300" />
-    case 'phone': return <Smartphone size={16} className="text-slate-300" />
-    case 'printer': return <Printer size={16} className="text-slate-300" />
-    default: return <Package size={16} className="text-slate-300" />
+    case 'laptop': return <Laptop size={16} className="text-slate-300 dark:text-slate-600" />
+    case 'desktop': return <Monitor size={16} className="text-slate-300 dark:text-slate-600" />
+    case 'server': return <Server size={16} className="text-slate-300 dark:text-slate-600" />
+    case 'phone': return <Smartphone size={16} className="text-slate-300 dark:text-slate-600" />
+    case 'printer': return <Printer size={16} className="text-slate-300 dark:text-slate-600" />
+    default: return <Package size={16} className="text-slate-300 dark:text-slate-600" />
   }
 }
 
@@ -68,31 +68,31 @@ export default function DemoAssets() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-slate-900 mb-6">Assets</h1>
+      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">Assets</h1>
 
       <div className="mb-4 relative">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
         <input
           placeholder="Search by name, person, or serial..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
         />
       </div>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-16 text-slate-400">
+        <div className="text-center py-16 text-slate-400 dark:text-slate-500">
           <Package size={48} className="mx-auto mb-3 opacity-50" />
           <p className="text-lg font-medium">No assets match your search</p>
         </div>
       ) : (
-        <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+        <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
           <div className="max-h-[calc(100vh-260px)] overflow-auto">
             <table className="w-full text-sm">
               <thead className="sticky top-0 z-10">
-                <tr className="text-left text-slate-500 bg-slate-50 border-b">
+                <tr className="text-left text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 border-b">
                   {['name', 'category', 'assigned_to', 'status', 'warranty_expires'].map(f => (
-                    <th key={f} onClick={() => toggleSort(f)} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700">
+                    <th key={f} onClick={() => toggleSort(f)} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700 dark:hover:text-slate-200">
                       <span className="inline-flex items-center gap-1">
                         {f === 'warranty_expires' ? 'Warranty' : f === 'assigned_to' ? 'Assigned To' : f.charAt(0).toUpperCase() + f.slice(1)}
                         {sortIcon(f)}
@@ -103,30 +103,30 @@ export default function DemoAssets() {
               </thead>
               <tbody>
                 {sorted.map(a => (
-                  <tr key={a.id} className="border-b border-slate-100 hover:bg-slate-50">
-                    <td className="py-2.5 px-4 text-slate-900 font-medium">
+                  <tr key={a.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800">
+                    <td className="py-2.5 px-4 text-slate-900 dark:text-slate-100 font-medium">
                       <div className="flex items-center gap-2">
                         {categoryIcon(a.category)}
                         {a.name}
                       </div>
                     </td>
-                    <td className="py-2.5 px-4 text-slate-500 capitalize">{a.category}</td>
-                    <td className="py-2.5 px-4 text-slate-600">{a.assigned_to || '—'}</td>
+                    <td className="py-2.5 px-4 text-slate-500 dark:text-slate-400 capitalize">{a.category}</td>
+                    <td className="py-2.5 px-4 text-slate-600 dark:text-slate-400">{a.assigned_to || '—'}</td>
                     <td className="py-2.5 px-4">
                       <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${
-                        a.status === 'active' ? 'bg-emerald-50 text-emerald-700' :
-                        a.status === 'maintenance' ? 'bg-amber-50 text-amber-700' :
-                        a.status === 'lost' ? 'bg-red-50 text-red-700' :
-                        'bg-slate-100 text-slate-600'
+                        a.status === 'active' ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300' :
+                        a.status === 'maintenance' ? 'bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300' :
+                        a.status === 'lost' ? 'bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300' :
+                        'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                       }`}>{a.status}</span>
                     </td>
-                    <td className="py-2.5 px-4 text-slate-500">{formatDate(a.warranty_expires)}</td>
+                    <td className="py-2.5 px-4 text-slate-500 dark:text-slate-400">{formatDate(a.warranty_expires)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-slate-50 text-sm text-slate-600">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-sm text-slate-600 dark:text-slate-400">
             <span>{sampleAssets.length} assets · Showing all</span>
           </div>
         </div>
