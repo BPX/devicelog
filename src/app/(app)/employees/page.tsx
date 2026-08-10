@@ -36,7 +36,13 @@ export default function EmployeesPage() {
   const [editEmp, setEditEmp] = useState<Employee | null>(null)
   const [editForm, setEditForm] = useState({ email:'', job_title:'', department:'' })
 
-  useEffect(() => { setEmployees(getSettings().employees); setCounts(getCounts()) }, [])
+  useEffect(() => { setEmployees(getSettings().employees); setCounts(getCounts())
+    if (typeof window !== 'undefined' && window.location.search.includes('new=true')) {
+      const inp = document.getElementById('emp-add-input') as HTMLInputElement
+      if (inp) inp.focus()
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }, [])
 
   function toggleSort(f: string) {
     if (sortField === f) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
@@ -91,6 +97,7 @@ export default function EmployeesPage() {
       <div className="flex gap-2">
         <button onClick={() => setShowImport(true)} className="flex items-center gap-2 px-3 py-2 border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50"><Upload size={16}/>Import CSV</button>
         <button onClick={() => downloadCsv(employees.map(e => ({ name: e.name, email: e.email, job_title: e.job_title, department: e.department, devices: counts[e.name]||0 })), 'trackstack-employees.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50"><Download size={16}/>Export</button>
+        <button onClick={() => { const inp = document.getElementById('emp-add-input') as HTMLInputElement; inp?.focus() }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700"><Plus size={16}/>Add Employee</button>
       </div>
     </div>
 

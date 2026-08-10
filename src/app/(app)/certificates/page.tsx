@@ -22,7 +22,12 @@ export default function CertsPage() {
   const [form, setForm] = useState({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30 })
   const certTypes = getSettings().cert_types || ['ssl_cert','software_license','support_contract','domain','other']
 
-  useEffect(() => { setCerts(getCerts()); setLoading(false) }, [])
+  useEffect(() => { setCerts(getCerts()); setLoading(false)
+    if (typeof window !== 'undefined' && window.location.search.includes('new=true')) {
+      setShowForm(true)
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }, [])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

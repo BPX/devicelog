@@ -46,7 +46,13 @@ export default function AssetsPage() {
     return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av)
   }) : filtered
 
-  useEffect(() => { setAssets(getAssets()); setLoading(false) }, [])
+  useEffect(() => { setAssets(getAssets()); setLoading(false)
+    // Auto-open create modal from QuickAdd
+    if (typeof window !== 'undefined' && window.location.search.includes('new=true')) {
+      setShowForm(true)
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }, [])
   function reload() { setAssets(getAssets()) }
 
   function makeAsset(data: Record<string, string>): Asset {
