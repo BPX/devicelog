@@ -15,6 +15,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
+        <link rel="dns-prefetch" href="https://mbsjxuymiuevankxrgmo.supabase.co" />
+        <link rel="preconnect" href="https://mbsjxuymiuevankxrgmo.supabase.co" crossOrigin="anonymous" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#0891b2" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
