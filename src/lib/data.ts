@@ -53,9 +53,19 @@ export async function saveSettings(s: any) { return post('/rest/v1/settings', s)
 
 // ---- TEAMS ----
 export async function getTeam() {
-  const data = await get('/rest/v1/team_members?select=team_id&limit=1')
+  // Use POST with Content-Type — same pattern as login which works
+  const token = localStorage.getItem('sb_token')
+  const r = await fetch(U + '/rest/v1/team_members?select=team_id&limit=1', {
+    headers: { apikey: K, Authorization: token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' }
+  })
+  if (!r.ok) return null
+  const data = await r.json()
   if (!data?.length) return null
-  const teams = await get('/rest/v1/teams?select=*&id=eq.' + data[0].team_id)
+  const t = await fetch(U + '/rest/v1/teams?select=*&id=eq.' + data[0].team_id, {
+    headers: { apikey: K, Authorization: token ? `Bearer ${token}` : '', 'Content-Type': 'application/json' }
+  })
+  if (!t.ok) return null
+  const teams = await t.json()
   return teams?.[0] || null
 }
 export async function getTeamMembers(teamId: string) {
