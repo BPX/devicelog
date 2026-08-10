@@ -7,7 +7,7 @@ import ConfirmDialog from '@/components/confirm-dialog'
 import { downloadCsv } from '@/lib/export'
 import { getSettings } from '@/lib/settings-store'
 
-interface Cert { id: string; name: string; type: string; issuer: string; expires_at: string; notify_before_days: number }
+interface Cert { id: string; name: string; type: string; issuer: string; expires_at: string; notify_before_days: number; document?: string }
 
 function getCerts(): Cert[] { try { return JSON.parse(localStorage.getItem('trackstack_certificates') || '[]') } catch { return [] } }
 function saveCerts(c: Cert[]) { localStorage.setItem('trackstack_certificates', JSON.stringify(c)) }
@@ -19,7 +19,7 @@ export default function CertsPage() {
   const [search, setSearch] = useState('')
   const [sortField, setSortField] = useState<string>('')
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
-  const [form, setForm] = useState({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30 })
+  const [form, setForm] = useState({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30, document:'' })
   const certTypes = getSettings().cert_types || ['ssl_cert','software_license','support_contract','domain','other']
 
   useEffect(() => { setCerts(getCerts()); setLoading(false)
@@ -34,7 +34,7 @@ export default function CertsPage() {
     const all = getCerts()
     all.push({ id: Date.now().toString(), ...form })
     saveCerts(all); setCerts(getCerts())
-    setShowForm(false); setForm({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30 })
+    setShowForm(false); setForm({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30, document:'' })
   }
 
   function toggleSort(field: string) {
@@ -83,6 +83,19 @@ export default function CertsPage() {
         <div className="grid grid-cols-2 gap-3">
           <div><label className="block text-xs font-medium text-slate-600 mb-1">Expires *</label><input required type="date" value={form.expires_at} onChange={e=>setForm({...form,expires_at:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm"/></div>
           <div><label className="block text-xs font-medium text-slate-600 mb-1">Notify (days before)</label><input type="number" value={form.notify_before_days} onChange={e=>setForm({...form,notify_before_days:parseInt(e.target.value)})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm"/></div>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-slate-600 mb-1">Document (PDF)</label>
+          <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-slate-300 rounded text-sm text-slate-500 cursor-pointer hover:border-cyan-300 hover:text-cyan-600">
+            <Upload size={14} /> Upload PDF
+            <input type="file" accept=".pdf" className="hidden" onChange={e => {
+              const f = e.target.files?.[0]
+              if (!f) return
+              const reader = new FileReader()
+              reader.onload = () => setForm({...form, document: reader.result as string})
+              reader.readAsDataURL(f)
+            }} />
+          </label>
         </div>
         <div className="flex gap-2 pt-2"><button type="submit" className="flex-1 py-2 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700">Add</button><button type="button" onClick={()=>setShowForm(false)} className="px-4 py-2 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button></div>
       </form></div></div>}

@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { formatDate } from '@/lib/utils'
-import { Plus, Search, Pencil, Trash2, Package, Upload, Monitor, QrCode, ArrowUpDown, ArrowUp, ArrowDown, Download } from 'lucide-react'
+import { Plus, Search, Pencil, Trash2, Package, Upload, Monitor, QrCode, ArrowUpDown, ArrowUp, ArrowDown, Download, Image, Camera } from 'lucide-react'
 import { getSettings, addEmployee as addEmp } from '@/lib/settings-store'
 import CsvImport from '@/components/csv-import'
 import EmployeeAutocomplete from '@/components/employee-autocomplete'
@@ -10,7 +10,7 @@ import QrLabel from '@/components/qr-label'
 import ConfirmDialog from '@/components/confirm-dialog'
 import { downloadCsv } from '@/lib/export'
 
-interface Asset { id: string; name: string; category: string; manufacturer: string; model: string; serial_number: string; status: string; assigned_to: string; location: string; purchase_date: string | null; warranty_expires: string | null }
+interface Asset { id: string; name: string; category: string; manufacturer: string; model: string; serial_number: string; status: string; assigned_to: string; location: string; purchase_date: string | null; warranty_expires: string | null; image?: string }
 
 function getAssets(): Asset[] { try { return JSON.parse(localStorage.getItem('trackstack_assets') || '[]') } catch { return [] } }
 function saveAssets(a: Asset[]) { localStorage.setItem('trackstack_assets', JSON.stringify(a)) }
@@ -24,7 +24,7 @@ export default function AssetsPage() {
   const [deleteAsset, setDeleteAsset] = useState<Asset | null>(null)
   const [sortField, setSortField] = useState<string>('')
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
-  const [form, setForm] = useState({ name:'', category:'laptop', manufacturer:'', model:'', serial_number:'', status:'active', assigned_to:'', location:'', purchase_date:'', warranty_expires:'' })
+  const [form, setForm] = useState({ name:'', category:'laptop', manufacturer:'', model:'', serial_number:'', status:'active', assigned_to:'', location:'', purchase_date:'', warranty_expires:'', image:'' })
   const settings = getSettings()
   const employeeNames = settings.employees.map(e => e.name)
 
@@ -82,11 +82,11 @@ export default function AssetsPage() {
     }
     saveAssets(all); reload(); setShowForm(false); setEditing(null)
     if (form.assigned_to.trim()) addEmp(form.assigned_to.trim())
-    setForm({ name:'', category:'laptop', manufacturer:'', model:'', serial_number:'', status:'active', assigned_to:'', location:'', purchase_date:'', warranty_expires:'' })
+    setForm({ name:'', category:'laptop', manufacturer:'', model:'', serial_number:'', status:'active', assigned_to:'', location:'', purchase_date:'', warranty_expires:'', image:'' })
   }
 
   function startEdit(a: Asset) {
-    setEditing(a); setForm({ name:a.name, category:a.category, manufacturer:a.manufacturer||'', model:a.model||'', serial_number:a.serial_number||'', status:a.status, assigned_to:a.assigned_to||'', location:a.location||'', purchase_date:a.purchase_date||'', warranty_expires:a.warranty_expires||'' })
+    setEditing(a); setForm({ name:a.name, category:a.category, manufacturer:a.manufacturer||'', model:a.model||'', serial_number:a.serial_number||'', status:a.status, assigned_to:a.assigned_to||'', location:a.location||'', purchase_date:a.purchase_date||'', warranty_expires:a.warranty_expires||'', image:a.image||'' })
     setShowForm(true)
   }
 
@@ -150,6 +150,26 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Purchase Date</label><input type="date" value={form.purchase_date} onChange={e=>setForm({...form,purchase_date:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm"/></div>
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Warranty Expires</label><input type="date" value={form.warranty_expires} onChange={e=>setForm({...form,warranty_expires:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm"/></div>
       </div>
+      <div className="pt-2">
+        <label className="block text-xs font-medium text-slate-600 mb-1">Photo</label>
+        {form.image ? (
+          <div className="relative inline-block">
+            <img src={form.image} alt="Preview" className="h-24 rounded border border-slate-200" />
+            <button onClick={() => setForm({...form, image: ''})} className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">×</button>
+          </div>
+        ) : (
+          <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-slate-300 rounded text-sm text-slate-500 cursor-pointer hover:border-cyan-300 hover:text-cyan-600">
+            <Camera size={14} /> Add photo
+            <input type="file" accept="image/*" className="hidden" onChange={e => {
+              const f = e.target.files?.[0]
+              if (!f) return
+              const reader = new FileReader()
+              reader.onload = () => setForm({...form, image: reader.result as string})
+              reader.readAsDataURL(f)
+            }} />
+          </label>
+        )}
+      </div>
       <div className="flex gap-2 pt-2"><button type="submit" className="flex-1 py-2 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700">{editing?'Save Changes':'Add Asset'}</button><button type="button" onClick={()=>{setShowForm(false);setEditing(null)}} className="px-4 py-2 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button></div></form></div></div>}
 
     {filtered.length===0 ? <div className="text-center py-16 text-slate-400"><Package size={48} className="mx-auto mb-3 opacity-50"/><p className="text-lg font-medium">No assets yet</p><p className="text-sm mt-1">Add manually, import a CSV, or drop a file anywhere on this page</p></div> :
@@ -164,7 +184,12 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
                 </th>
               ))}
               <th className="py-3 px-4 font-medium w-20"></th></tr></thead>
-          <tbody>{sorted.map(a=><tr key={a.id} className="border-b border-slate-100 hover:bg-slate-50"><td className="py-2.5 px-4 text-slate-900 font-medium">{a.name}</td><td className="py-2.5 px-4 text-slate-500 capitalize">{a.category}</td><td className="py-2.5 px-4 text-slate-600">{a.assigned_to||'—'}</td><td className="py-2.5 px-4"><span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${a.status==='active'?'bg-emerald-50 text-emerald-700':a.status==='maintenance'?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-600'}`}>{a.status}</span></td><td className="py-2.5 px-4 text-slate-500">{formatDate(a.warranty_expires)}</td><td className="py-2.5 px-4"><div className="flex gap-1"><button onClick={()=>startEdit(a)} className="p-1 hover:bg-slate-100 rounded"><Pencil size={14} className="text-slate-400"/></button><button onClick={()=>setQrAsset(a)} className="p-1 hover:bg-cyan-50 rounded"><QrCode size={14} className="text-cyan-500"/></button><button onClick={()=>setDeleteAsset(a)} className="p-1 hover:bg-red-50 rounded"><Trash2 size={14} className="text-red-400"/></button></div></td></tr>)}</tbody></table>
+          <tbody>{sorted.map(a=><tr key={a.id} className="border-b border-slate-100 hover:bg-slate-50"><td className="py-2.5 px-4 text-slate-900 font-medium">
+            <div className="flex items-center gap-2">
+              {a.image ? <img src={a.image} alt="" className="w-8 h-8 rounded object-cover border border-slate-200" /> : <Package size={16} className="text-slate-300" />}
+              {a.name}
+            </div>
+          </td><td className="py-2.5 px-4 text-slate-500 capitalize">{a.category}</td><td className="py-2.5 px-4 text-slate-600">{a.assigned_to||'—'}</td><td className="py-2.5 px-4"><span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${a.status==='active'?'bg-emerald-50 text-emerald-700':a.status==='maintenance'?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-600'}`}>{a.status}</span></td><td className="py-2.5 px-4 text-slate-500">{formatDate(a.warranty_expires)}</td><td className="py-2.5 px-4"><div className="flex gap-1"><button onClick={()=>startEdit(a)} className="p-1 hover:bg-slate-100 rounded"><Pencil size={14} className="text-slate-400"/></button><button onClick={()=>setQrAsset(a)} className="p-1 hover:bg-cyan-50 rounded"><QrCode size={14} className="text-cyan-500"/></button><button onClick={()=>setDeleteAsset(a)} className="p-1 hover:bg-red-50 rounded"><Trash2 size={14} className="text-red-400"/></button></div></td></tr>)}</tbody></table>
       </div>
     </div>}
   </div>)
