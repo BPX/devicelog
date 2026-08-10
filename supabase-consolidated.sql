@@ -150,6 +150,10 @@ INSERT INTO storage.buckets (id, name, public, file_size_limit)
   VALUES ('asset-images', 'asset-images', true, 524288)
   ON CONFLICT (id) DO UPDATE SET public = true;
 
+DROP POLICY IF EXISTS "assets_images_insert" ON storage.objects;
+DROP POLICY IF EXISTS "assets_images_delete" ON storage.objects;
+DROP POLICY IF EXISTS "assets_images_select" ON storage.objects;
+
 CREATE POLICY "assets_images_insert" ON storage.objects FOR INSERT
   TO authenticated
   WITH CHECK (bucket_id = 'asset-images' AND auth.role() = 'authenticated');
