@@ -6,9 +6,29 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] })
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Trackstack — Simple IT Asset Management",
-  description: "Track your IT assets without the bloat. $19/month.",
+  title: "Trackstack — Free IT Asset Management Software | Track Laptops, Certs & Licenses",
+  description: "Simple IT asset management for small teams. Track laptops, monitors, SSL certificates, and software licenses. Free tier, CSV import, QR labels. No bloat.",
   manifest: "/manifest.json",
+  keywords: ["IT asset management", "asset tracking", "IT inventory", "certificate tracking", "warranty tracking", "software license management"],
+  openGraph: {
+    title: "Trackstack — Simple IT Asset Management",
+    description: "Track your company's laptops, monitors, SSL certs, and software licenses. Free for small teams.",
+    url: "https://trackstack.dev",
+    siteName: "Trackstack",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Trackstack — Simple IT Asset Management",
+    description: "Track your company's laptops, monitors, SSL certs, and software licenses. Free for small teams.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: "https://trackstack.dev",
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -20,6 +40,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#0891b2" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "Trackstack",
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "Web",
+              "description": "Simple IT asset management for small teams. Track laptops, monitors, SSL certificates, and software licenses.",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD",
+                "description": "Free tier with up to 50 assets"
+              },
+              "url": "https://trackstack.dev"
+            })
+          }}
+        />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-slate-900`}>
         {children}
