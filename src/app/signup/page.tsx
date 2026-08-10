@@ -2,29 +2,39 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { signUp } from '@/lib/demo-auth'
+import { signUp } from '@/lib/auth'
 
 export default function SignupPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); setLoading(true); setError('')
-    const result = signUp(email.trim(), password)
-    if (result.error) setError(result.error)
-    else router.push('/dashboard')
-    setLoading(false)
+    const result = await signUp(email.trim(), password)
+    if (result.error) { setError(result.error); setLoading(false) }
+    else { setSuccess(true) }
   }
+
+  if (success) return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="text-center max-w-sm">
+        <h1 className="text-xl font-semibold text-slate-900 mb-2">Check your email</h1>
+        <p className="text-sm text-slate-500 mb-4">We sent a confirmation link to <strong>{email}</strong></p>
+        <Link href="/login" className="text-sm text-cyan-600 hover:underline">Go to login</Link>
+      </div>
+    </div>
+  )
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Track<span className="text-cyan-600">stack</span></h1>
-          <p className="text-sm text-slate-500 mt-1">Start your 14-day free trial</p>
+          <p className="text-sm text-slate-500 mt-1">Create your account</p>
         </div>
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm space-y-4">
           {error && <div className="text-sm text-red-600 bg-red-50 p-3 rounded border border-red-200">{error}</div>}
@@ -46,7 +56,6 @@ export default function SignupPage() {
         <p className="text-center text-sm text-slate-500 mt-4">
           Already have an account? <Link href="/login" className="text-cyan-600 hover:underline">Sign in</Link>
         </p>
-        <p className="text-center text-xs text-slate-400 mt-2">Demo mode — data stored in your browser</p>
       </div>
     </div>
   )

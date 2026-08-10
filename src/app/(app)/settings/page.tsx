@@ -8,17 +8,18 @@ export default function SettingsPage() {
   const [saved, setSaved] = useState(false)
   const [newCat, setNewCat] = useState('')
   const [newStatus, setNewStatus] = useState('')
+  const [newCertType, setNewCertType] = useState('')
 
   function persist(updated: AppSettings) { setSettings(updated); saveSettings(updated) }
 
-  function addItem(field: 'categories'|'statuses', value: string) {
+  function addItem(field: 'categories'|'statuses'|'cert_types', value: string) {
     if (!value.trim()) return
     if (!settings[field].includes(value.trim())) {
       persist({ ...settings, [field]: [...settings[field], value.trim()].sort() })
     }
   }
 
-  function removeItem(field: 'categories'|'statuses', value: string) {
+  function removeItem(field: 'categories'|'statuses'|'cert_types', value: string) {
     persist({ ...settings, [field]: settings[field].filter(v => v !== value) })
   }
 
@@ -57,6 +58,22 @@ export default function SettingsPage() {
         <div className="flex gap-2">
           <input value={newStatus} onChange={e => setNewStatus(e.target.value)} placeholder="New status..." className="flex-1 px-3 py-1.5 border border-slate-300 rounded text-sm" onKeyDown={e => { if(e.key==='Enter'){addItem('statuses',newStatus);setNewStatus('')} }} />
           <button onClick={() => { addItem('statuses', newStatus); setNewStatus('') }} className="px-3 py-1.5 bg-cyan-600 text-white rounded text-sm hover:bg-cyan-700"><Plus size={14} /></button>
+        </div>
+      </div>
+
+      <div className="bg-white border border-slate-200 rounded-lg p-5">
+        <h2 className="font-medium text-slate-900 mb-1">Certificate Types</h2>
+        <p className="text-sm text-slate-500 mb-4">Custom types for tracking (SSL certs, software licenses, support contracts, etc.)</p>
+        <div className="flex flex-wrap gap-2 mb-4">
+          {settings.cert_types.map(t => (
+            <span key={t} className="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 rounded-full text-sm text-slate-700">
+              {t.replace('_',' ')} <button onClick={() => removeItem('cert_types', t)} className="hover:text-red-500"><X size={12} /></button>
+            </span>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <input value={newCertType} onChange={e => setNewCertType(e.target.value)} placeholder="ssl_cert / software_license..." className="flex-1 px-3 py-1.5 border border-slate-300 rounded text-sm" onKeyDown={e => { if(e.key==='Enter'){addItem('cert_types',newCertType);setNewCertType('')} }} />
+          <button onClick={() => { addItem('cert_types', newCertType); setNewCertType('') }} className="px-3 py-1.5 bg-cyan-600 text-white rounded text-sm hover:bg-cyan-700"><Plus size={14} /></button>
         </div>
       </div>
 

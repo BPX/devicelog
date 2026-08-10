@@ -1,12 +1,6 @@
-const CACHE = 'trackstack-v1'
-const URLS = ['/','/login','/signup','/dashboard','/assets','/certificates','/settings','/manifest.json']
-
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(URLS)))
-})
-
-self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
-  )
+// Trackstack — no service worker needed. This uninstalls old ones.
+self.addEventListener('install', () => self.skipWaiting())
+self.addEventListener('activate', () => {
+  caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))))
+  self.registration.unregister()
 })
