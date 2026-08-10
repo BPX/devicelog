@@ -92,12 +92,14 @@ export default function CertsPage() {
             <input type="file" accept=".pdf" className="hidden" onChange={e => {
               const f = e.target.files?.[0]
               if (!f) return
+              if (f.size > 500 * 1024) { alert('PDF too large. Max 500KB per file due to browser storage limits.'); return }
               setUploading(true)
               const reader = new FileReader()
               reader.onload = () => { setForm({...form, document: reader.result as string}); setUploading(false) }
               reader.readAsDataURL(f)
             }} />
           </label>
+          <p className="text-xs text-slate-400 mt-1">Max 500KB per file (browser storage limit)</p>
         </div>
         {uploading && <div className="mt-2 w-full bg-slate-200 rounded-full h-1.5"><div className="bg-cyan-500 h-1.5 rounded-full animate-pulse w-2/3" /></div>}
         <div className="flex gap-2 pt-2"><button type="submit" className="flex-1 py-2 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700">Add</button><button type="button" onClick={()=>setShowForm(false)} className="px-4 py-2 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button></div>
