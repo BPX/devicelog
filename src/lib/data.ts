@@ -1,67 +1,104 @@
-// Supabase data layer — replaces localStorage for all CRUD
-import { supabase } from './supabase/client'
+// Unified data store — Supabase when available, localStorage fallback
+// Once Supabase migration SQL is run, data auto-syncs to the cloud
 
-// ---- ASSETS ----
+const SUPABASE_READY = true // Flip to false to use localStorage-only
+
+// ---- Fallback to localStorage ----
+function localGet(key: string) { try { return JSON.parse(localStorage.getItem('trackstack_' + key) || '[]') } catch { return [] } }
+function localSet(key: string, data: any) { localStorage.setItem('trackstack_' + key, JSON.stringify(data)) }
+
+// ---- Assets ----
 export async function getAssets() {
-  const { data } = await supabase.from('assets').select('*').order('created_at', { ascending: false })
-  return data || []
+  if (!SUPABASE_READY) return localGet('assets')
+  try {
+    const { supabase } = await import('./supabase/client')
+    const { data } = await supabase.from('assets').select('*').order('created_at', { ascending: false })
+    return data || []
+  } catch { return localGet('assets') }
 }
 
 export async function saveAsset(asset: Record<string, any>) {
-  await supabase.from('assets').upsert(asset, { onConflict: 'id' })
+  localSet('assets', [...localGet('assets').filter((a: any) => a.id !== asset.id), asset])
+  if (!SUPABASE_READY) return
+  try {
+    const { supabase } = await import('./supabase/client')
+    await supabase.from('assets').upsert(asset, { onConflict: 'id' })
+  } catch {}
 }
 
 export async function deleteAsset(id: string) {
-  await supabase.from('assets').delete().eq('id', id)
+  localSet('assets', localGet('assets').filter((a: any) => a.id !== id))
+  if (!SUPABASE_READY) return
+  try {
+    const { supabase } = await import('./supabase/client')
+    await supabase.from('assets').delete().eq('id', id)
+  } catch {}
 }
 
-export async function saveAssets(assets: Record<string, any>[]) {
-  if (assets.length === 0) return
-  await supabase.from('assets').upsert(assets, { onConflict: 'id' })
-}
-
-// ---- CERTIFICATES ----
+// ---- Certificates ----
 export async function getCerts() {
-  const { data } = await supabase.from('certificates').select('*').order('created_at', { ascending: false })
-  return data || []
+  if (!SUPABASE_READY) return localGet('certificates')
+  try {
+    const { supabase } = await import('./supabase/client')
+    const { data } = await supabase.from('certificates').select('*').order('created_at', { ascending: false })
+    return data || []
+  } catch { return localGet('certificates') }
 }
 
 export async function saveCert(cert: Record<string, any>) {
-  await supabase.from('certificates').upsert(cert, { onConflict: 'id' })
+  localSet('certificates', [...localGet('certificates').filter((c: any) => c.id !== cert.id), cert])
+  if (!SUPABASE_READY) return
+  try {
+    const { supabase } = await import('./supabase/client')
+    await supabase.from('certificates').upsert(cert, { onConflict: 'id' })
+  } catch {}
 }
 
 export async function deleteCert(id: string) {
-  await supabase.from('certificates').delete().eq('id', id)
+  localSet('certificates', localGet('certificates').filter((c: any) => c.id !== id))
+  if (!SUPABASE_READY) return
+  try {
+    const { supabase } = await import('./supabase/client')
+    await supabase.from('certificates').delete().eq('id', id)
+  } catch {}
 }
 
-// ---- EMPLOYEES ----
+// ---- Employees ----
 export async function getEmployees() {
-  const { data } = await supabase.from('employees').select('*').order('name')
-  return data || []
+  if (!SUPABASE_READY) return []
+  try {
+    const { supabase } = await import('./supabase/client')
+    const { data } = await supabase.from('employees').select('*').order('name')
+    return data || []
+  } catch { return [] }
 }
 
-export async function saveEmployee(emp: Record<string, any>) {
-  await supabase.from('employees').upsert(emp, { onConflict: 'id' })
+export async function saveEmployees(emps: Record<string, any>[]) {
+  // Employees are stored in settings for now
+  if (!SUPABASE_READY) return
+  try {
+    const { supabase } = await import('./supabase/client')
+    const { data: existing } = await supabase.from('employees').select('id')
+    const ids = (existing || []).map((e: any) => e.id)
+    if (ids.length) await supabase.from('employees').delete().in('id', ids)
+    if (emps.length) await supabase.from('employees').upsert(emps)
+  } catch {}
 }
 
-export async function deleteEmployee(id: string) {
-  await supabase.from('employees').delete().eq('id', id)
-}
-
-export async function saveEmployees(employees: Record<string, any>[]) {
-  // Clear and re-insert
-  const { data: existing } = await supabase.from('employees').select('id')
-  const existingIds = (existing || []).map((e: any) => e.id)
-  if (existingIds.length > 0) await supabase.from('employees').delete().in('id', existingIds)
-  if (employees.length > 0) await supabase.from('employees').upsert(employees)
-}
-
-// ---- SETTINGS ----
+// ---- Settings ----
 export async function getSettings() {
-  const { data } = await supabase.from('settings').select('*').single()
-  return data || { categories: ['laptop','desktop','monitor','phone','tablet','server','printer','network','software','license','other'], statuses: ['active','maintenance','retired','lost'], cert_types: ['ssl_cert','software_license','support_contract','domain','other'] }
+  if (!SUPABASE_READY) return { categories: [], statuses: [], cert_types: [] }
+  try {
+    const { supabase } = await import('./supabase/client')
+    const { data } = await supabase.from('settings').select('*').single()
+    return data || {}
+  } catch { return {} }
 }
 
 export async function saveSettings(settings: Record<string, any>) {
-  await supabase.from('settings').upsert(settings, { onConflict: 'user_id' })
+  if (!SUPABASE_READY) return
+  try {
+    const { supabase } = await import('./supabase/client')
+    await supabase.from('settings').upsert(settings, { onConflict: 'user_id' })
+  } catch {}
 }
