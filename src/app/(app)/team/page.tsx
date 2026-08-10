@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { getTeam, getTeamMembers, createTeam, removeMember, lookupUserByEmail, inviteMember } from '@/lib/data'
+import { getTeam, getTeamMembers, createTeam, removeMember, lookupUserByEmail, inviteMember, getUserProfile } from '@/lib/data'
 import { Users, Plus, Trash2, UserPlus, Mail, AlertTriangle } from 'lucide-react'
 
 interface Member { user_id: string; role: string; username?: string }
@@ -29,17 +29,8 @@ export default function TeamPage() {
         // Fetch usernames for display
         const enriched = await Promise.all(
           (m || []).map(async (member: Member) => {
-            try {
-              const tok = localStorage.getItem('sb_token')
-              const r = await window.fetch(
-                'https://mbsjxuymiuevankxrgmo.supabase.co/rest/v1/user_profiles?select=username&user_id=eq.' + member.user_id,
-                { headers: { apikey: 'eyJhbGci...9MDA2MTg3fQ.iGBihjfQH_sGuQkDdkgYI9UWNQ66tJ_wKiq6RZ-0DIs', Authorization: 'Bearer ' + (tok || '') } }
-              )
-              const data = await r.json()
-              return { ...member, username: data?.[0]?.username }
-            } catch {
-              return member
-            }
+            const profile = await getUserProfile(member.user_id)
+            return { ...member, username: profile?.username }
           })
         )
         setMembers(enriched)
@@ -100,17 +91,10 @@ export default function TeamPage() {
 
     // Refresh members
     const m = await getTeamMembers(team.id)
-    const tok = localStorage.getItem('sb_token')
     const enriched = await Promise.all(
       (m || []).map(async (member: Member) => {
-        try {
-          const r = await window.fetch(
-            'https://mbsjxuymiuevankxrgmo.supabase.co/rest/v1/user_profiles?select=username&user_id=eq.' + member.user_id,
-            { headers: { apikey: 'eyJhbGci...9MDA2MTg3fQ.iGBihjfQH_sGuQkDdkgYI9UWNQ66tJ_wKiq6RZ-0DIs', Authorization: 'Bearer ' + (tok || '') } }
-          )
-          const data = await r.json()
-          return { ...member, username: data?.[0]?.username }
-        } catch { return member }
+        const profile = await getUserProfile(member.user_id)
+        return { ...member, username: profile?.username }
       })
     )
     setMembers(enriched)

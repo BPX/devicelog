@@ -153,17 +153,28 @@ export async function lookupUserByEmail(email: string): Promise<{ user_id: strin
     'POST',
     { p_email: email.toLowerCase().trim() }
   )
-  if (!data || data.error) return null
+  // RPC returns an array of rows
+  const row = Array.isArray(data) ? data[0] : data
+  if (!row || row.error) return null
   return {
-    user_id: data.user_id,
-    username: data.username || 'User',
+    user_id: row.user_id,
+    username: row.username || 'User',
   }
 }
 
 /** Invite a user to the team by user_id. Only the team owner should call this (enforced by RLS). */
 export async function inviteMember(teamId: string, userId: string) {
-  const { error } = await req('/team_members', 'POST', { team_id: teamId, user_id: userId, role: 'viewer' })
-  return { error }
+  const result = await req('/team_members', 'POST', { team_id: teamId, user_id: userId, role: 'viewer' })
+  return { error: result.error, data: result.data }
+}
+
+/** Fetch a user's profile (username) by user_id. */
+export async function getUserProfile(userId: string): Promise<{ username: string } | null> {
+  const { data } = await req(
+    '/user_profiles?select=username&user_id=eq.' + userId,
+    'GET'
+  )
+  return data?.[0] || null
 }
 
 // ── Assets (team-scoped, paginated) ────────────────────────────────────
