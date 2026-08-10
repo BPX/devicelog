@@ -57,7 +57,32 @@ export default function TeamPage() {
   }
 
   if (loading) return <div className="p-8 text-slate-500">Loading...</div>
-  if (!team) return <div className="p-8 text-slate-500">No team found. Create one in Settings.</div>
+  if (!team) return (
+    <div>
+      <h1 className="text-2xl font-semibold text-slate-900 mb-6">Team</h1>
+      <div className="max-w-md">
+        <div className="bg-white border border-slate-200 rounded-lg p-8 text-center">
+          <Users size={48} className="mx-auto mb-4 text-slate-300" />
+          <h2 className="text-lg font-medium text-slate-900 mb-2">No team yet</h2>
+          <p className="text-sm text-slate-500 mb-6">Create a team to collaborate with your colleagues on asset management.</p>
+          <button onClick={async () => {
+            setLoading(true)
+            const teamName = prompt('Team name:')
+            if (!teamName) { setLoading(false); return }
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) return
+            const { data: t, error: e } = await supabase.from('teams').insert({ name: teamName, owner_id: user.id }).select('id').single()
+            if (e) { setLoading(false); return }
+            await supabase.from('team_members').insert({ team_id: t.id, user_id: user.id, role: 'admin' })
+            await supabase.from('settings').insert({ user_id: user.id, team_id: t.id })
+            window.location.reload()
+          }} className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700">
+            <Plus size={16} /> Create Team
+          </button>
+        </div>
+      </div>
+    </div>
+  )
 
   return (
     <div>

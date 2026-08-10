@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Package, Shield, Settings, LogOut, LayoutDashboard, Users } from 'lucide-react'
+import { Package, Shield, Settings, LogOut, LayoutDashboard, Users, User } from 'lucide-react'
 import { getCurrentUser, signOut } from '@/lib/auth'
 import { supabase } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
@@ -15,6 +15,7 @@ const navItems = [
   { href: '/certificates', label: 'Certs & Licenses', icon: Shield },
   { href: '/team', label: 'Team', icon: Users },
   { href: '/settings', label: 'Settings', icon: Settings },
+  { href: '/profile', label: 'Profile', icon: User },
 ]
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -25,10 +26,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     getCurrentUser().then(user => {
       if (!user) { router.replace('/login'); return }
       setEmail(user)
-      // Check team membership — redirect to setup if none
-      supabase.from('team_members').select('team_id').limit(1).then(({ data }) => {
-        if (!data?.length && window.location.pathname !== '/setup') router.replace('/setup')
-      })
     })
   }, [])
 
