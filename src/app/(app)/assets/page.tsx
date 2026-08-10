@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { formatDate } from '@/lib/utils'
 import { Plus, Search, Pencil, Trash2, Package, Upload, Monitor, QrCode, ArrowUpDown, ArrowUp, ArrowDown, Download, Image, Camera } from 'lucide-react'
 import { getSettings, addEmployee as addEmp } from '@/lib/settings-store'
+import { getAssets, saveAsset, deleteAsset as deleteAssetDb } from '@/lib/data'
 import CsvImport from '@/components/csv-import'
 import EmployeeAutocomplete from '@/components/employee-autocomplete'
 import ScanDevice from '@/components/scan-device'
@@ -12,16 +13,13 @@ import { downloadCsv } from '@/lib/export'
 
 interface Asset { id: string; name: string; category: string; manufacturer: string; model: string; serial_number: string; status: string; assigned_to: string; location: string; purchase_date: string | null; warranty_expires: string | null; image?: string }
 
-function getAssets(): Asset[] { try { return JSON.parse(localStorage.getItem('trackstack_assets') || '[]') } catch { return [] } }
-function saveAssets(a: Asset[]) { localStorage.setItem('trackstack_assets', JSON.stringify(a)) }
-
 export default function AssetsPage() {
   const [assets, setAssets] = useState<Asset[]>([]); const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false); const [editing, setEditing] = useState<Asset|null>(null)
   const [search, setSearch] = useState(''); const [showCsvImport, setShowCsvImport] = useState(false)
   const [showScanner, setShowScanner] = useState(false)
   const [qrAsset, setQrAsset] = useState<Asset | null>(null)
-  const [deleteAsset, setDeleteAsset] = useState<Asset | null>(null)
+  const [deletingAsset, setDeletingAsset] = useState<Asset | null>(null)
   const [sortField, setSortField] = useState<string>('')
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
   const [form, setForm] = useState({ name:'', category:'laptop', manufacturer:'', model:'', serial_number:'', status:'active', assigned_to:'', location:'', purchase_date:'', warranty_expires:'', image:'' })
@@ -47,14 +45,23 @@ export default function AssetsPage() {
     return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av)
   }) : filtered
 
-  useEffect(() => { setAssets(getAssets()); setLoading(false)
+  async function reload() {
+    const data = await getAssets()
+    setAssets(data || [])
+  }
+
+  useEffect(() => {
+    (async () => {
+      const data = await getAssets()
+      setAssets(data || [])
+      setLoading(false)
+    })()
     // Auto-open create modal from QuickAdd
     if (typeof window !== 'undefined' && window.location.search.includes('new=true')) {
       setShowForm(true)
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [])
-  function reload() { setAssets(getAssets()) }
 
   function makeAsset(data: Record<string, string>): Asset {
     return {
@@ -72,16 +79,20 @@ export default function AssetsPage() {
     }
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const all = getAssets()
     if (editing) {
-      const idx = all.findIndex(a => a.id === editing.id)
-      if (idx >= 0) all[idx] = { ...all[idx], ...form, warranty_expires: form.warranty_expires || null, purchase_date: form.purchase_date || null }
-    } else {
-      all.push({ id: Date.now().toString() + Math.random().toString(36).slice(2,6), ...form, warranty_expires: form.warranty_expires || null, purchase_date: form.purchase_date || null })
+      await deleteAssetDb(editing.id)
     }
-    saveAssets(all); reload(); setShowForm(false); setEditing(null)
+    const newAsset: Asset = {
+      id: Date.now().toString() + Math.random().toString(36).slice(2,6),
+      ...form,
+      warranty_expires: form.warranty_expires || null,
+      purchase_date: form.purchase_date || null,
+    }
+    await saveAsset(newAsset)
+    await reload()
+    setShowForm(false); setEditing(null)
     if (form.assigned_to.trim()) addEmp(form.assigned_to.trim())
     setForm({ name:'', category:'laptop', manufacturer:'', model:'', serial_number:'', status:'active', assigned_to:'', location:'', purchase_date:'', warranty_expires:'', image:'' })
   }
@@ -113,26 +124,35 @@ export default function AssetsPage() {
 MacBook Pro,MBP 14 M3,SN123456,laptop,John Smith,Zurich Office
 Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
       sampleFilename="inventory.csv"
-      onImport={rows => { const newAssets = rows.map(makeAsset); saveAssets([...getAssets(), ...newAssets]); reload() }}
+      onImport={async rows => {
+        const newAssets = rows.map(makeAsset)
+        for (const a of newAssets) await saveAsset(a)
+        await reload()
+      }}
       onClose={() => setShowCsvImport(false)}
     />}
 
     {showScanner && <ScanDevice
-      onImport={data => { 
+      onImport={async data => { 
         const asset: Asset = { id: Date.now().toString() + Math.random().toString(36).slice(2,6), name: data.name || 'Unknown', category: data.category || 'laptop', manufacturer: data.manufacturer || '', model: data.model || '', serial_number: data.serial_number || '', status: 'active', assigned_to: '', location: '', purchase_date: null, warranty_expires: null }
-        saveAssets([...getAssets(), asset]); reload() 
+        await saveAsset(asset)
+        await reload()
       }}
       onClose={() => setShowScanner(false)}
     />}
 
     {qrAsset && <QrLabel assetId={qrAsset.id} assetName={qrAsset.name} onClose={() => setQrAsset(null)} />}
 
-    {deleteAsset && <ConfirmDialog
-      title={`Delete ${deleteAsset.name}?`}
+    {deletingAsset && <ConfirmDialog
+      title={`Delete ${deletingAsset.name}?`}
       message="This permanently removes the asset from your inventory."
       confirmLabel="Delete"
-      onConfirm={() => { saveAssets(getAssets().filter(x=>x.id!==deleteAsset.id)); setDeleteAsset(null); reload() }}
-      onCancel={() => setDeleteAsset(null)}
+      onConfirm={async () => {
+        await deleteAssetDb(deletingAsset.id)
+        setDeletingAsset(null)
+        await reload()
+      }}
+      onCancel={() => setDeletingAsset(null)}
     />}
 
     {showForm && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"><div className="bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-auto border border-slate-200 shadow-xl"><h2 className="text-lg font-semibold mb-4">{editing?'Edit Asset':'New Asset'}</h2>
@@ -193,7 +213,7 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
               {a.image ? <img src={a.image} alt="" className="w-8 h-8 rounded object-cover border border-slate-200" /> : <Package size={16} className="text-slate-300" />}
               {a.name}
             </div>
-          </td><td className="py-2.5 px-4 text-slate-500 capitalize">{a.category}</td><td className="py-2.5 px-4 text-slate-600">{a.assigned_to||'—'}</td><td className="py-2.5 px-4"><span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${a.status==='active'?'bg-emerald-50 text-emerald-700':a.status==='maintenance'?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-600'}`}>{a.status}</span></td><td className="py-2.5 px-4 text-slate-500">{formatDate(a.warranty_expires)}</td><td className="py-2.5 px-4"><div className="flex gap-1"><button onClick={()=>startEdit(a)} className="p-1 hover:bg-slate-100 rounded"><Pencil size={14} className="text-slate-400"/></button><button onClick={()=>setQrAsset(a)} className="p-1 hover:bg-cyan-50 rounded"><QrCode size={14} className="text-cyan-500"/></button><button onClick={()=>setDeleteAsset(a)} className="p-1 hover:bg-red-50 rounded"><Trash2 size={14} className="text-red-400"/></button></div></td></tr>)}</tbody></table>
+          </td><td className="py-2.5 px-4 text-slate-500 capitalize">{a.category}</td><td className="py-2.5 px-4 text-slate-600">{a.assigned_to||'—'}</td><td className="py-2.5 px-4"><span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${a.status==='active'?'bg-emerald-50 text-emerald-700':a.status==='maintenance'?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-600'}`}>{a.status}</span></td><td className="py-2.5 px-4 text-slate-500">{formatDate(a.warranty_expires)}</td><td className="py-2.5 px-4"><div className="flex gap-1"><button onClick={()=>startEdit(a)} className="p-1 hover:bg-slate-100 rounded"><Pencil size={14} className="text-slate-400"/></button><button onClick={()=>setQrAsset(a)} className="p-1 hover:bg-cyan-50 rounded"><QrCode size={14} className="text-cyan-500"/></button><button onClick={()=>setDeletingAsset(a)} className="p-1 hover:bg-red-50 rounded"><Trash2 size={14} className="text-red-400"/></button></div></td></tr>)}</tbody></table>
       </div>
     </div>}
   </div>)

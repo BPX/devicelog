@@ -6,17 +6,15 @@ import CsvImport from '@/components/csv-import'
 import ConfirmDialog from '@/components/confirm-dialog'
 import { downloadCsv } from '@/lib/export'
 import { getSettings } from '@/lib/settings-store'
+import { getCerts, saveCert, deleteCert } from '@/lib/data'
 
 interface Cert { id: string; name: string; type: string; issuer: string; expires_at: string; notify_before_days: number; document?: string; docName?: string }
-
-function getCerts(): Cert[] { try { return JSON.parse(localStorage.getItem('trackstack_certificates') || '[]') } catch { return [] } }
-function saveCerts(c: Cert[]) { localStorage.setItem('trackstack_certificates', JSON.stringify(c)) }
 
 export default function CertsPage() {
   const [certs, setCerts] = useState<Cert[]>([]); const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false); const [showImport, setShowImport] = useState(false)
   const [editing, setEditing] = useState<Cert | null>(null)
-  const [deleteCert, setDeleteCert] = useState<Cert | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<Cert | null>(null)
   const [search, setSearch] = useState('')
   const [sortField, setSortField] = useState<string>('')
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
@@ -24,23 +22,26 @@ export default function CertsPage() {
   const [uploading, setUploading] = useState(false)
   const certTypes = getSettings().cert_types || ['ssl_cert','software_license','support_contract','domain','other']
 
-  useEffect(() => { setCerts(getCerts()); setLoading(false)
+  async function loadCerts() {
+    const data = await getCerts()
+    setCerts(data)
+    setLoading(false)
+  }
+
+  useEffect(() => { loadCerts()
     if (typeof window !== 'undefined' && window.location.search.includes('new=true')) {
       setShowForm(true); setEditing(null)
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [])
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const all = getCerts()
     if (editing) {
-      const idx = all.findIndex(c => c.id === editing.id)
-      if (idx >= 0) all[idx] = { ...all[idx], ...form }
-    } else {
-      all.push({ id: Date.now().toString(), ...form })
+      await deleteCert(editing.id)
     }
-    saveCerts(all); setCerts(getCerts())
+    await saveCert(form)
+    await loadCerts()
     setShowForm(false); setEditing(null)
     setForm({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30, document:'', docName:'' })
   }
@@ -138,26 +139,29 @@ export default function CertsPage() {
 trackstack.com SSL,ssl_cert,Let's Encrypt,2027-06-15
 Office 365,software_license,Microsoft,2026-12-31`}
       sampleFilename="certs.csv"
-      onImport={rows => {
+      onImport={async rows => {
         const newCerts = rows.map(r => ({
-          id: Date.now().toString()+Math.random().toString(36).slice(2,6),
           name: r.name || r.cert_name || r.domain || 'Unknown',
           type: (r.type || 'ssl_cert').toLowerCase().replace(' ','_'),
           issuer: r.issuer || '',
           expires_at: r.expires_at || r.expires || r.expiry || '',
           notify_before_days: parseInt(r.notify_before_days) || 30,
         }))
-        saveCerts([...getCerts(), ...newCerts]); setCerts(getCerts()); setShowImport(false)
+        for (const c of newCerts) {
+          await saveCert(c)
+        }
+        await loadCerts()
+        setShowImport(false)
       }}
       onClose={() => setShowImport(false)}
     />}
 
-    {deleteCert && <ConfirmDialog
-      title={`Delete ${deleteCert.name}?`}
+    {deleteTarget && <ConfirmDialog
+      title={`Delete ${deleteTarget.name}?`}
       message="This permanently removes the certificate from your tracking."
       confirmLabel="Delete"
-      onConfirm={() => { saveCerts(getCerts().filter(x=>x.id!==deleteCert.id)); setCerts(getCerts()); setDeleteCert(null) }}
-      onCancel={() => setDeleteCert(null)}
+      onConfirm={async () => { await deleteCert(deleteTarget.id); await loadCerts(); setDeleteTarget(null) }}
+      onCancel={() => setDeleteTarget(null)}
     />}
 
     {certs.length===0 ? <div className="text-center py-16 text-slate-400"><Shield size={48} className="mx-auto mb-3 opacity-50"/><p className="text-lg font-medium">No certificates yet</p><p className="text-sm mt-1">Track SSL certs, software licenses, and support contracts</p></div> :
@@ -191,7 +195,7 @@ Office 365,software_license,Microsoft,2026-12-31`}
                     <div className="flex gap-1">
                       {c.document && <button onClick={() => downloadDoc(c)} className="p-1 hover:bg-slate-100 rounded" title="Download PDF"><Download size={14} className="text-slate-400"/></button>}
                       <button onClick={() => startEdit(c)} className="p-1 hover:bg-slate-100 rounded"><Pencil size={14} className="text-slate-400"/></button>
-                      <button onClick={()=>setDeleteCert(c)} className="p-1 hover:bg-red-50 rounded"><Trash2 size={14} className="text-red-400"/></button>
+                      <button onClick={()=>setDeleteTarget(c)} className="p-1 hover:bg-red-50 rounded"><Trash2 size={14} className="text-red-400"/></button>
                     </div>
                   </td>
                 </tr>

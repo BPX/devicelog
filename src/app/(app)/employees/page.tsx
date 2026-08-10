@@ -1,10 +1,19 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { getSettings, saveSettings, importEmployees, type Employee } from '@/lib/settings-store'
+import { getEmployees, saveEmployee, deleteEmployee } from '@/lib/data'
 import CsvImport from '@/components/csv-import'
 import ConfirmDialog from '@/components/confirm-dialog'
 import { Plus, Search, X, Upload, Ghost, Monitor, Download, ArrowUpDown, ArrowUp, ArrowDown, Pencil, Copy } from 'lucide-react'
 import { downloadCsv } from '@/lib/export'
+
+interface Employee {
+  id?: string
+  user_id?: string
+  name: string
+  email: string
+  job_title: string
+  department: string
+}
 
 function getCounts(): Record<string, number> {
   try {
@@ -38,7 +47,14 @@ export default function EmployeesPage() {
   const [showAddModal, setShowAddModal] = useState(false)
   const [addForm, setAddForm] = useState({ name:'', email:'', job_title:'', department:'' })
 
-  useEffect(() => { setEmployees(getSettings().employees); setCounts(getCounts())
+  async function loadEmployees() {
+    const data = await getEmployees()
+    setEmployees(data || [])
+    setCounts(getCounts())
+  }
+
+  useEffect(() => {
+    loadEmployees()
     if (typeof window !== 'undefined' && window.location.search.includes('new=true')) {
       setShowAddModal(true)
       window.history.replaceState({}, '', window.location.pathname)
@@ -54,30 +70,36 @@ export default function EmployeesPage() {
     return sortDir === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />
   }
 
-  function persist(list: Employee[]) {
-    setEmployees(list)
-    saveSettings({ ...getSettings(), employees: list })
-    setCounts(getCounts())
-  }
-
-  function add() {
+  async function add() {
     if (!newEmp.trim()) return
-    if (!employees.find(e => e.name === newEmp.trim())) persist([...employees, { name: newEmp.trim(), email: '', job_title: '', department: '' }].sort((a,b) => a.name.localeCompare(b.name)))
+    if (!employees.find(e => e.name === newEmp.trim())) {
+      await saveEmployee({ name: newEmp.trim(), email: '', job_title: '', department: '' })
+      await loadEmployees()
+    }
     setNewEmp('')
   }
 
-  function remove(name: string) {
+  async function removeEmp(name: string) {
     const count = counts[name] || 0
     if (count > 0) { setConfirmRemove({ name, count }); return }
-    persist(employees.filter(e => e.name !== name))
+    const emp = employees.find(e => e.name === name)
+    if (emp?.id) await deleteEmployee(emp.id)
+    await loadEmployees()
   }
 
-  function saveEdit() {
+  async function saveEdit() {
     if (!editEmp) return
-    const oldName = employees.find(e => editEmp && e.name === editEmp.name)?.name || ''
-    const updated = employees.map(e => e.name === oldName ? { ...e, ...editForm, name: editEmp.name } : e)
-    persist(updated)
-    // If name changed, update all assigned assets
+    const match = editEmp.id
+      ? employees.find(e => e.id === editEmp.id)
+      : employees.find(e => e.name === editEmp.name)
+    const oldName = match?.name || ''
+    if (editEmp.id) await deleteEmployee(editEmp.id)
+    await saveEmployee({
+      name: editEmp.name,
+      email: editForm.email.trim(),
+      job_title: editForm.job_title.trim(),
+      department: editForm.department.trim(),
+    })
     if (editEmp.name !== oldName) {
       try {
         const assets = JSON.parse(localStorage.getItem('trackstack_assets') || '[]')
@@ -87,14 +109,21 @@ export default function EmployeesPage() {
       } catch {}
     }
     setEditEmp(null)
+    await loadEmployees()
   }
 
-  function saveNew() {
+  async function saveNew() {
     if (!addForm.name.trim()) return
     if (employees.find(e => e.name === addForm.name.trim())) return
-    persist([...employees, { name: addForm.name.trim(), email: addForm.email.trim(), job_title: addForm.job_title.trim(), department: addForm.department.trim() }].sort((a,b) => a.name.localeCompare(b.name)))
+    await saveEmployee({
+      name: addForm.name.trim(),
+      email: addForm.email.trim(),
+      job_title: addForm.job_title.trim(),
+      department: addForm.department.trim(),
+    })
     setShowAddModal(false)
     setAddForm({ name:'', email:'', job_title:'', department:'' })
+    await loadEmployees()
   }
 
   function startEdit(emp: Employee) {
@@ -109,7 +138,6 @@ export default function EmployeesPage() {
     if (emp.department) parts.push(emp.department)
     const text = parts.join('\n')
     navigator.clipboard.writeText(text).catch(() => {
-      // Fallback: select and copy
       const ta = document.createElement('textarea')
       ta.value = text; document.body.appendChild(ta); ta.select()
       document.execCommand('copy'); document.body.removeChild(ta)
@@ -156,7 +184,7 @@ export default function EmployeesPage() {
               {sorted.map(e => {
                 const count = counts[e.name] || 0
                 return (
-                  <tr key={e.name} className={`border-b border-slate-100 ${count === 0 ? 'bg-red-50/30' : 'hover:bg-slate-50'}`}>
+                  <tr key={e.id || e.name} className={`border-b border-slate-100 ${count === 0 ? 'bg-red-50/30' : 'hover:bg-slate-50'}`}>
                     <td className="py-2.5 px-4">
                       <div className="flex items-center gap-2">
                         <Monitor size={14} className={count > 0 ? 'text-slate-400' : 'text-red-300'} />
@@ -175,7 +203,7 @@ export default function EmployeesPage() {
                       <div className="flex gap-1">
                         <button onClick={() => copyInfo(e)} className="p-1 hover:bg-slate-100 rounded"><Copy size={14} className="text-slate-400"/></button>
                         <button onClick={() => startEdit(e)} className="p-1 hover:bg-slate-100 rounded"><Pencil size={14} className="text-slate-400"/></button>
-                        <button onClick={() => remove(e.name)} className="p-1 hover:bg-red-50 rounded"><X size={14} className="text-slate-300 hover:text-red-500"/></button>
+                        <button onClick={() => removeEmp(e.name)} className="p-1 hover:bg-red-50 rounded"><X size={14} className="text-slate-300 hover:text-red-500"/></button>
                       </div>
                     </td>
                   </tr>
@@ -208,14 +236,29 @@ export default function EmployeesPage() {
 
     {showImport && <CsvImport title="Import Employees" description="Upload a CSV with name, email, job title, department." sampleData={`name,email,job_title,department
 John Smith,john@company.com,IT Manager,IT
-Jane Doe,jane@company.com,System Admin,IT`} sampleFilename="employees.csv" onImport={rows => { importEmployees(rows); setEmployees(getSettings().employees); setCounts(getCounts()); setShowImport(false) }} onClose={() => setShowImport(false)} />}
+Jane Doe,jane@company.com,System Admin,IT`} sampleFilename="employees.csv" onImport={async rows => {
+      for (const r of rows) {
+        const name = (r.name || r['name'] || r[Object.keys(r)[0]] || '').trim()
+        if (name) {
+          await saveEmployee({
+            name,
+            email: (r.email || '').trim(),
+            job_title: (r.job_title || '').trim(),
+            department: (r.department || '').trim(),
+          })
+        }
+      }
+      await loadEmployees()
+      setShowImport(false)
+    }} onClose={() => setShowImport(false)} />}
 
     {confirmRemove && <ConfirmDialog
       title={`Remove ${confirmRemove.name}?`}
       message={`They have ${confirmRemove.count} device(s) assigned. Removing will unassign all their assets.`}
       confirmLabel="Remove"
-      onConfirm={() => {
-        persist(employees.filter(e => e.name !== confirmRemove.name))
+      onConfirm={async () => {
+        const emp = employees.find(e => e.name === confirmRemove.name)
+        if (emp?.id) await deleteEmployee(emp.id)
         try {
           const assets = JSON.parse(localStorage.getItem('trackstack_assets') || '[]')
           let changed = false
@@ -223,6 +266,7 @@ Jane Doe,jane@company.com,System Admin,IT`} sampleFilename="employees.csv" onImp
           if (changed) localStorage.setItem('trackstack_assets', JSON.stringify(assets))
         } catch {}
         setConfirmRemove(null)
+        await loadEmployees()
       }}
       onCancel={() => setConfirmRemove(null)}
     />}

@@ -2,18 +2,23 @@
 import { useEffect, useState } from 'react'
 import { Package, Shield, AlertTriangle } from 'lucide-react'
 import { daysUntil } from '@/lib/utils'
+import { getAssets, getCerts } from '@/lib/data'
 import Link from 'next/link'
 
 interface Asset { id: string; name: string; category: string; status: string; warranty_expires: string | null }
 interface Cert { id: string; name: string; type: string; expires_at: string }
 
-function getStore(key: string) { try { const v = localStorage.getItem('trackstack_' + key); return v ? JSON.parse(v) : []; } catch { return [] } }
-
 export default function DashboardPage() {
   const [assets, setAssets] = useState<Asset[]>([]); const [certs, setCerts] = useState<Cert[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => { setAssets(getStore('assets')); setCerts(getStore('certificates')); setLoading(false) }, [])
+  useEffect(() => {
+    async function load() {
+      const [a, c] = await Promise.all([getAssets(), getCerts()])
+      setAssets(a || []); setCerts(c || []); setLoading(false)
+    }
+    load()
+  }, [])
 
   const expiringSoon = certs.filter(c => daysUntil(c.expires_at) <= 30 && daysUntil(c.expires_at) > 0).length
   const expired = certs.filter(c => daysUntil(c.expires_at) <= 0).length
