@@ -25,6 +25,7 @@ export default function AssetsPage() {
   const [sortField, setSortField] = useState<string>('')
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
   const [form, setForm] = useState({ name:'', category:'laptop', manufacturer:'', model:'', serial_number:'', status:'active', assigned_to:'', location:'', purchase_date:'', warranty_expires:'', image:'' })
+  const [uploading, setUploading] = useState(false)
   const settings = getSettings()
   const employeeNames = settings.employees.map(e => e.name)
 
@@ -159,16 +160,18 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
           </div>
         ) : (
           <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-slate-300 rounded text-sm text-slate-500 cursor-pointer hover:border-cyan-300 hover:text-cyan-600">
-            <Camera size={14} /> Add photo
+            <Camera size={14} /> {uploading ? 'Uploading...' : 'Add photo'}
             <input type="file" accept="image/*" className="hidden" onChange={e => {
               const f = e.target.files?.[0]
               if (!f) return
+              setUploading(true)
               const reader = new FileReader()
-              reader.onload = () => setForm({...form, image: reader.result as string})
+              reader.onload = () => { setForm({...form, image: reader.result as string}); setUploading(false) }
               reader.readAsDataURL(f)
             }} />
           </label>
         )}
+        {uploading && <div className="mt-2 w-full bg-slate-200 rounded-full h-1.5"><div className="bg-cyan-500 h-1.5 rounded-full animate-pulse w-2/3" /></div>}
       </div>
       <div className="flex gap-2 pt-2"><button type="submit" className="flex-1 py-2 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700">{editing?'Save Changes':'Add Asset'}</button><button type="button" onClick={()=>{setShowForm(false);setEditing(null)}} className="px-4 py-2 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button></div></form></div></div>}
 

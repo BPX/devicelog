@@ -20,6 +20,7 @@ export default function CertsPage() {
   const [sortField, setSortField] = useState<string>('')
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
   const [form, setForm] = useState({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30, document:'' })
+  const [uploading, setUploading] = useState(false)
   const certTypes = getSettings().cert_types || ['ssl_cert','software_license','support_contract','domain','other']
 
   useEffect(() => { setCerts(getCerts()); setLoading(false)
@@ -87,16 +88,18 @@ export default function CertsPage() {
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1">Document (PDF)</label>
           <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-slate-300 rounded text-sm text-slate-500 cursor-pointer hover:border-cyan-300 hover:text-cyan-600">
-            <Upload size={14} /> Upload PDF
+            <Upload size={14} /> {uploading ? 'Uploading...' : 'Upload PDF'}
             <input type="file" accept=".pdf" className="hidden" onChange={e => {
               const f = e.target.files?.[0]
               if (!f) return
+              setUploading(true)
               const reader = new FileReader()
-              reader.onload = () => setForm({...form, document: reader.result as string})
+              reader.onload = () => { setForm({...form, document: reader.result as string}); setUploading(false) }
               reader.readAsDataURL(f)
             }} />
           </label>
         </div>
+        {uploading && <div className="mt-2 w-full bg-slate-200 rounded-full h-1.5"><div className="bg-cyan-500 h-1.5 rounded-full animate-pulse w-2/3" /></div>}
         <div className="flex gap-2 pt-2"><button type="submit" className="flex-1 py-2 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700">Add</button><button type="button" onClick={()=>setShowForm(false)} className="px-4 py-2 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button></div>
       </form></div></div>}
 
