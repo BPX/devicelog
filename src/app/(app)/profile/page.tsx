@@ -27,8 +27,19 @@ export default function ProfilePage() {
       const user = getCurrentUser()
       if (!user) { router.replace('/login'); return }
       setEmail(user)
-      setUsername(getCurrentUsername() || '')
-      setNewUsername(getCurrentUsername() || '')
+      // Try localStorage first, then user_metadata from JWT
+      let uname = getCurrentUsername() || ''
+      if (!uname) {
+        const tok = localStorage.getItem('sb_token')
+        if (tok) {
+          try {
+            const meta = JSON.parse(atob(tok.split('.')[1])).user_metadata
+            if (meta?.username) uname = meta.username
+          } catch {}
+        }
+      }
+      setUsername(uname)
+      setNewUsername(uname)
       setLoading(false)
     }
     load()
@@ -87,7 +98,9 @@ export default function ProfilePage() {
   }
 
   async function deleteAccount() {
-    // Sign out — data is orphaned but inaccessible without token
+    // Full account deletion requires a Supabase admin RPC — not available from client-only.
+    // This signs you out. Contact support to fully scrub your data.
+    setShowDelete(false)
     await signOut()
     router.replace('/login')
   }

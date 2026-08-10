@@ -74,18 +74,23 @@ export async function signIn(login: string, password: string) {
   localStorage.setItem('sb_refresh', j.refresh_token || '')
   localStorage.setItem('sb_email', email)
   
-  // Fetch username from user_profiles
-  try {
-    const userId = j.user?.id || ''
-    const r2 = await window.fetch(
-      REST + '/user_profiles?select=username&user_id=eq.' + userId,
-      { headers: { apikey: K, 'Authorization': 'Bearer ' + j.access_token } }
-    )
-    const profiles = await r2.json()
-    if (profiles?.[0]?.username) {
-      localStorage.setItem('sb_username', profiles[0].username)
-    }
-  } catch { /* non-critical */ }
+  // Username — try user_metadata first (always present from signup), then user_profiles
+  const metaUser = j.user?.user_metadata?.username
+  if (metaUser) {
+    localStorage.setItem('sb_username', metaUser)
+  } else {
+    try {
+      const userId = j.user?.id || ''
+      const r2 = await window.fetch(
+        REST + '/user_profiles?select=username&user_id=eq.' + userId,
+        { headers: { apikey: K, 'Authorization': 'Bearer ' + j.access_token } }
+      )
+      const profiles = await r2.json()
+      if (profiles?.[0]?.username) {
+        localStorage.setItem('sb_username', profiles[0].username)
+      }
+    } catch { /* non-critical */ }
+  }
 
   return {}
 }
