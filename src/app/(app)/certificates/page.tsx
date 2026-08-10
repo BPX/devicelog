@@ -1,13 +1,13 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { formatDate, daysUntil } from '@/lib/utils'
-import { Plus, Trash2, Upload, Download, Shield, Search, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
+import { Plus, Trash2, Upload, Download, Shield, Search, ArrowUpDown, ArrowUp, ArrowDown, Pencil, FileText } from 'lucide-react'
 import CsvImport from '@/components/csv-import'
 import ConfirmDialog from '@/components/confirm-dialog'
 import { downloadCsv } from '@/lib/export'
 import { getSettings } from '@/lib/settings-store'
 
-interface Cert { id: string; name: string; type: string; issuer: string; expires_at: string; notify_before_days: number; document?: string }
+interface Cert { id: string; name: string; type: string; issuer: string; expires_at: string; notify_before_days: number; document?: string; docName?: string }
 
 function getCerts(): Cert[] { try { return JSON.parse(localStorage.getItem('trackstack_certificates') || '[]') } catch { return [] } }
 function saveCerts(c: Cert[]) { localStorage.setItem('trackstack_certificates', JSON.stringify(c)) }
@@ -15,18 +15,18 @@ function saveCerts(c: Cert[]) { localStorage.setItem('trackstack_certificates', 
 export default function CertsPage() {
   const [certs, setCerts] = useState<Cert[]>([]); const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false); const [showImport, setShowImport] = useState(false)
+  const [editing, setEditing] = useState<Cert | null>(null)
   const [deleteCert, setDeleteCert] = useState<Cert | null>(null)
   const [search, setSearch] = useState('')
   const [sortField, setSortField] = useState<string>('')
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
-  const [form, setForm] = useState({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30, document:'' })
+  const [form, setForm] = useState({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30, document:'', docName:'' })
   const [uploading, setUploading] = useState(false)
-  const [docName, setDocName] = useState('')
   const certTypes = getSettings().cert_types || ['ssl_cert','software_license','support_contract','domain','other']
 
   useEffect(() => { setCerts(getCerts()); setLoading(false)
     if (typeof window !== 'undefined' && window.location.search.includes('new=true')) {
-      setShowForm(true)
+      setShowForm(true); setEditing(null)
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [])
@@ -34,9 +34,27 @@ export default function CertsPage() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const all = getCerts()
-    all.push({ id: Date.now().toString(), ...form })
+    if (editing) {
+      const idx = all.findIndex(c => c.id === editing.id)
+      if (idx >= 0) all[idx] = { ...all[idx], ...form }
+    } else {
+      all.push({ id: Date.now().toString(), ...form })
+    }
     saveCerts(all); setCerts(getCerts())
-    setShowForm(false); setForm({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30, document:'' }); setDocName('')
+    setShowForm(false); setEditing(null)
+    setForm({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30, document:'', docName:'' })
+  }
+
+  function startEdit(c: Cert) {
+    setEditing(c)
+    setForm({ name:c.name, type:c.type, issuer:c.issuer||'', expires_at:c.expires_at, notify_before_days:c.notify_before_days||30, document:c.document||'', docName:c.docName||'' })
+    setShowForm(true)
+  }
+
+  function downloadDoc(c: Cert) {
+    if (!c.document) return
+    const a = document.createElement('a')
+    a.href = c.document; a.download = c.docName || c.name + '.pdf'; a.click()
   }
 
   function toggleSort(field: string) {
@@ -69,13 +87,13 @@ export default function CertsPage() {
       <div className="flex gap-2">
         <button onClick={() => setShowImport(true)} className="flex items-center gap-2 px-3 py-2 border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50"><Upload size={16}/>Import CSV</button>
         <button onClick={() => downloadCsv(certs, 'trackstack-certs.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 text-slate-600 rounded-md text-sm font-medium hover:bg-slate-50"><Download size={16}/>Export</button>
-        <button onClick={()=>setShowForm(true)} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700"><Plus size={16}/>Add Certificate</button>
+        <button onClick={()=>{setEditing(null); setForm({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30, document:'', docName:'' }); setShowForm(true)}} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700"><Plus size={16}/>Add Certificate</button>
       </div>
     </div>
 
     <div className="mb-4 relative"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/><input placeholder="Search by name or issuer..." value={search} onChange={e=>setSearch(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"/></div>
 
-    {showForm && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"><div className="bg-white rounded-lg p-6 w-full max-w-md border border-slate-200 shadow-xl"><h2 className="text-lg font-semibold mb-4">New Certificate</h2>
+    {showForm && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"><div className="bg-white rounded-lg p-6 w-full max-w-md border border-slate-200 shadow-xl"><h2 className="text-lg font-semibold mb-4">{editing ? 'Edit Certificate' : 'New Certificate'}</h2>
       <form onSubmit={handleSubmit} className="space-y-3">
         <div><label className="block text-xs font-medium text-slate-600 mb-1">Name *</label><input required value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 rounded text-sm" placeholder="e.g. trackstack.com SSL"/></div>
         <div className="grid grid-cols-2 gap-3">
@@ -88,10 +106,10 @@ export default function CertsPage() {
         </div>
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1">Document (PDF)</label>
-          {docName ? (
+          {form.docName ? (
             <div className="flex items-center gap-2 px-3 py-1.5 border border-slate-200 rounded text-sm">
-              <span className="text-slate-600 truncate flex-1">{docName}</span>
-              <button onClick={() => { setDocName(''); setForm({...form, document:''}) }} className="text-red-400 hover:text-red-600 text-xs">Remove</button>
+              <span className="text-slate-600 truncate flex-1">{form.docName}</span>
+              <button onClick={() => { setForm({...form, document:'', docName:''}) }} className="text-red-400 hover:text-red-600 text-xs">Remove</button>
             </div>
           ) : (
             <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-slate-300 rounded text-sm text-slate-500 cursor-pointer hover:border-cyan-300 hover:text-cyan-600">
@@ -102,7 +120,7 @@ export default function CertsPage() {
                 if (f.size > 500 * 1024) { alert('PDF too large. Max 500KB per file due to browser storage limits.'); return }
                 setUploading(true)
                 const reader = new FileReader()
-                reader.onload = () => { setForm({...form, document: reader.result as string}); setDocName(f.name); setUploading(false) }
+                reader.onload = () => { setForm({...form, document: reader.result as string, docName: f.name}); setUploading(false) }
                 reader.readAsDataURL(f)
               }} />
             </label>
@@ -110,7 +128,7 @@ export default function CertsPage() {
           <p className="text-xs text-slate-400 mt-1">Max 500KB per file (browser storage limit)</p>
         </div>
         {uploading && <div className="mt-2 w-full bg-slate-200 rounded-full h-1.5"><div className="bg-cyan-500 h-1.5 rounded-full animate-pulse w-2/3" /></div>}
-        <div className="flex gap-2 pt-2"><button type="submit" className="flex-1 py-2 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700">Add</button><button type="button" onClick={()=>setShowForm(false)} className="px-4 py-2 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button></div>
+        <div className="flex gap-2 pt-2"><button type="submit" className="flex-1 py-2 bg-cyan-600 text-white rounded text-sm font-medium hover:bg-cyan-700">{editing?'Save Changes':'Add'}</button><button type="button" onClick={()=>{setShowForm(false);setEditing(null)}} className="px-4 py-2 border border-slate-300 rounded text-sm text-slate-600 hover:bg-slate-50">Cancel</button></div>
       </form></div></div>}
 
     {showImport && <CsvImport
@@ -153,7 +171,7 @@ Office 365,software_license,Microsoft,2026-12-31`}
                   <span className="inline-flex items-center gap-1">{f==='expires_at' ? 'Expires' : f.charAt(0).toUpperCase()+f.slice(1)}{sortIcon(f)}</span>
                 </th>
               ))}
-              <th className="py-3 px-4 font-medium w-12"></th>
+              <th className="py-3 px-4 font-medium w-20"></th>
             </tr>
           </thead>
           <tbody>
@@ -170,7 +188,11 @@ Office 365,software_license,Microsoft,2026-12-31`}
                     </span>
                   </td>
                   <td className="py-2.5 px-4">
-                    <button onClick={()=>setDeleteCert(c)} className="p-1 hover:bg-red-50 rounded"><Trash2 size={14} className="text-red-400"/></button>
+                    <div className="flex gap-1">
+                      {c.document && <button onClick={() => downloadDoc(c)} className="p-1 hover:bg-slate-100 rounded" title="Download PDF"><Download size={14} className="text-slate-400"/></button>}
+                      <button onClick={() => startEdit(c)} className="p-1 hover:bg-slate-100 rounded"><Pencil size={14} className="text-slate-400"/></button>
+                      <button onClick={()=>setDeleteCert(c)} className="p-1 hover:bg-red-50 rounded"><Trash2 size={14} className="text-red-400"/></button>
+                    </div>
                   </td>
                 </tr>
               )
