@@ -146,13 +146,18 @@ export async function getTeamMembers(teamId: string) {
   return data
 }
 
-/** Look up a user by email via user_profiles (publicly readable). */
+/** Look up a user by email — checks user_profiles first, falls back to auth.users via RPC. */
 export async function lookupUserByEmail(email: string): Promise<{ user_id: string; username: string } | null> {
   const { data } = await req(
-    '/user_profiles?select=user_id,username&email=eq.' + encodeURIComponent(email.toLowerCase().trim()),
-    'GET'
+    '/rpc/lookup_user',
+    'POST',
+    { p_email: email.toLowerCase().trim() }
   )
-  return data?.[0] || null
+  if (!data || data.error) return null
+  return {
+    user_id: data.user_id,
+    username: data.username || 'User',
+  }
 }
 
 /** Invite a user to the team by user_id. Only the team owner should call this (enforced by RLS). */
