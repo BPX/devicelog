@@ -4,6 +4,7 @@ import { formatDate } from '@/lib/utils'
 import { Plus, Search, Pencil, Trash2, Package, Upload, Monitor, QrCode, ArrowUpDown, ArrowUp, ArrowDown, Download, Camera, ChevronLeft, ChevronRight, AlertTriangle, RefreshCw } from 'lucide-react'
 import { getSettings, addEmployee as addEmp } from '@/lib/settings-store'
 import { getTeam, queryAssets, saveAsset, saveAssetsBatch, deleteAsset as deleteAssetDb, uploadAssetImage, getTeamSettings } from '@/lib/data'
+import { checkPlanLimit } from '@/lib/billing'
 import type { Asset } from '@/lib/data'
 import CsvImport from '@/components/csv-import'
 import EmployeeAutocomplete from '@/components/employee-autocomplete'
@@ -146,9 +147,10 @@ export default function AssetsPage() {
 
   async function handleCsvImport(rows: Record<string, string>[]) {
     if (!teamId) return
+    const limit = await checkPlanLimit('create_asset')
+    if (!limit.allowed) { alert(limit.message); return }
     const newAssets = rows.map(makeAsset)
     const result = await saveAssetsBatch(newAssets, teamId)
-    // Show result? For now just reload
     await fetchAssets()
     setShowCsvImport(false)
   }
@@ -156,6 +158,8 @@ export default function AssetsPage() {
   // ── Scan device ──
   async function handleScanImport(data: Record<string, string>) {
     if (!teamId) return
+    const limit = await checkPlanLimit('create_asset')
+    if (!limit.allowed) { alert(limit.message); return }
     const asset: Asset = {
       id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
       name: data.name || 'Unknown',
@@ -177,6 +181,13 @@ export default function AssetsPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!teamId) return
+
+    // Check plan limits for new assets (not edits)
+    if (!editing) {
+      const limit = await checkPlanLimit('create_asset')
+      if (!limit.allowed) { alert(limit.message); return }
+    }
+
     if (editing) {
       await deleteAssetDb(editing.id)
     }

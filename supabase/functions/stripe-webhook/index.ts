@@ -38,7 +38,7 @@ serve(async (req: Request) => {
             user_id: userId,
             stripe_customer_id: customerId,
             stripe_subscription_id: subId,
-            plan: sub.items.data[0]?.price.id === Deno.env.get("STRIPE_TEAM_PRICE_ID") ? "team" : "enterprise",
+            plan: "team",
             status: sub.status,
             current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
             updated_at: new Date().toISOString(),

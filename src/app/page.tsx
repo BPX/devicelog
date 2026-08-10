@@ -70,23 +70,6 @@ const plans = [
     href: '/signup?plan=team',
     featured: true,
   },
-  {
-    name: 'Enterprise',
-    price: 49,
-    period: '/ month',
-    description: 'For larger orgs with compliance requirements.',
-    features: [
-      'Everything in Team',
-      'SSO / SAML',
-      'Audit logs',
-      'Custom categories',
-      'API access',
-      'Dedicated support',
-    ],
-    cta: 'Contact Us',
-    href: 'mailto:hello@trackstack.dev',
-    featured: false,
-  },
 ]
 
 export default function LandingPage() {
@@ -219,7 +202,7 @@ export default function LandingPage() {
               Start free. Upgrade when your team grows. Cancel anytime.
             </p>
           </div>
-          <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <div className="grid sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
             {plans.map(plan => (
               <div
                 key={plan.name}

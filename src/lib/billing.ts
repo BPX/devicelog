@@ -82,3 +82,86 @@ function uid(): string {
     return 'anon'
   }
 }
+
+/**
+ * Plan limits for the free tier.
+ */
+const PLAN_LIMITS: Record<string, { assets: number; members: number }> = {
+  free: { assets: 50, members: 2 },
+  team: { assets: Infinity, members: Infinity },
+  enterprise: { assets: Infinity, members: Infinity },
+}
+
+export interface LimitCheckResult {
+  allowed: boolean
+  message: string
+}
+
+/**
+ * Check if the current user can perform an action given their plan.
+ * If they're about to exceed a limit, return the blocking message.
+ */
+export async function checkPlanLimit(action: 'create_asset' | 'invite_member'): Promise<LimitCheckResult> {
+  const sub = await getSubscription()
+  const plan = sub?.plan || 'free'
+  const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.free
+
+  if (action === 'create_asset') {
+    const tok = localStorage.getItem('sb_token')
+    if (!tok) return { allowed: false, message: 'Not authenticated' }
+    try {
+      // RLS auto-scopes: counts team assets if user has team, else personal assets
+      const r = await fetch(
+        `https://mbsjxuymiuevankxrgmo.supabase.co/rest/v1/assets?select=id&limit=1`,
+        {
+          headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${tok}`,
+            Prefer: 'count=exact',
+          },
+        }
+      )
+      const range = r.headers.get('content-range')
+      const total = range ? parseInt(range.split('/')[1], 10) : 0
+      if (total >= limits.assets) {
+        return {
+          allowed: false,
+          message: `Free plan allows ${limits.assets} assets. You have ${total}. Upgrade to Team for unlimited assets.`,
+        }
+      }
+    } catch {
+      // Allow on error — don't block users from network issues
+      return { allowed: true, message: '' }
+    }
+  }
+
+  if (action === 'invite_member') {
+    const tok = localStorage.getItem('sb_token')
+    if (!tok) return { allowed: false, message: 'Not authenticated' }
+    try {
+      // RLS auto-scopes to the team
+      const r = await fetch(
+        `https://mbsjxuymiuevankxrgmo.supabase.co/rest/v1/team_members?select=user_id&limit=1`,
+        {
+          headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${tok}`,
+            Prefer: 'count=exact',
+          },
+        }
+      )
+      const range = r.headers.get('content-range')
+      const total = range ? parseInt(range.split('/')[1], 10) : 0
+      if (total >= limits.members) {
+        return {
+          allowed: false,
+          message: `Free plan allows ${limits.members} team members. You have ${total}. Upgrade to Team for unlimited members.`,
+        }
+      }
+    } catch {
+      return { allowed: true, message: '' }
+    }
+  }
+
+  return { allowed: true, message: '' }
+}

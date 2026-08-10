@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { getTeam, getTeamMembers, createTeam, removeMember, lookupUserByEmail, inviteMember, getUserProfile } from '@/lib/data'
+import { checkPlanLimit } from '@/lib/billing'
 import { Users, Plus, Trash2, UserPlus, Mail, AlertTriangle } from 'lucide-react'
 
 interface Member { user_id: string; role: string; username?: string }
@@ -57,6 +58,11 @@ export default function TeamPage() {
   async function handleInvite() {
     const email = inviteEmail.trim().toLowerCase()
     if (!email) return
+
+    // Check plan limits
+    const limit = await checkPlanLimit('invite_member')
+    if (!limit.allowed) { setInviteError(limit.message); return }
+
     setInviting(true)
     setInviteError('')
     setInviteSuccess('')
