@@ -21,6 +21,7 @@ export default function CertsPage() {
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
   const [form, setForm] = useState({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30, document:'' })
   const [uploading, setUploading] = useState(false)
+  const [docName, setDocName] = useState('')
   const certTypes = getSettings().cert_types || ['ssl_cert','software_license','support_contract','domain','other']
 
   useEffect(() => { setCerts(getCerts()); setLoading(false)
@@ -35,7 +36,7 @@ export default function CertsPage() {
     const all = getCerts()
     all.push({ id: Date.now().toString(), ...form })
     saveCerts(all); setCerts(getCerts())
-    setShowForm(false); setForm({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30, document:'' })
+    setShowForm(false); setForm({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30, document:'' }); setDocName('')
   }
 
   function toggleSort(field: string) {
@@ -87,18 +88,25 @@ export default function CertsPage() {
         </div>
         <div>
           <label className="block text-xs font-medium text-slate-600 mb-1">Document (PDF)</label>
-          <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-slate-300 rounded text-sm text-slate-500 cursor-pointer hover:border-cyan-300 hover:text-cyan-600">
-            <Upload size={14} /> {uploading ? 'Uploading...' : 'Upload PDF'}
-            <input type="file" accept=".pdf" className="hidden" onChange={e => {
-              const f = e.target.files?.[0]
-              if (!f) return
-              if (f.size > 500 * 1024) { alert('PDF too large. Max 500KB per file due to browser storage limits.'); return }
-              setUploading(true)
-              const reader = new FileReader()
-              reader.onload = () => { setForm({...form, document: reader.result as string}); setUploading(false) }
-              reader.readAsDataURL(f)
-            }} />
-          </label>
+          {docName ? (
+            <div className="flex items-center gap-2 px-3 py-1.5 border border-slate-200 rounded text-sm">
+              <span className="text-slate-600 truncate flex-1">{docName}</span>
+              <button onClick={() => { setDocName(''); setForm({...form, document:''}) }} className="text-red-400 hover:text-red-600 text-xs">Remove</button>
+            </div>
+          ) : (
+            <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-slate-300 rounded text-sm text-slate-500 cursor-pointer hover:border-cyan-300 hover:text-cyan-600">
+              <Upload size={14} /> {uploading ? 'Uploading...' : 'Upload PDF'}
+              <input type="file" accept=".pdf" className="hidden" onChange={e => {
+                const f = e.target.files?.[0]
+                if (!f) return
+                if (f.size > 500 * 1024) { alert('PDF too large. Max 500KB per file due to browser storage limits.'); return }
+                setUploading(true)
+                const reader = new FileReader()
+                reader.onload = () => { setForm({...form, document: reader.result as string}); setDocName(f.name); setUploading(false) }
+                reader.readAsDataURL(f)
+              }} />
+            </label>
+          )}
           <p className="text-xs text-slate-400 mt-1">Max 500KB per file (browser storage limit)</p>
         </div>
         {uploading && <div className="mt-2 w-full bg-slate-200 rounded-full h-1.5"><div className="bg-cyan-500 h-1.5 rounded-full animate-pulse w-2/3" /></div>}
