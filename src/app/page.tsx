@@ -46,8 +46,8 @@ function Heading({ children, className = '' }: { children: React.ReactNode, clas
   return <h2 className={`text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 leading-tight ${className}`}>{children}</h2>
 }
 
-function Subtitle({ children }: { children: React.ReactNode }) {
-  return <p className="mt-4 text-lg text-slate-500 dark:text-slate-400 leading-relaxed max-w-2xl">{children}</p>
+function Subtitle({ children, centered = true }: { children: React.ReactNode, centered?: boolean }) {
+  return <p className={`mt-4 text-lg text-slate-500 dark:text-slate-400 leading-relaxed max-w-2xl ${centered ? 'mx-auto' : ''}`}>{children}</p>
 }
 
 function PrimaryCTA({ href, children }: { href: string, children: React.ReactNode }) {
@@ -412,7 +412,7 @@ export default function LandingPage() {
           <div>
             <Label>THE PROBLEM</Label>
             <Heading>Your IT inventory lives in someone's head. Or a spreadsheet. Both fail.</Heading>
-            <Subtitle>When Sarah leaves the company, who knows which laptop she had? When the SSL cert expires on Saturday at 2 AM, does anyone get paged? Spreadsheets go stale, email threads get lost, and audits become panic attacks.</Subtitle>
+            <Subtitle centered={false}>When Sarah leaves the company, who knows which laptop she had? When the SSL cert expires on Saturday at 2 AM, does anyone get paged? Spreadsheets go stale, email threads get lost, and audits become panic attacks.</Subtitle>
             <div className="mt-8 space-y-3">
               {['"Who has the spare monitor?" · every Slack thread ever','"The cert expired and now the site is down"','"I think we have 200 devices? Or maybe 190?"','Onboarding takes 3 days because gear availability is a mystery'].map((q, i) => (
                 <div key={i} className="flex items-start gap-2.5 text-sm text-slate-500 dark:text-slate-400"><span className="text-red-400 text-sm mt-0.5">✕</span> {q}</div>
