@@ -10,6 +10,13 @@ export async function signUp(email: string, password: string) {
     body: JSON.stringify({ email, password })
   })
   if (!r.ok) { const j = await r.json(); return { error: j.msg || 'Signup failed' } }
+  // Store email immediately so getCurrentUser works
+  const j = await r.json()
+  if (j.access_token) {
+    localStorage.setItem('sb_token', j.access_token)
+    localStorage.setItem('sb_refresh', j.refresh_token || '')
+    localStorage.setItem('sb_email', email)
+  }
   return {}
 }
 
@@ -19,27 +26,21 @@ export async function signIn(email: string, password: string) {
     headers: { apikey: K, 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password })
   })
-  if (!r.ok) { const j = await r.json(); return { error: j.error_description || 'Invalid login' } }
+  if (!r.ok) { const j = await r.json(); return { error: j.error_description || 'Invalid email or password' } }
   const j = await r.json()
   localStorage.setItem('sb_token', j.access_token)
-  localStorage.setItem('sb_refresh', j.refresh_token)
+  localStorage.setItem('sb_refresh', j.refresh_token || '')
+  localStorage.setItem('sb_email', email)
   return {}
 }
 
 export async function signOut() {
-  const t = localStorage.getItem('sb_token')
   localStorage.removeItem('sb_token')
   localStorage.removeItem('sb_refresh')
-  if (t) await fetch(U + '/auth/v1/logout', { method: 'POST', headers: { apikey: K, Authorization: 'Bearer ' + t } })
+  localStorage.removeItem('sb_email')
 }
 
-export async function getCurrentUser(): Promise<string | null> {
-  const t = localStorage.getItem('sb_token')
-  if (!t) return null
-  try {
-    const r = await fetch(U + '/auth/v1/user', { headers: { apikey: K, Authorization: 'Bearer ' + t } })
-    if (!r.ok) return null
-    const j = await r.json()
-    return j.email || null
-  } catch { return null }
+// No API call needed — just check localStorage
+export function getCurrentUser(): string | null {
+  return localStorage.getItem('sb_email')
 }

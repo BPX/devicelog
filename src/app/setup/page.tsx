@@ -14,7 +14,7 @@ export default function SetupPage() {
 
   useEffect(() => {
     async function check() {
-      const user = await getCurrentUser()
+      const user = getCurrentUser()
       if (!user) { router.replace('/login'); return }
       // Check if user already belongs to a team
       const { data } = await supabase.from('team_members').select('team_id').single()

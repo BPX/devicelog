@@ -23,10 +23,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [email, setEmail] = useState<string | null | 'loading'>('loading')
 
   useEffect(() => {
-    getCurrentUser().then(user => {
-      if (!user) { router.replace('/login'); return }
-      setEmail(user)
-    })
+    const user = getCurrentUser()
+    if (!user) { router.replace('/login'); return }
+    setEmail(user)
   }, [])
 
   if (email === 'loading') return null
