@@ -1,14 +1,16 @@
 // Trackstack data layer — via Vercel Function proxy
-// api/proxy.ts handles server-side → Supabase, zero CORS
+// Token embedded in URL path to avoid Vercel edge header limit (494)
+
+function token(): string {
+  return localStorage.getItem('sb_token') || 'anon'
+}
 
 async function req(path: string, method: string, body?: any) {
   const headers: Record<string, string> = {}
-  const token = localStorage.getItem('sb_token')
-  if (token) headers['Authorization'] = 'Bearer ' + token
   if (body) headers['Content-Type'] = 'application/json'
 
   try {
-    const r = await fetch('/api/proxy' + path, {
+    const r = await fetch('/api/proxy/' + token() + path, {
       method,
       headers,
       body: body ? JSON.stringify(body) : undefined
