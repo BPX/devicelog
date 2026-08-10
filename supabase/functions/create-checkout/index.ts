@@ -58,6 +58,7 @@ serve(async (req: Request) => {
       cancel_url: cancelUrl,
       metadata: { user_id: userId },
       allow_promotion_codes: true,
+      automatic_tax: { enabled: true },
     })
 
     return new Response(JSON.stringify({ url: session.url }), {
