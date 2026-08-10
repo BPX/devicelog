@@ -7,9 +7,11 @@ function authHeaders() {
   return {
     apikey: K,
     Authorization: token ? `Bearer ${token}` : '',
-    'Content-Type': 'application/json',
-    Prefer: 'return=representation'
   }
+}
+
+function postHeaders() {
+  return { ...authHeaders(), 'Content-Type': 'application/json' }
 }
 
 async function get(path: string) {
@@ -20,13 +22,7 @@ async function get(path: string) {
 
 async function post(path: string, body: any) {
   await fetch(U + path, {
-    method: 'POST', headers: authHeaders(), body: JSON.stringify(body)
-  })
-}
-
-async function patch(path: string, body: any) {
-  await fetch(U + path, {
-    method: 'PATCH', headers: authHeaders(), body: JSON.stringify(body)
+    method: 'POST', headers: postHeaders(), body: JSON.stringify(body)
   })
 }
 
@@ -68,7 +64,7 @@ export async function getTeamMembers(teamId: string) {
 }
 export async function createTeam(name: string): Promise<{ error?: string }> {
   const r = await fetch(U + '/rest/v1/teams', {
-    method: 'POST', headers: { ...authHeaders(), Prefer: 'return=representation' },
+    method: 'POST', headers: { ...postHeaders(), Prefer: 'return=representation' },
     body: JSON.stringify({ name, owner_id: 'me' })
   })
   if (!r.ok) return { error: 'Failed to create team' }
