@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { 
   Package, Shield, Users, BarChart3, Zap, Lock, ArrowRight, Check, 
-  ChevronRight, Star, Clock, Globe, CreditCard, ShieldCheck, RefreshCw,
+  ChevronRight, Clock, Globe, CreditCard, ShieldCheck, RefreshCw,
   Monitor, AlertTriangle, Download, Upload, FileSpreadsheet, Bell, Search,
   Sun, Moon
 } from 'lucide-react'
@@ -205,41 +205,6 @@ function CheckCell({ value }: { value: boolean | string }) {
       : value === false ? (<span className="text-slate-300 dark:text-slate-600 text-sm leading-none">—</span>)
       : (<span className="text-xs text-slate-500 dark:text-slate-400">{value}</span>)}
     </span>
-  )
-}
-
-// ── Counter animation ──
-function useCountUp(end: number, duration = 2000, start = false) {
-  const [count, setCount] = useState(0)
-  const ref = useRef<number>(0)
-  useEffect(() => {
-    if (!start) return
-    const t0 = performance.now()
-    const step = (now: number) => {
-      const p = Math.min((now - t0) / duration, 1)
-      setCount(Math.floor(p * end))
-      if (p < 1) ref.current = requestAnimationFrame(step)
-    }
-    ref.current = requestAnimationFrame(step)
-    return () => cancelAnimationFrame(ref.current)
-  }, [end, duration, start])
-  return start ? count : 0
-}
-
-function CounterStat({ value, suffix = '', label }: { value: number, suffix?: string, label: string }) {
-  const [visible, setVisible] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true) }, { threshold: 0.5 })
-    if (ref.current) obs.observe(ref.current)
-    return () => obs.disconnect()
-  }, [])
-  const n = useCountUp(value, 2000, visible)
-  return (
-    <div ref={ref} className="text-center">
-      <div className="text-4xl sm:text-5xl font-semibold text-cyan-600 dark:text-cyan-400 tracking-tight">{n.toLocaleString()}{suffix}</div>
-      <div className="text-sm text-slate-500 dark:text-slate-400 mt-2">{label}</div>
-    </div>
   )
 }
 
@@ -448,16 +413,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── COUNTER STATS ── */}
-      <Section>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
-          <CounterStat value={247} suffix="+" label="Assets tracked" />
-          <CounterStat value={12} label="Team members synced" />
-          <CounterStat value={38} label="Certificates monitored" />
-          <CounterStat value={99.9} suffix="%" label="Uptime SLA" />
-        </div>
-      </Section>
-
       {/* ── COMPARISON TABLE ── */}
       <Section alt>
         <div className="text-center mb-12">
@@ -493,27 +448,6 @@ export default function LandingPage() {
               </tbody>
             </table>
           </div>
-        </div>
-      </Section>
-
-      {/* ── TESTIMONIALS ── */}
-      <Section>
-        <div className="text-center mb-12"><Label>TESTIMONIALS</Label><Heading>What IT teams are saying</Heading></div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[
-            { quote: 'We went from a shared Google Sheet nobody updated to full visibility in 10 minutes. The CSV import actually worked on the first try, and that alone sold us.', name: 'Alex Rivera', role: 'IT Manager, Fintech Startup (85 employees)' },
-            { quote: 'The certificate tracking alone is worth it. We had three domain certs expire in one quarter last year. This year? Zero. The email reminders are a lifesaver.', name: 'Jordan Lee', role: 'DevOps Lead, Digital Agency' },
-            { quote: 'We evaluated Snipe-IT and Asset Panda. Snipe required self-hosting, Asset Panda was overkill on pricing. devicelog was the Goldilocks: simple enough to actually use, powerful enough to cover our needs.', name: 'Morgan Taylor', role: 'CTO, HealthTech (42 employees)' },
-          ].map((t, i) => (
-            <Card key={i} hover>
-              <div className="flex gap-1 mb-4">{[1,2,3,4,5].map(s => <Star key={s} size={14} className="text-amber-400 fill-amber-400" />)}</div>
-              <blockquote className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-6">"{t.quote}"</blockquote>
-              <div className="border-t border-slate-100 dark:border-slate-800 pt-4">
-                <div className="font-semibold text-slate-900 dark:text-slate-200 text-sm">{t.name}</div>
-                <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{t.role}</div>
-              </div>
-            </Card>
-          ))}
         </div>
       </Section>
 
