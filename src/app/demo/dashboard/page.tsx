@@ -6,10 +6,11 @@ import { daysUntil } from '@/lib/utils'
 // ── Sample data ──
 
 const stats = [
-  { label: 'Total Assets', value: 247, icon: Package, color: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-50 dark:bg-cyan-950' },
-  { label: 'Team Members', value: 12, icon: Users, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-950' },
-  { label: 'Active Certifications', value: 38, icon: Shield, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-950' },
-  { label: 'Expiring Soon', value: 5, icon: AlertTriangle, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-950' },
+  { label: 'Total Assets', value: 247, icon: Package, color: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-50 dark:bg-cyan-950', href: '/demo/assets' },
+  { label: 'Employees', value: 12, icon: Users, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-950', href: '/demo/employees' },
+  { label: 'Active Certifications', value: 38, icon: Shield, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-950', href: '/demo/certificates' },
+  { label: 'Expiring Soon', value: 5, icon: AlertTriangle, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-950', href: '/demo/certificates?expiring=true' },
+  { label: 'Expired', value: 2, icon: AlertTriangle, color: 'text-red-600 dark:text-red-400', bg: 'bg-red-50 dark:bg-red-950', href: '/demo/certificates?expired=true' },
 ]
 
 const recentAssets = [
@@ -29,7 +30,12 @@ const expiringCerts = [
 export default function DemoDashboard() {
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">Dashboard</h1>
+      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-3">Dashboard</h1>
+      <div className="mb-4 flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-500 dark:text-slate-400">
+        <span>🐛</span>
+        <span>Found a bug or have a feature idea?</span>
+        <a href="https://github.com/bpx/devicelog/issues/new/choose" target="_blank" rel="noopener" className="text-cyan-600 dark:text-cyan-400 font-medium hover:underline ml-auto">Report on GitHub →</a>
+      </div>
 
       {(expiringCerts.some(c => daysUntil(c.expires_at) <= 0)) && (
         <div className="mb-4 flex items-center gap-3 px-4 py-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg text-sm">
@@ -38,15 +44,15 @@ export default function DemoDashboard() {
         </div>
       )}
 
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-5 gap-4 mb-8">
         {stats.map(s => (
-          <div key={s.label} className={`${s.bg} rounded-lg p-5 border border-slate-200 dark:border-slate-800`}>
+          <Link key={s.label} href={s.href} className={`${s.bg} rounded-lg p-5 border border-slate-200 dark:border-slate-800 hover:shadow-md transition-shadow`}>
             <div className="flex items-center gap-2 mb-2">
               <s.icon size={18} className={s.color} />
               <span className="text-sm text-slate-600 dark:text-slate-400">{s.label}</span>
             </div>
             <div className={`text-3xl font-light ${s.color}`}>{s.value}</div>
-          </div>
+          </Link>
         ))}
       </div>
 
