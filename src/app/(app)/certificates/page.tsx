@@ -262,7 +262,7 @@ Office 365,software_license,Microsoft,2026-12-31`}
     />}
 
     {certs.length===0 ? <div className="text-center py-16 text-slate-400 dark:text-slate-500"><Shield size={48} className="mx-auto mb-3 opacity-50"/><p className="text-lg font-medium">No certificates yet</p><p className="text-sm mt-1">Track SSL certs, software licenses, and support contracts</p></div> :
-    cert-table <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
+    <div className="cert-table bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
       {selectedIds.size > 0 && (
         <div className="flex items-center gap-3 px-4 py-2 bg-cyan-50 dark:bg-cyan-950 border-b border-cyan-200 dark:border-cyan-800 text-sm">
           <span className="text-cyan-800 dark:text-cyan-200 font-medium">{selectedIds.size} selected</span>
