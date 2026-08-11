@@ -263,15 +263,6 @@ export default function LandingPage() {
 
       {/* ── HERO ── */}
       <section className="max-w-6xl mx-auto px-6 pt-24 sm:pt-32 pb-20 sm:pb-28">
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-cyan-50 dark:bg-cyan-950 border border-cyan-200 dark:border-cyan-800 rounded-full text-xs font-semibold text-cyan-700 dark:text-cyan-300">
-            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-            Free tier, no credit card required
-          </div>
-          <span className="hidden sm:inline text-slate-300 dark:text-slate-600">·</span>
-          <span className="text-xs text-slate-400 dark:text-slate-500">Set up in under 2 minutes</span>
-        </div>
-
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-[1.05] max-w-5xl mx-auto text-center">
           Track every laptop, license, and SSL cert{' '}
           <span className="text-cyan-600 dark:text-cyan-400">without the spreadsheet nightmare</span>
