@@ -214,7 +214,7 @@ export default function EmployeesPage() {
     {filtered.length === 0 ? (
       <div className="text-center py-16 text-slate-400 dark:text-slate-500"><Monitor size={48} className="mx-auto mb-3 opacity-50"/><p className="text-lg font-medium">No employees yet</p><p className="text-sm mt-1">Import a CSV, add manually, or type a name when assigning an asset — it auto-adds here.</p></div>
     ) : (
-      <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
+      <div className="employee-table bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
         {selectedIds.size > 0 && (
           <div className="flex items-center gap-3 px-4 py-2 bg-cyan-50 dark:bg-cyan-950 border-b border-cyan-200 dark:border-cyan-800 text-sm">
             <span className="text-cyan-800 dark:text-cyan-200 font-medium">{selectedIds.size} selected</span>

@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase/client'
 import InstallPrompt from '@/components/install-prompt'
 import ToastContainer from '@/components/toast'
 import QuickAdd from '@/components/quick-add'
+import OnboardingTour from '@/components/onboarding-tour'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -65,8 +66,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="p-5 border-b border-slate-200 dark:border-slate-700">
           <Link href="/dashboard" className="text-lg font-semibold text-slate-900 dark:text-slate-100 tracking-tight">device<span className="text-cyan-600 dark:text-cyan-400">log</span></Link>
         </div>
-        <div className="px-3 pt-3"><QuickAdd /></div>
-        <nav className="flex-1 p-3 space-y-1">
+        <div className="px-3 pt-3"><QuickAdd />
+        <OnboardingTour /></div>
+        <nav className="flex-1 p-3 space-y-1 sidebar-nav">
           {navItems.map(({ href, label, icon: Icon }) => {
             const active = pathname.startsWith(href)
             return <Link key={href} href={href} className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${active ? 'bg-cyan-50 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'}`}><Icon size={16} />{label}</Link>

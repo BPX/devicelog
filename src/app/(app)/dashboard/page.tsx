@@ -98,7 +98,7 @@ export default function DashboardPage() {
         </span>
       </div>}
 
-      <div className="grid grid-cols-5 gap-4 mb-8">
+      <div className="stat-cards grid grid-cols-5 gap-4 mb-8">
         {stats.map(s => (
           <Link key={s.label} href={s.href} className={`${s.bg} ${cardLink}`}>
             <div className="flex items-center gap-2 mb-2"><s.icon size={18} className={s.color} /><span className="text-sm text-slate-600 dark:text-slate-400">{s.label}</span></div>
