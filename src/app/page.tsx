@@ -290,7 +290,7 @@ export default function LandingPage() {
 
         <div className="mt-12 flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-sm text-slate-400 dark:text-slate-500">
           <div className="flex items-center gap-2"><Clock size={14} className="text-cyan-500 dark:text-cyan-400" /> <span className="font-medium text-slate-500 dark:text-slate-400">2 min</span> setup</div>
-          <div className="flex items-center gap-2"><Globe size={14} className="text-cyan-500 dark:text-cyan-400" /> <span className="font-medium text-slate-500 dark:text-slate-400">Browser-based</span>, no download</div>
+          <div className="flex items-center gap-2"><Globe size={14} className="text-cyan-500 dark:text-cyan-400" /> <span className="font-medium text-slate-500 dark:text-slate-400">Browser based</span> no download</div>
           <div className="flex items-center gap-2"><Download size={14} className="text-cyan-500 dark:text-cyan-400" /> <span className="font-medium text-slate-500 dark:text-slate-400">CSV import</span> from spreadsheets</div>
         </div>
 
@@ -538,8 +538,8 @@ export default function LandingPage() {
             <div>
               <h4 className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">Account</h4>
               <div className="space-y-2.5 text-sm">
-                {['Log in','Sign up','Setup guide'].map((label, i) => (
-                  <div key={label}><Link href={['/login','/signup','/setup'][i]} className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">{label}</Link></div>
+                {['Log in','Sign up'].map((label, i) => (
+                  <div key={label}><Link href={['/login','/signup'][i]} className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">{label}</Link></div>
                 ))}
               </div>
             </div>
