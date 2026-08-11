@@ -27,7 +27,29 @@ export default function AssetsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // ── Search & Sort ──
+  // ── Multi-select ──
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+
+  function toggleSelect(id: string) {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+
+  function selectAll() {
+    if (selectedIds.size === assets.length) { setSelectedIds(new Set()); return }
+    setSelectedIds(new Set(assets.map(a => a.id)))
+  }
+
+  async function bulkDelete() {
+    if (selectedIds.size === 0) return
+    if (!confirm(`Delete ${selectedIds.size} asset${selectedIds.size > 1 ? 's' : ''}?`)) return
+    for (const id of selectedIds) await deleteAssetDb(id)
+    setSelectedIds(new Set())
+    await fetchAssets()
+  }
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [sortField, setSortField] = useState<string>('')
@@ -395,10 +417,20 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
       </div>
     ) : (
       <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
+        {selectedIds.size > 0 && (
+          <div className="flex items-center gap-3 px-4 py-2 bg-cyan-50 dark:bg-cyan-950 border-b border-cyan-200 dark:border-cyan-800 text-sm">
+            <span className="text-cyan-800 dark:text-cyan-200 font-medium">{selectedIds.size} selected</span>
+            <button onClick={bulkDelete} className="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600">Delete</button>
+            <button onClick={() => setSelectedIds(new Set())} className="px-3 py-1 border border-slate-300 dark:border-slate-600 rounded text-xs text-slate-600 dark:text-slate-400">Clear</button>
+          </div>
+        )}
         <div className="max-h-[calc(100vh-260px)] overflow-auto">
           <table className="w-full text-sm">
             <thead className="sticky top-0 z-10">
               <tr className="text-left text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 border-b">
+                <th className="py-3 px-4 w-10">
+                  <input type="checkbox" checked={selectedIds.size === assets.length && assets.length > 0} onChange={selectAll} className="rounded border-slate-300" />
+                </th>
                 {['name', 'category', 'assigned_to', 'status', 'warranty_expires'].map(f => (
                   <th key={f} onClick={() => toggleSort(f)} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700 dark:text-slate-200">
                     <span className="inline-flex items-center gap-1">
@@ -413,6 +445,9 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
             <tbody>
               {assets.map(a => (
                 <tr key={a.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800">
+                  <td className="py-2.5 px-4">
+                    <input type="checkbox" checked={selectedIds.has(a.id)} onChange={() => toggleSelect(a.id)} className="rounded border-slate-300" />
+                  </td>
                   <td className="py-2.5 px-4 text-slate-900 dark:text-slate-100 font-medium">
                     <div className="flex items-center gap-2">
                       {a.image ? <img src={a.image} alt="" className="w-8 h-8 rounded object-cover border border-slate-200 dark:border-slate-800" /> : <Package size={16} className="text-slate-300 dark:text-slate-600" />}

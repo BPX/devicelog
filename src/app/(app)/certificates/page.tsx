@@ -25,6 +25,26 @@ export default function CertsPage() {
   const [form, setForm] = useState({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30, document:'', docName:'' })
   const [uploading, setUploading] = useState(false)
   const [teamSettings, setTeamSettings] = useState<any>(null)
+
+  // ── Multi-select ──
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+
+  function toggleSelect(id: string) {
+    setSelectedIds(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
+  }
+
+  function selectAll() {
+    if (selectedIds.size === certs.length) { setSelectedIds(new Set()); return }
+    setSelectedIds(new Set(certs.map(c => c.id)))
+  }
+
+  async function bulkDelete() {
+    if (selectedIds.size === 0) return
+    if (!confirm(`Delete ${selectedIds.size} certificate${selectedIds.size > 1 ? 's' : ''}?`)) return
+    for (const id of selectedIds) await deleteCert(id)
+    setSelectedIds(new Set())
+    await loadCerts()
+  }
   const localSettings = getSettings()
   const settings = teamSettings || localSettings
   const certTypes = (settings.cert_types || ['ssl_cert','software_license','support_contract','domain','other']) as string[]
@@ -231,10 +251,20 @@ Office 365,software_license,Microsoft,2026-12-31`}
 
     {certs.length===0 ? <div className="text-center py-16 text-slate-400 dark:text-slate-500"><Shield size={48} className="mx-auto mb-3 opacity-50"/><p className="text-lg font-medium">No certificates yet</p><p className="text-sm mt-1">Track SSL certs, software licenses, and support contracts</p></div> :
     <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
+      {selectedIds.size > 0 && (
+        <div className="flex items-center gap-3 px-4 py-2 bg-cyan-50 dark:bg-cyan-950 border-b border-cyan-200 dark:border-cyan-800 text-sm">
+          <span className="text-cyan-800 dark:text-cyan-200 font-medium">{selectedIds.size} selected</span>
+          <button onClick={bulkDelete} className="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600">Delete</button>
+          <button onClick={() => setSelectedIds(new Set())} className="px-3 py-1 border border-slate-300 dark:border-slate-600 rounded text-xs text-slate-600 dark:text-slate-400">Clear</button>
+        </div>
+      )}
       <div className="max-h-[calc(100vh-220px)] overflow-auto">
         <table className="w-full text-sm">
           <thead className="sticky top-0 z-10">
             <tr className="text-left text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 border-b">
+              <th className="py-3 px-4 w-10">
+                <input type="checkbox" checked={selectedIds.size === certs.length && certs.length > 0} onChange={selectAll} className="rounded border-slate-300" />
+              </th>
               {['name','type','issuer','expires_at'].map(f => (
                 <th key={f} onClick={() => toggleSort(f)} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700 dark:text-slate-200">
                   <span className="inline-flex items-center gap-1">{f==='expires_at' ? 'Expires' : f.charAt(0).toUpperCase()+f.slice(1)}{sortIcon(f)}</span>
@@ -248,6 +278,9 @@ Office 365,software_license,Microsoft,2026-12-31`}
               const d = daysUntil(c.expires_at)
               return (
                 <tr key={c.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800">
+                  <td className="py-2.5 px-4">
+                    <input type="checkbox" checked={selectedIds.has(c.id)} onChange={() => toggleSelect(c.id)} className="rounded border-slate-300" />
+                  </td>
                   <td className="py-2.5 px-4 text-slate-900 dark:text-slate-100 font-medium">{c.name}</td>
                   <td className="py-2.5 px-4 text-slate-500 dark:text-slate-400 capitalize">{c.type.replace('_',' ')}</td>
                   <td className="py-2.5 px-4 text-slate-500 dark:text-slate-400">{c.issuer||'—'}</td>

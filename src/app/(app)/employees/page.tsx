@@ -25,6 +25,27 @@ export default function EmployeesPage() {
   const [newEmp, setNewEmp] = useState('')
   const [showImport, setShowImport] = useState(false)
   const [confirmRemove, setConfirmRemove] = useState<{name:string, count:number}|null>(null)
+
+  // ── Multi-select ──
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+
+  function toggleSelect(id: string) {
+    setSelectedIds(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
+  }
+
+  function selectAll() {
+    if (selectedIds.size === employees.length) { setSelectedIds(new Set()); return }
+    setSelectedIds(new Set(employees.map(e => e.id!).filter(Boolean)))
+  }
+
+  async function bulkDelete() {
+    if (selectedIds.size === 0) return
+    if (!confirm(`Delete ${selectedIds.size} employee${selectedIds.size > 1 ? 's' : ''}?`)) return
+    for (const id of selectedIds) await deleteEmployee(id)
+    setSelectedIds(new Set())
+    await loadEmployees()
+    await loadCounts()
+  }
   const [sortField, setSortField] = useState<string>('')
   const [sortDir, setSortDir] = useState<'asc'|'desc'>('asc')
   const [editEmp, setEditEmp] = useState<Employee | null>(null)
@@ -188,10 +209,20 @@ export default function EmployeesPage() {
       <div className="text-center py-16 text-slate-400 dark:text-slate-500"><Monitor size={48} className="mx-auto mb-3 opacity-50"/><p className="text-lg font-medium">No employees yet</p><p className="text-sm mt-1">Import a CSV, add manually, or type a name when assigning an asset — it auto-adds here.</p></div>
     ) : (
       <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
+        {selectedIds.size > 0 && (
+          <div className="flex items-center gap-3 px-4 py-2 bg-cyan-50 dark:bg-cyan-950 border-b border-cyan-200 dark:border-cyan-800 text-sm">
+            <span className="text-cyan-800 dark:text-cyan-200 font-medium">{selectedIds.size} selected</span>
+            <button onClick={bulkDelete} className="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600">Delete</button>
+            <button onClick={() => setSelectedIds(new Set())} className="px-3 py-1 border border-slate-300 dark:border-slate-600 rounded text-xs text-slate-600 dark:text-slate-400">Clear</button>
+          </div>
+        )}
         <div className="max-h-[calc(100vh-260px)] overflow-auto">
           <table className="w-full text-sm">
             <thead className="sticky top-0 z-10">
               <tr className="text-left text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 border-b">
+                <th className="py-3 px-4 w-10">
+                  <input type="checkbox" checked={selectedIds.size === employees.length && employees.length > 0} onChange={selectAll} className="rounded border-slate-300" />
+                </th>
                 <th onClick={() => toggleSort('name')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700 dark:text-slate-200"><span className="inline-flex items-center gap-1">Name{sortIcon('name')}</span></th>
                 <th className="py-3 px-4 font-medium">Email / Role</th>
                 <th onClick={() => toggleSort('department')} className="py-3 px-4 font-medium cursor-pointer select-none hover:text-slate-700 dark:text-slate-200"><span className="inline-flex items-center gap-1">Department{sortIcon('department')}</span></th>
@@ -204,6 +235,9 @@ export default function EmployeesPage() {
                 const count = counts[e.name] || 0
                 return (
                   <tr key={e.id || e.name} className={`border-b border-slate-100 dark:border-slate-800 ${count === 0 ? 'bg-red-50 dark:bg-red-950/30' : 'hover:bg-slate-50 dark:hover:bg-slate-800'}`}>
+                    <td className="py-2.5 px-4">
+                      <input type="checkbox" checked={selectedIds.has(e.id || e.name)} onChange={() => toggleSelect(e.id || e.name)} className="rounded border-slate-300" />
+                    </td>
                     <td className="py-2.5 px-4">
                       <div className="flex items-center gap-2">
                         <Monitor size={14} className={count > 0 ? 'text-slate-400 dark:text-slate-500' : 'text-red-300'} />
