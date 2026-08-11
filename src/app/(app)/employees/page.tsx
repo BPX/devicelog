@@ -256,21 +256,27 @@ export default function EmployeesPage() {
 John Smith,john@company.com,IT Manager,IT
 Jane Doe,jane@company.com,System Admin,IT`} sampleFilename="employees.csv" onImport={async rows => {
       if (!teamId) return
+      const existingEmails = new Set(employees.filter(e => e.email).map(e => e.email.toLowerCase()))
+      let imported = 0, skipped = 0
       for (const r of rows) {
         const name = (r.name || r['name'] || r[Object.keys(r)[0]] || '').trim()
-        if (name) {
-          const empId = Date.now().toString() + Math.random().toString(36).slice(2, 6)
-          await saveEmployee({
-            id: empId,
-            name,
-            email: (r.email || '').trim(),
-            job_title: (r.job_title || '').trim(),
-            department: (r.department || '').trim(),
-          }, teamId)
-        }
+        const email = (r.email || '').trim()
+        if (!name) continue
+        if (email && existingEmails.has(email.toLowerCase())) { skipped++; continue }
+        if (email) existingEmails.add(email.toLowerCase())
+        const empId = Date.now().toString() + Math.random().toString(36).slice(2, 6)
+        await saveEmployee({
+          id: empId,
+          name,
+          email,
+          job_title: (r.job_title || '').trim(),
+          department: (r.department || '').trim(),
+        }, teamId)
+        imported++
       }
       await loadEmployees()
       setShowImport(false)
+      if (skipped > 0) alert(`Imported ${imported} employees. Skipped ${skipped} duplicate${skipped > 1 ? 's' : ''}.`)
     }} onClose={() => setShowImport(false)} />}
 
     {confirmRemove && <ConfirmDialog

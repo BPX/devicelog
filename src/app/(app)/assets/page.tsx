@@ -149,10 +149,23 @@ export default function AssetsPage() {
     if (!teamId) return
     const limit = await checkPlanLimit('create_asset')
     if (!limit.allowed) { alert(limit.message); return }
-    const newAssets = rows.map(makeAsset)
+    const existingSerials = new Set(assets.filter(a => a.serial_number).map(a => a.serial_number.toLowerCase()))
+    const newAssets: Asset[] = []
+    let skipped = 0
+    for (const r of rows) {
+      const asset = makeAsset(r)
+      if (asset.serial_number && existingSerials.has(asset.serial_number.toLowerCase())) {
+        skipped++
+        continue
+      }
+      if (asset.serial_number) existingSerials.add(asset.serial_number.toLowerCase())
+      newAssets.push(asset)
+    }
+    if (newAssets.length === 0) { alert('All rows are duplicates — nothing imported.'); return }
     const result = await saveAssetsBatch(newAssets, teamId)
     await fetchAssets()
     setShowCsvImport(false)
+    if (skipped > 0) alert(`Imported ${result.succeeded} assets. Skipped ${skipped} duplicate${skipped > 1 ? 's' : ''}.`)
   }
 
   // ── Scan device ──

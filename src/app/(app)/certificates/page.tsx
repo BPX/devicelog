@@ -196,17 +196,27 @@ Office 365,software_license,Microsoft,2026-12-31`}
       sampleFilename="certs.csv"
       onImport={async rows => {
         if (!teamId) return
-        const newCerts = rows.map(r => ({
-          id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
-          name: r.name || r.cert_name || r.domain || 'Unknown',
-          type: (r.type || 'ssl_cert').toLowerCase().replace(' ','_'),
-          issuer: r.issuer || '',
-          expires_at: r.expires_at || r.expires || r.expiry || '',
-          notify_before_days: parseInt(r.notify_before_days) || 30,
-        }))
+        const existingNames = new Set(certs.map(c => c.name.toLowerCase()))
+        const newCerts: any[] = []
+        let skipped = 0
+        for (const r of rows) {
+          const name = r.name || r.cert_name || r.domain || 'Unknown'
+          if (existingNames.has(name.toLowerCase())) { skipped++; continue }
+          existingNames.add(name.toLowerCase())
+          newCerts.push({
+            id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
+            name,
+            type: (r.type || 'ssl_cert').toLowerCase().replace(' ','_'),
+            issuer: r.issuer || '',
+            expires_at: r.expires_at || r.expires || r.expiry || '',
+            notify_before_days: parseInt(r.notify_before_days) || 30,
+          })
+        }
+        if (newCerts.length === 0) { alert('All rows are duplicates — nothing imported.'); setShowImport(false); return }
         for (const c of newCerts) await saveCert(c, teamId)
         await loadCerts()
         setShowImport(false)
+        if (skipped > 0) alert(`Imported ${newCerts.length} certificates. Skipped ${skipped} duplicate${skipped > 1 ? 's' : ''}.`)
       }}
       onClose={() => setShowImport(false)}
     />}
