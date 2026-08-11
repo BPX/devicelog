@@ -1,6 +1,6 @@
 {
-  "name": "Trackstack",
-  "short_name": "Trackstack",
+  "name": "devicelog",
+  "short_name": "devicelog",
   "description": "Simple IT asset management for SMBs",
   "start_url": "/login",
   "display": "standalone",

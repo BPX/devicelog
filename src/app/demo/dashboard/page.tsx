@@ -23,7 +23,7 @@ const recentAssets = [
 const expiringCerts = [
   { name: 'Cisco Meraki MX95 Support', type: 'support_contract', expires_at: '2026-04-20' },
   { name: 'JetBrains All Products Pack', type: 'software_license', expires_at: '2026-08-01' },
-  { name: 'trackstack.com SSL', type: 'ssl_cert', expires_at: '2027-06-15' },
+  { name: 'devicelog.com SSL', type: 'ssl_cert', expires_at: '2027-06-15' },
 ]
 
 export default function DemoDashboard() {

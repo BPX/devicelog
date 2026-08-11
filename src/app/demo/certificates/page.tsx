@@ -8,8 +8,8 @@ interface Cert {
 }
 
 const sampleCerts: Cert[] = [
-  { id: 'c1', name: 'trackstack.com SSL', type: 'ssl_cert', issuer: "Let's Encrypt", expires_at: '2027-06-15' },
-  { id: 'c2', name: 'api.trackstack.dev SSL', type: 'ssl_cert', issuer: "Let's Encrypt", expires_at: '2027-04-03' },
+  { id: 'c1', name: 'devicelog.com SSL', type: 'ssl_cert', issuer: "Let's Encrypt", expires_at: '2027-06-15' },
+  { id: 'c2', name: 'api.devicelog.dev SSL', type: 'ssl_cert', issuer: "Let's Encrypt", expires_at: '2027-04-03' },
   { id: 'c3', name: 'Office 365 E5', type: 'software_license', issuer: 'Microsoft', expires_at: '2026-12-31' },
   { id: 'c4', name: 'JetBrains All Products Pack', type: 'software_license', issuer: 'JetBrains', expires_at: '2026-08-01' },
   { id: 'c5', name: 'Slack Enterprise Grid', type: 'software_license', issuer: 'Slack', expires_at: '2027-01-15' },
@@ -20,7 +20,7 @@ const sampleCerts: Cert[] = [
   { id: 'c10', name: 'AWS Business Support', type: 'support_contract', issuer: 'Amazon Web Services', expires_at: '2026-11-15' },
   { id: 'c11', name: 'GitHub Enterprise Cloud', type: 'software_license', issuer: 'GitHub', expires_at: '2027-05-30' },
   { id: 'c12', name: 'Datadog Pro', type: 'software_license', issuer: 'Datadog', expires_at: '2026-10-01' },
-  { id: 'c13', name: 'internal.trackstack.dev SSL', type: 'ssl_cert', issuer: "Let's Encrypt", expires_at: '2027-05-20' },
+  { id: 'c13', name: 'internal.devicelog.dev SSL', type: 'ssl_cert', issuer: "Let's Encrypt", expires_at: '2027-05-20' },
   { id: 'c14', name: 'Google Workspace Enterprise', type: 'software_license', issuer: 'Google', expires_at: '2027-08-01' },
 ]
 

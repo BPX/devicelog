@@ -177,7 +177,7 @@ export default function EmployeesPage() {
       <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Employees</h1>
       <div className="flex gap-2">
         <button onClick={() => setShowImport(true)} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Upload size={16}/>Import CSV</button>
-        <button onClick={() => downloadCsv(employees.map(e => ({ name: e.name, email: e.email, job_title: e.job_title, department: e.department, devices: counts[e.name]||0 })), 'trackstack-employees.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Download size={16}/>Export</button>
+        <button onClick={() => downloadCsv(employees.map(e => ({ name: e.name, email: e.email, job_title: e.job_title, department: e.department, devices: counts[e.name]||0 })), 'devicelog-employees.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Download size={16}/>Export</button>
         <button onClick={() => { setAddForm({ name:'', email:'', job_title:'', department:'' }); setShowAddModal(true) }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400"><Plus size={16}/>Add Employee</button>
       </div>
     </div>

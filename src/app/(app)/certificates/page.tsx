@@ -132,7 +132,7 @@ export default function CertsPage() {
       <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Certs &amp; Licenses</h1>
       <div className="flex gap-2">
         <button onClick={() => setShowImport(true)} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Upload size={16}/>Import CSV</button>
-        <button onClick={() => downloadCsv(certs, 'trackstack-certs.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Download size={16}/>Export</button>
+        <button onClick={() => downloadCsv(certs, 'devicelog-certs.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Download size={16}/>Export</button>
         <button onClick={()=>{setEditing(null); setForm({ name:'', type:'ssl_cert', issuer:'', expires_at:'', notify_before_days:30, document:'', docName:'' }); setShowForm(true)}} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400"><Plus size={16}/>Add Certificate</button>
       </div>
     </div>
@@ -151,7 +151,7 @@ export default function CertsPage() {
 
     {showForm && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"><div className="bg-white dark:bg-slate-950 rounded-lg p-6 w-full max-w-md border border-slate-200 dark:border-slate-800 shadow-xl"><h2 className="text-lg font-semibold mb-4">{editing ? 'Edit Certificate' : 'New Certificate'}</h2>
       <form onSubmit={handleSubmit} className="space-y-3">
-        <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Name *</label><input required value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" placeholder="e.g. trackstack.com SSL"/></div>
+        <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Name *</label><input required value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" placeholder="e.g. devicelog.com SSL"/></div>
         <div className="grid grid-cols-2 gap-3">
           <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Type</label><select value={form.type} onChange={e=>setForm({...form,type:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm">{certTypes.map((t:string)=><option key={t} value={t}>{t.replace('_',' ')}</option>)}</select></div>
           <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Issuer</label><input value={form.issuer} onChange={e=>setForm({...form,issuer:e.target.value})} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" placeholder="e.g. Let's Encrypt"/></div>
@@ -191,7 +191,7 @@ export default function CertsPage() {
       title="Import Certificates"
       description="Upload a CSV with name, type, issuer, expiry. We'll try to match columns."
       sampleData={`name,type,issuer,expires_at
-trackstack.com SSL,ssl_cert,Let's Encrypt,2027-06-15
+devicelog.com SSL,ssl_cert,Let's Encrypt,2027-06-15
 Office 365,software_license,Microsoft,2026-12-31`}
       sampleFilename="certs.csv"
       onImport={async rows => {

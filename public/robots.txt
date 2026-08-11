@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://trackstack.dev/sitemap.xml
+Sitemap: https://devicelog.dev/sitemap.xml

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Trackstack Device Scanner — v3
+"""devicelog Device Scanner — v3
 Usage:
     python3 scanner.py                    # prints JSON to stdout
-    python3 scanner.py --code TOKEN       # outputs encrypted blob for Trackstack import
+    python3 scanner.py --code TOKEN       # outputs encrypted blob for devicelog import
 """
 import json, platform, subprocess, sys, base64
 
@@ -125,7 +125,7 @@ def main():
         payload = json.dumps(data)
         key = token * (len(payload) // len(token) + 1)
         encoded = base64.b64encode(bytes([ord(p) ^ ord(k) for p, k in zip(payload, key)])).decode()
-        print(f"TRACKSTACK_SCAN_V1:{encoded}")
+        print(f"DEVICELOG_SCAN_V1:{encoded}")
     elif '--post' in sys.argv:
         try:
             idx = sys.argv.index('--post')
@@ -136,7 +136,7 @@ def main():
                 'Content-Type': 'application/json', 'Authorization': f'Bearer {token}'
             })
             resp = urllib.request.urlopen(req, timeout=10)
-            print(f"✅ Asset posted to Trackstack (HTTP {resp.getcode()})")
+            print(f"✅ Asset posted to devicelog (HTTP {resp.getcode()})")
         except Exception as e:
             print(f"❌ Could not reach server: {e}")
             print("   Run with --code instead to use the manual import flow.")

@@ -20,7 +20,7 @@ export default function QrLabel({ assetId, assetName, onClose }: Props) {
   function download() {
     if (!canvasRef.current) return
     const link = document.createElement('a')
-    link.download = `trackstack-${assetName.replace(/\s+/g, '-').toLowerCase()}.png`
+    link.download = `devicelog-${assetName.replace(/\s+/g, '-').toLowerCase()}.png`
     link.href = canvasRef.current.toDataURL('image/png')
     link.click()
   }
@@ -30,7 +30,7 @@ export default function QrLabel({ assetId, assetName, onClose }: Props) {
     const win = window.open('', '_blank', 'width=400,height=550')
     if (!win) return
     win.document.write(`
-      <html><head><title>${assetName} — Trackstack Label</title>
+      <html><head><title>${assetName} — devicelog Label</title>
       <style>body{margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:system-ui}
       .label{text-align:center;padding:20px}
       .label img{max-width:280px}

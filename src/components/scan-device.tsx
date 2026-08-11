@@ -17,8 +17,8 @@ export default function ScanDevice({ onImport, onClose }: Props) {
     setError('')
     const input = pasteValue.trim()
 
-    // Try v1 format: TRACKSTACK_SCAN_V1:base64blob
-    const v1Match = input.match(/^TRACKSTACK_SCAN_V1:(.+)$/)
+    // Try v1 format: DEVICELOG_SCAN_V1:base64blob
+    const v1Match = input.match(/^DEVICELOG_SCAN_V1:(.+)$/)
     if (v1Match) {
       try {
         const encoded = v1Match[1]
@@ -39,7 +39,7 @@ export default function ScanDevice({ onImport, onClose }: Props) {
     }
 
     // Try v0 fallback: plain base64 JSON
-    const v0Match = input.match(/^TRACKSTACK_SCAN_V0:(.+)$/)
+    const v0Match = input.match(/^DEVICELOG_SCAN_V0:(.+)$/)
     if (v0Match) {
       try {
         const data = JSON.parse(atob(v0Match[1]))
@@ -108,7 +108,7 @@ export default function ScanDevice({ onImport, onClose }: Props) {
           <p className="text-sm text-slate-500 mb-3">Paste the scanner output below:</p>
           <textarea value={pasteValue} onChange={e => setPasteValue(e.target.value)}
             className="w-full h-32 p-3 border border-slate-300 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-cyan-500 mb-3"
-            placeholder="TRACKSTACK_SCAN_V1:eyJ..." />
+            placeholder="DEVICELOG_SCAN_V1:eyJ..." />
           {error && <div className="text-sm text-red-600 bg-red-50 p-2 rounded mb-3">{error}</div>}
           <div className="flex gap-2">
             <button onClick={handlePaste} className="flex-1 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700">Import Device</button>

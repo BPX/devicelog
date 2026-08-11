@@ -17,7 +17,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const stored = localStorage.getItem('trackstack-theme')
+    const stored = localStorage.getItem('devicelog-theme')
     if (stored === 'light' || stored === 'dark') {
       setTheme(stored)
     }
@@ -27,7 +27,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!mounted) return
     document.documentElement.classList.toggle('dark', theme === 'dark')
-    localStorage.setItem('trackstack-theme', theme)
+    localStorage.setItem('devicelog-theme', theme)
   }, [theme, mounted])
 
   const toggle = () => setTheme(t => t === 'dark' ? 'light' : 'dark')

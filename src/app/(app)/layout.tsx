@@ -76,7 +76,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </Link>
           <div className="flex items-center gap-1 mt-1">
             <a
-              href="https://github.com/bpx/trackstack/issues/new/choose"
+              href="https://github.com/bpx/devicelog/issues/new/choose"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"

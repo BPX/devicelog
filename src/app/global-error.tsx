@@ -2,7 +2,7 @@
 import { useEffect } from 'react'
 
 export default function GlobalError({ error }: { error: Error & { digest?: string } }) {
-  useEffect(() => { console.error('Trackstack crash:', error) }, [error])
+  useEffect(() => { console.error('devicelog crash:', error) }, [error])
   return (
     <html>
       <body style={{ fontFamily: 'system-ui', padding: 40, background: '#f8fafc', color: '#0f172a' }}>

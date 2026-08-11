@@ -267,7 +267,7 @@ export default function AssetsPage() {
       <div className="flex gap-2">
         <button onClick={() => setShowCsvImport(true)} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Upload size={16} />Import CSV</button>
         <button onClick={() => setShowScanner(true)} className="flex items-center gap-2 px-3 py-2 border border-cyan-300 text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-950 rounded-md text-sm font-medium hover:bg-cyan-100"><Monitor size={16} />Scan Device</button>
-        <button onClick={() => downloadCsv(assets, 'trackstack-assets.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Download size={16} />Export</button>
+        <button onClick={() => downloadCsv(assets, 'devicelog-assets.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Download size={16} />Export</button>
         <button onClick={() => { setEditing(null); setForm({ name: '', category: 'laptop', manufacturer: '', model: '', serial_number: '', status: 'active', assigned_to: '', location: '', purchase_date: '', warranty_expires: '', image: '' }); setShowForm(true) }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400"><Plus size={16} />Add Asset</button>
       </div>
     </div>

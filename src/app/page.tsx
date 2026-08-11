@@ -105,8 +105,8 @@ const featureTabs = [
         </div>
         <div className="space-y-2">
           {[
-            { name: 'trackstack.dev', issuer: "Let's Encrypt", days: 5, color: 'text-red-400', bg: 'bg-red-500/20' },
-            { name: 'api.trackstack.dev', issuer: "Let's Encrypt", days: 18, color: 'text-amber-400', bg: 'bg-amber-500/20' },
+            { name: 'devicelog.dev', issuer: "Let's Encrypt", days: 5, color: 'text-red-400', bg: 'bg-red-500/20' },
+            { name: 'api.devicelog.dev', issuer: "Let's Encrypt", days: 18, color: 'text-amber-400', bg: 'bg-amber-500/20' },
             { name: 'Slack Enterprise', issuer: 'Slack', days: 210, color: 'text-emerald-400', bg: 'bg-emerald-500/20' },
           ].map(cert => (
             <div key={cert.name} className="flex items-center gap-3 py-2 px-3 bg-slate-800/50 rounded text-xs">
@@ -182,20 +182,20 @@ const featureTabs = [
 const plans = [
   { name: 'Free', price: '$0', period: 'forever', description: 'For individuals and small teams getting started.', features: ['Up to 50 assets','2 team members','Certificate tracking','CSV import & export','QR code labels','Basic dashboard'], cta: 'Start free', href: '/signup', featured: false },
   { name: 'Team', price: '$19', period: '/month', description: 'For growing companies that need shared visibility.', features: ['Unlimited assets','Unlimited team members','Everything in Free','Device barcode scanning','Priority support','Bulk QR generation','Custom fields'], cta: 'Start free trial', href: '/signup?plan=team', featured: true },
-  { name: 'Enterprise', price: 'Custom', period: '', description: 'For larger organizations with advanced requirements.', features: ['Everything in Team','SSO / SAML','Audit logs','Dedicated support','Custom SLA','On-premise option','API access'], cta: 'Contact sales', href: 'mailto:hello@trackstack.dev', featured: false },
+  { name: 'Enterprise', price: 'Custom', period: '', description: 'For larger organizations with advanced requirements.', features: ['Everything in Team','SSO / SAML','Audit logs','Dedicated support','Custom SLA','On-premise option','API access'], cta: 'Contact sales', href: 'mailto:hello@devicelog.dev', featured: false },
 ]
 
 const comparison = [
-  { feature: 'Asset tracking', trackstack: true, spreadsheet: 'Manual', snipeit: true, freshservice: 'Module' },
-  { feature: 'Certificate & license tracking', trackstack: true, spreadsheet: false, snipeit: false, freshservice: false },
-  { feature: 'QR code labels', trackstack: true, spreadsheet: false, snipeit: true, freshservice: false },
-  { feature: 'CSV import', trackstack: true, spreadsheet: 'Native', snipeit: true, freshservice: 'Limited' },
-  { feature: 'Team collaboration', trackstack: true, spreadsheet: false, snipeit: 'Limited', freshservice: true },
-  { feature: 'Mobile barcode scanning', trackstack: true, spreadsheet: false, snipeit: true, freshservice: true },
-  { feature: 'Free tier', trackstack: true, spreadsheet: 'Free', snipeit: 'Self-host', freshservice: '21-day trial' },
-  { feature: 'No setup required', trackstack: true, spreadsheet: true, snipeit: false, freshservice: false },
-  { feature: 'Startup-friendly pricing', trackstack: true, spreadsheet: true, snipeit: 'Free self-host', freshservice: false },
-  { feature: 'Modern UI', trackstack: true, spreadsheet: false, snipeit: false, freshservice: true },
+  { feature: 'Asset tracking', devicelog: true, spreadsheet: 'Manual', snipeit: true, freshservice: 'Module' },
+  { feature: 'Certificate & license tracking', devicelog: true, spreadsheet: false, snipeit: false, freshservice: false },
+  { feature: 'QR code labels', devicelog: true, spreadsheet: false, snipeit: true, freshservice: false },
+  { feature: 'CSV import', devicelog: true, spreadsheet: 'Native', snipeit: true, freshservice: 'Limited' },
+  { feature: 'Team collaboration', devicelog: true, spreadsheet: false, snipeit: 'Limited', freshservice: true },
+  { feature: 'Mobile barcode scanning', devicelog: true, spreadsheet: false, snipeit: true, freshservice: true },
+  { feature: 'Free tier', devicelog: true, spreadsheet: 'Free', snipeit: 'Self-host', freshservice: '21-day trial' },
+  { feature: 'No setup required', devicelog: true, spreadsheet: true, snipeit: false, freshservice: false },
+  { feature: 'Startup-friendly pricing', devicelog: true, spreadsheet: true, snipeit: 'Free self-host', freshservice: false },
+  { feature: 'Modern UI', devicelog: true, spreadsheet: false, snipeit: false, freshservice: true },
 ]
 
 function CheckCell({ value }: { value: boolean | string }) {
@@ -244,13 +244,13 @@ function CounterStat({ value, suffix = '', label }: { value: number, suffix?: st
 }
 
 const faqs = [
-  { q: 'Is Trackstack really free?', a: 'Yes. The Free plan includes up to 50 assets and 2 team members. No credit card, no time limit, no hidden fees. We believe every team should have basic IT asset management, and charging for that doesn\'t sit right with us. Upgrade to Team ($19/mo) for unlimited everything.' },
-  { q: 'How is this different from a spreadsheet?', a: 'Spreadsheets go stale the moment someone forgets to update them. Trackstack gives your whole team a shared, real-time view of your entire IT inventory. Plus you get automatic certificate expiry reminders, QR code labels, mobile barcode scanning, and team assignment tracking. Things spreadsheets simply can\'t do. When Sarah leaves the company, you know exactly which laptop to recover.' },
+  { q: 'Is devicelog really free?', a: 'Yes. The Free plan includes up to 50 assets and 2 team members. No credit card, no time limit, no hidden fees. We believe every team should have basic IT asset management, and charging for that doesn\'t sit right with us. Upgrade to Team ($19/mo) for unlimited everything.' },
+  { q: 'How is this different from a spreadsheet?', a: 'Spreadsheets go stale the moment someone forgets to update them. devicelog gives your whole team a shared, real-time view of your entire IT inventory. Plus you get automatic certificate expiry reminders, QR code labels, mobile barcode scanning, and team assignment tracking. Things spreadsheets simply can\'t do. When Sarah leaves the company, you know exactly which laptop to recover.' },
   { q: 'Can I import my existing inventory?', a: 'Absolutely. Drop your CSV or Excel file and our column mapper auto-detects names, serials, models, and assigned users. Works with exports from Excel, Google Sheets, Snipe-IT, and most other tools. We\'ve imported inventories ranging from 20 devices to 5,000+.' },
   { q: 'How is my data secured?', a: 'All data is encrypted in transit (TLS 1.3) and at rest (AES-256). We run on Supabase with row-level security, meaning your team can only see your company\'s data. Our database is SOC 2 compliant. We don\'t sell, share, or analyze your inventory data. Ever.' },
   { q: 'What happens if I exceed the free limits?', a: 'We\'ll show a friendly notification in your dashboard when you\'re approaching the limit. Your existing data stays safe and accessible. You just can\'t add more assets or team members until you upgrade to Team. No data loss, no surprise bills.' },
   { q: 'Can I cancel my Team plan anytime?', a: 'Yes, with one click from your billing settings. Your data remains accessible on the Free plan. If you have more than 50 assets, you can still view and export everything. You just can\'t add new ones until you either upgrade again or reduce your inventory count.' },
-  { q: 'Do you offer discounts for nonprofits or education?', a: 'Yes! We offer 50% off Team plans for registered nonprofits, educational institutions, and open-source projects. Contact us at hello@trackstack.dev with your organization details and we\'ll set you up.' },
+  { q: 'Do you offer discounts for nonprofits or education?', a: 'Yes! We offer 50% off Team plans for registered nonprofits, educational institutions, and open-source projects. Contact us at hello@devicelog.dev with your organization details and we\'ll set you up.' },
 ]
 
 export default function LandingPage() {
@@ -269,7 +269,7 @@ export default function LandingPage() {
           <div className="hidden sm:flex items-center gap-5">
             <Link href="/demo" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Live Demo</Link>
             <Link href="/#pricing" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Pricing</Link>
-            <a href="https://github.com/bpx/trackstack/issues/new/choose" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Feedback</a>
+            <a href="https://github.com/bpx/devicelog/issues/new/choose" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Feedback</a>
             <Link href="/login" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Log in</Link>
             <button onClick={toggle} className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" aria-label="Toggle theme">
               {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
@@ -335,7 +335,7 @@ export default function LandingPage() {
           <div className="bg-slate-900 rounded-xl overflow-hidden shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_4px_16px_rgba(0,0,0,0.08),0_16px_48px_rgba(0,0,0,0.06)]">
             <div className="flex items-center gap-2 px-4 py-3 bg-slate-800 border-b border-slate-700">
               <div className="w-3 h-3 rounded-full bg-red-400" /><div className="w-3 h-3 rounded-full bg-amber-400" /><div className="w-3 h-3 rounded-full bg-emerald-400" />
-              <span className="ml-2 text-xs text-slate-400">Trackstack · Dashboard</span>
+              <span className="ml-2 text-xs text-slate-400">devicelog · Dashboard</span>
             </div>
             <div className="p-6 sm:p-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[
@@ -462,7 +462,7 @@ export default function LandingPage() {
       <Section alt>
         <div className="text-center mb-12">
           <Label>HOW WE COMPARE</Label>
-          <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 leading-tight">See why teams choose Trackstack</h2>
+          <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 leading-tight">See why teams choose devicelog</h2>
           <Subtitle>Purpose-built for small-to-medium IT teams. Not an ITSM suite with asset tracking bolted on.</Subtitle>
         </div>
         <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-[0_0_0_1px_rgba(0,0,0,0.04),0_4px_16px_rgba(0,0,0,0.04)]">
@@ -474,7 +474,7 @@ export default function LandingPage() {
               <thead>
                 <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
                   <th className="text-left py-3.5 px-5 font-semibold text-slate-700 dark:text-slate-200">Feature</th>
-                  <th className="text-center py-3.5 px-4 font-semibold text-cyan-600 dark:text-cyan-400 bg-cyan-50/30 dark:bg-cyan-950/30">Trackstack</th>
+                  <th className="text-center py-3.5 px-4 font-semibold text-cyan-600 dark:text-cyan-400 bg-cyan-50/30 dark:bg-cyan-950/30">devicelog</th>
                   <th className="text-center py-3.5 px-4 font-medium text-slate-500 dark:text-slate-400">Spreadsheets</th>
                   <th className="text-center py-3.5 px-4 font-medium text-slate-500 dark:text-slate-400">Snipe-IT</th>
                   <th className="text-center py-3.5 px-4 font-medium text-slate-500 dark:text-slate-400">Freshservice</th>
@@ -484,7 +484,7 @@ export default function LandingPage() {
                 {comparison.map((row, i) => (
                   <tr key={row.feature} className={`border-b border-slate-50 dark:border-slate-800 ${i % 2 === 0 ? 'bg-slate-50/30 dark:bg-slate-800/30' : ''}`}>
                     <td className="py-3 px-5 text-slate-700 dark:text-slate-300 font-medium">{row.feature}</td>
-                    <td className="py-3 px-4 text-center bg-cyan-50/20 dark:bg-cyan-950/20"><CheckCell value={row.trackstack} /></td>
+                    <td className="py-3 px-4 text-center bg-cyan-50/20 dark:bg-cyan-950/20"><CheckCell value={row.devicelog} /></td>
                     <td className="py-3 px-4 text-center"><CheckCell value={row.spreadsheet} /></td>
                     <td className="py-3 px-4 text-center"><CheckCell value={row.snipeit} /></td>
                     <td className="py-3 px-4 text-center"><CheckCell value={row.freshservice} /></td>
@@ -503,7 +503,7 @@ export default function LandingPage() {
           {[
             { quote: 'We went from a shared Google Sheet nobody updated to full visibility in 10 minutes. The CSV import actually worked on the first try, and that alone sold us.', name: 'Alex Rivera', role: 'IT Manager, Fintech Startup (85 employees)' },
             { quote: 'The certificate tracking alone is worth it. We had three domain certs expire in one quarter last year. This year? Zero. The email reminders are a lifesaver.', name: 'Jordan Lee', role: 'DevOps Lead, Digital Agency' },
-            { quote: 'We evaluated Snipe-IT and Asset Panda. Snipe required self-hosting, Asset Panda was overkill on pricing. Trackstack was the Goldilocks: simple enough to actually use, powerful enough to cover our needs.', name: 'Morgan Taylor', role: 'CTO, HealthTech (42 employees)' },
+            { quote: 'We evaluated Snipe-IT and Asset Panda. Snipe required self-hosting, Asset Panda was overkill on pricing. devicelog was the Goldilocks: simple enough to actually use, powerful enough to cover our needs.', name: 'Morgan Taylor', role: 'CTO, HealthTech (42 employees)' },
           ].map((t, i) => (
             <Card key={i} hover>
               <div className="flex gap-1 mb-4">{[1,2,3,4,5].map(s => <Star key={s} size={14} className="text-amber-400 fill-amber-400" />)}</div>
@@ -613,14 +613,14 @@ export default function LandingPage() {
             <div>
               <h4 className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">Company</h4>
               <div className="space-y-2.5 text-sm">
-                <div><a href="mailto:hello@trackstack.dev" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">Contact us</a></div>
-                <div><a href="https://github.com/bpx/trackstack/issues/new/choose" target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">Request feature</a></div>
-                <div><span className="text-slate-500 dark:text-slate-400">hello@trackstack.dev</span></div>
+                <div><a href="mailto:hello@devicelog.dev" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">Contact us</a></div>
+                <div><a href="https://github.com/bpx/devicelog/issues/new/choose" target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">Request feature</a></div>
+                <div><span className="text-slate-500 dark:text-slate-400">hello@devicelog.dev</span></div>
               </div>
             </div>
           </div>
           <div className="border-t border-slate-100 dark:border-slate-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-400 dark:text-slate-500">
-            <span>© {new Date().getFullYear()} Trackstack. All rights reserved.</span>
+            <span>© {new Date().getFullYear()} devicelog. All rights reserved.</span>
             <span>Built with Next.js & Supabase</span>
           </div>
         </div>

@@ -1,9 +1,9 @@
 name,type,issuer,expires_at
-trackstack.com SSL,ssl_cert,Let's Encrypt,2027-03-15
-mail.trackstack.com SSL,ssl_cert,DigiCert,2026-12-01
-vpn.trackstack.com SSL,ssl_cert,Sectigo,2025-08-22
+devicelog.com SSL,ssl_cert,Let's Encrypt,2027-03-15
+mail.devicelog.com SSL,ssl_cert,DigiCert,2026-12-01
+vpn.devicelog.com SSL,ssl_cert,Sectigo,2025-08-22
 internal-wiki TLS,ssl_cert,Let's Encrypt,2027-07-10
-api.trackstack.com SSL,ssl_cert,Google Trust,2027-01-28
+api.devicelog.com SSL,ssl_cert,Google Trust,2027-01-28
 Office 365 Business,software_license,Microsoft,2026-06-30
 Adobe Creative Cloud,software_license,Adobe,2026-09-15
 Slack Pro,software_license,Slack,2027-02-01

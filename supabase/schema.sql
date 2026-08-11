@@ -1,4 +1,4 @@
--- Trackstack — Canonical Database Setup
+-- devicelog — Canonical Database Setup
 -- Run once in Supabase SQL Editor: https://supabase.com/dashboard/project/mbsjxuymiuevankxrgmo/sql
 -- 
 -- This replaces: supabase-migration.sql, supabase-teams.sql, supabase-teams-fix.sql,

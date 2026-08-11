@@ -1,8 +1,8 @@
-# Trackstack
+# devicelog
 
 Simple IT asset management for small teams. Track laptops, monitors, SSL certificates, and software licenses — no spreadsheets required.
 
-**[trackstack.dev](https://trackstack.dev)** · [Live Demo](https://trackstack.dev/demo)
+**[devicelog.dev](https://devicelog.dev)** · [Live Demo](https://devicelog.dev/demo)
 
 ---
 

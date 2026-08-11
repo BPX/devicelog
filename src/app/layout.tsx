@@ -9,26 +9,26 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] })
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Trackstack — Free IT Asset Management Software | Track Laptops, Certs & Licenses",
+  title: "devicelog — Free IT Asset Management Software | Track Laptops, Certs & Licenses",
   description: "Simple IT asset management for small teams. Track laptops, monitors, SSL certificates, and software licenses. Free tier, CSV import, QR labels. No bloat.",
   manifest: "/manifest.json",
   keywords: ["IT asset management", "asset tracking", "IT inventory", "certificate tracking", "warranty tracking", "software license management"],
   openGraph: {
-    title: "Trackstack — Simple IT Asset Management",
+    title: "devicelog — Simple IT Asset Management",
     description: "Track your company's laptops, monitors, SSL certs, and software licenses. Free for small teams.",
-    url: "https://trackstack.dev",
-    siteName: "Trackstack",
+    url: "https://devicelog.dev",
+    siteName: "devicelog",
     type: "website",
-    images: [{ url: "https://trackstack.dev/og-image.svg", width: 1200, height: 630 }],
+    images: [{ url: "https://devicelog.dev/og-image.svg", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Trackstack — Simple IT Asset Management",
+    title: "devicelog — Simple IT Asset Management",
     description: "Track your company's laptops, monitors, SSL certs, and software licenses. Free for small teams.",
-    images: ["https://trackstack.dev/og-image.svg"],
+    images: ["https://devicelog.dev/og-image.svg"],
   },
   robots: { index: true, follow: true },
-  alternates: { canonical: "https://trackstack.dev" },
+  alternates: { canonical: "https://devicelog.dev" },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Anti-FOUC: apply dark class before first paint */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){var t=localStorage.getItem('trackstack-theme')||'dark';document.documentElement.classList.toggle('dark',t==='dark')})()`,
+            __html: `(function(){var t=localStorage.getItem('devicelog-theme')||'dark';document.documentElement.classList.toggle('dark',t==='dark')})()`,
           }}
         />
         <link rel="dns-prefetch" href="https://mbsjxuymiuevankxrgmo.supabase.co" />
@@ -53,12 +53,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
-              "name": "Trackstack",
+              "name": "devicelog",
               "applicationCategory": "BusinessApplication",
               "operatingSystem": "Web",
               "description": "Simple IT asset management for small teams. Track laptops, monitors, SSL certificates, and software licenses.",
               "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "description": "Free tier with up to 50 assets" },
-              "url": "https://trackstack.dev",
+              "url": "https://devicelog.dev",
             }),
           }}
         />

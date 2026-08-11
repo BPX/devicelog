@@ -13,7 +13,7 @@ export default function AssetPageContent() {
   useEffect(() => {
     if (!id) return
     try {
-      const assets: Asset[] = JSON.parse(localStorage.getItem('trackstack_assets') || '[]')
+      const assets: Asset[] = JSON.parse(localStorage.getItem('devicelog_assets') || '[]')
       setAsset(assets.find(a => a.id === id) || null)
     } catch {}
   }, [id])
@@ -36,7 +36,7 @@ export default function AssetPageContent() {
           {asset.warranty_expires && <div className="flex items-center gap-3 text-sm"><Calendar size={14} className="text-slate-400" /><span className="text-slate-700">Warranty: {new Date(asset.warranty_expires).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span></div>}
           {asset.purchase_date && <div className="flex items-center gap-3 text-sm"><Calendar size={14} className="text-slate-400" /><span className="text-slate-700">Purchased: {new Date(asset.purchase_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span></div>}
         </div>
-        <div className="border-t pt-4"><p className="text-xs text-slate-400 text-center">Trackstack Asset</p></div>
+        <div className="border-t pt-4"><p className="text-xs text-slate-400 text-center">devicelog Asset</p></div>
       </div>
     </div>
   )

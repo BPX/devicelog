@@ -1,5 +1,5 @@
 // App-wide settings stored in localStorage
-const KEY = 'trackstack_settings'
+const KEY = 'devicelog_settings'
 
 export interface Employee {
   name: string

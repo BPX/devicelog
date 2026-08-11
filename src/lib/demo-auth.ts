@@ -1,7 +1,7 @@
 // Demo auth — works without Supabase. Uses localStorage.
 // Swap to real Supabase auth by changing createClient() in production.
 
-const DEMO_KEY = 'trackstack_demo'
+const DEMO_KEY = 'devicelog_demo'
 
 interface DemoUser {
   email: string
