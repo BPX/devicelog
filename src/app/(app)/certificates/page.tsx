@@ -80,7 +80,7 @@ export default function CertsPage() {
     if (!teamLoading) loadCerts()
   }, [teamLoading])
 
-  const searchParams = useSearchParams()
+  // Auto-open form when navigated from Quick Add
   useEffect(() => {
     if (searchParams.get('new') === 'true') { setShowForm(true); setEditing(null) }
   }, [searchParams])
