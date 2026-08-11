@@ -1,16 +1,21 @@
 name,email,job_title,department
-John Smith,john@company.com,IT Manager,IT
-Jane Doe,jane@company.com,System Administrator,IT
-Bob Wilson,bob@company.com,Developer,Engineering
-Alice Chen,alice@company.com,UX Designer,Design
-Mike Brown,mike@company.com,DevOps Engineer,Engineering
-Sarah Davis,sarah@company.com,HR Manager,HR
-Tom Lee,tom@company.com,Network Engineer,IT
-Emma White,emma@company.com,Finance Analyst,Finance
-James Kim,james@company.com,Product Manager,Product
-Lisa Park,lisa@company.com,CTO,Executive
-David Mueller,david@company.com,Software Engineer,Engineering
-Anna Weber,anna@company.com,Marketing Lead,Marketing
-Marco Rossi,marco@company.com,Data Analyst,Data
-Sophie Dubois,sophie@company.com,Office Manager,Operations
-Lars Nielsen,lars@company.com,Security Engineer,IT
+Sarah Chen,sarah@company.com,VP Engineering,Engineering
+Marcus Rivera,marcus@company.com,Senior Developer,Engineering
+Priya Patel,priya@company.com,Product Manager,Product
+James Wilson,james@company.com,Design Lead,Design
+Emma Thompson,emma@company.com,Marketing Director,Marketing
+David Kim,david@company.com,Backend Engineer,Engineering
+Anna Müller,anna@company.com,Sales Lead,Sales
+Tom Baker,tom@company.com,IT Support,IT
+Lisa Wong,lisa@company.com,Finance Manager,Finance
+Carlos Diaz,carlos@company.com,Operations Manager,Operations
+Michael Foster,michael@company.com,Frontend Engineer,Engineering
+Sophie Laurent,sophie@company.com,Technical Writer,Engineering
+Raj Patel,raj@company.com,QA Lead,Engineering
+Olivia Berg,olivia@company.com,HR Coordinator,HR
+Lucas Weber,lucas@company.com,Data Analyst,Data
+Nina Johansson,nina@company.com,Content Strategist,Marketing
+Andre Dubois,andre@company.com,Infrastructure Engineer,IT
+Yuki Tanaka,yuki@company.com,Support Specialist,IT
+Fatima Al-Rashid,fatima@company.com,Compliance Officer,Finance
+Marco Bianchi,marco@company.com,UX Researcher,Design

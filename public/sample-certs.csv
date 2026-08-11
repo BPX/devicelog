@@ -1,21 +1,26 @@
 name,type,issuer,expires_at
-devicelog.com SSL,ssl_cert,Let's Encrypt,2027-03-15
-mail.devicelog.com SSL,ssl_cert,DigiCert,2026-12-01
-vpn.devicelog.com SSL,ssl_cert,Sectigo,2025-08-22
-internal-wiki TLS,ssl_cert,Let's Encrypt,2027-07-10
-api.devicelog.com SSL,ssl_cert,Google Trust,2027-01-28
-Office 365 Business,software_license,Microsoft,2026-06-30
-Adobe Creative Cloud,software_license,Adobe,2026-09-15
-Slack Pro,software_license,Slack,2027-02-01
-Zoom Business,software_license,Zoom,2025-11-10
-Google Workspace,software_license,Google,2027-04-01
-Atlassian Jira Cloud,software_license,Atlassian,2026-08-14
-GitHub Enterprise,software_license,GitHub,2026-10-31
-AWS Support Plan,software_contract,AWS,2027-05-01
-Dell ProSupport,software_contract,Dell,2026-12-31
-Datadog Infrastructure,software_contract,Datadog,2025-09-01
-1Password Business,software_license,1Password,2027-01-15
-Figma Enterprise,software_license,Figma,2026-07-20
+devicelog.dev SSL,ssl_cert,Let's Encrypt,2027-06-15
+api.devicelog.dev SSL,ssl_cert,Let's Encrypt,2027-04-03
+internal.devicelog.dev SSL,ssl_cert,Let's Encrypt,2027-05-20
+Office 365 E5,software_license,Microsoft,2026-12-31
+JetBrains All Products Pack,software_license,JetBrains,2026-08-01
+Slack Enterprise Grid,software_license,Slack,2027-01-15
+Cisco Meraki MX95 Support,support_contract,Cisco,2026-04-20
+Vercel Pro,software_license,Vercel,2026-09-30
+1Password Business,software_license,1Password,2027-03-01
+Figma Enterprise,software_license,Figma,2027-01-10
+AWS Business Support,support_contract,Amazon Web Services,2026-11-15
+GitHub Enterprise Cloud,software_license,GitHub,2027-05-30
+Datadog Pro,software_license,Datadog,2026-10-01
+Google Workspace Enterprise,software_license,Google,2027-08-01
+Zoom One Business,software_license,Zoom,2026-07-31
+Adobe Creative Cloud Teams,software_license,Adobe,2027-02-14
 Notion Plus,software_license,Notion,2026-11-05
-CrowdStrike Falcon,software_license,CrowdStrike,2026-04-30
-Okta SSO,software_license,Okta,2027-06-01
+Okta Workforce Identity,software_license,Okta,2027-06-01
+CrowdStrike Falcon Pro,software_license,CrowdStrike,2026-04-30
+Atlassian Cloud Enterprise,software_license,Atlassian,2026-08-14
+Dell ProSupport Plus,support_contract,Dell,2026-12-31
+Linear Business,software_license,Linear,2027-04-01
+Sentry Business,software_license,Sentry,2026-09-15
+Cloudflare Pro,software_license,Cloudflare,2027-03-20
+Tailscale Team,software_license,Tailscale,2026-06-01
