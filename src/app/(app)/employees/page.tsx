@@ -146,7 +146,9 @@ export default function EmployeesPage() {
     if (!addForm.first_name.trim() || !teamId) return
     const fullName = `${addForm.first_name.trim()} ${addForm.last_name.trim()}`.trim()
     if (employees.find(e => e.name.toLowerCase() === fullName.toLowerCase())) { setAddError('An employee with this name already exists.'); return }
+    const empId = Date.now().toString() + Math.random().toString(36).slice(2, 6)
     await saveEmployee({
+      id: empId,
       name: fullName,
       email: addForm.email.trim(),
       job_title: addForm.job_title.trim(),
