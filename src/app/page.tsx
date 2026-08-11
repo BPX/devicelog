@@ -182,7 +182,6 @@ const featureTabs = [
 const plans = [
   { name: 'Free', price: '$0', period: 'forever', description: 'For individuals and small teams getting started.', features: ['Up to 50 assets','2 team members','Certificate tracking','CSV import & export','QR code labels','Basic dashboard'], cta: 'Start free', href: '/signup', featured: false },
   { name: 'Team', price: '$9', period: '/month', description: 'For growing companies that need shared visibility.', features: ['Unlimited assets','Unlimited team members','Everything in Free','Device barcode scanning','Priority support','Bulk QR generation','Custom fields'], cta: 'Start free trial', href: '/signup?plan=team', featured: true },
-  { name: 'Enterprise', price: 'Custom', period: '', description: 'For larger organizations with advanced requirements.', features: ['Everything in Team','SSO / SAML','Audit logs','Dedicated support','Custom SLA','On-premise option','API access'], cta: 'Contact sales', href: 'mailto:hello@devicelog.dev', featured: false },
 ]
 
 const comparison = [
@@ -215,7 +214,6 @@ const faqs = [
   { q: 'How is my data secured?', a: 'All data is encrypted in transit (TLS 1.3) and at rest (AES-256). We run on Supabase with row-level security, meaning your team can only see your company\'s data. Our database is SOC 2 compliant. We don\'t sell, share, or analyze your inventory data. Ever.' },
   { q: 'What happens if I exceed the free limits?', a: 'We\'ll show a friendly notification in your dashboard when you\'re approaching the limit. Your existing data stays safe and accessible. You just can\'t add more assets or team members until you upgrade to Team. No data loss, no surprise bills.' },
   { q: 'Can I cancel my Team plan anytime?', a: 'Yes, with one click from your billing settings. Your data remains accessible on the Free plan. If you have more than 50 assets, you can still view and export everything. You just can\'t add new ones until you either upgrade again or reduce your inventory count.' },
-  { q: 'Do you offer discounts for nonprofits or education?', a: 'Yes! We offer 50% off Team plans for registered nonprofits, educational institutions, and open-source projects. Contact us at hello@devicelog.dev with your organization details and we\'ll set you up.' },
 ]
 
 export default function LandingPage() {
@@ -459,7 +457,7 @@ export default function LandingPage() {
           <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 leading-tight">Simple, transparent pricing</h2>
           <Subtitle>Start free. Upgrade when your team grows. Cancel anytime. No hidden fees, no surprises.</Subtitle>
         </div>
-        <div className="grid sm:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
           {plans.map(plan => (
             <div key={plan.name} className={`rounded-xl p-8 flex flex-col border transition-colors ${
               plan.featured
@@ -546,11 +544,11 @@ export default function LandingPage() {
               </div>
             </div>
             <div>
-              <h4 className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">Company</h4>
+              <h4 className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">Feedback</h4>
               <div className="space-y-2.5 text-sm">
-                <div><a href="mailto:hello@devicelog.dev" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">Contact us</a></div>
-                <div><a href="https://github.com/bpx/devicelog/issues/new/choose" target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">Request feature</a></div>
-                <div><span className="text-slate-500 dark:text-slate-400">hello@devicelog.dev</span></div>
+                <div><a href="https://github.com/bpx/devicelog/issues/new/choose" target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">Request a feature</a></div>
+                <div><a href="https://github.com/bpx/devicelog/issues/new/choose" target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">Report a bug</a></div>
+                <div><a href="https://github.com/bpx/devicelog" target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">GitHub</a></div>
               </div>
             </div>
           </div>
