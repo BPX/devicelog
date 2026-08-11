@@ -219,7 +219,7 @@ export default function ProfilePage() {
                     disabled={checkoutLoading}
                     className="flex-1 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400 disabled:opacity-50"
                   >
-                    {checkoutLoading ? 'Redirecting...' : 'Upgrade to Team — $19/mo'}
+                    {checkoutLoading ? 'Redirecting...' : 'Upgrade to Team — $9/mo'}
                   </button>
                 </div>
               </div>

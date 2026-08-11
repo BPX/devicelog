@@ -209,7 +209,7 @@ function CheckCell({ value }: { value: boolean | string }) {
 }
 
 const faqs = [
-  { q: 'Is devicelog really free?', a: 'Yes. The Free plan includes up to 50 assets and 2 team members. No credit card, no time limit, no hidden fees. We believe every team should have basic IT asset management, and charging for that doesn\'t sit right with us. Upgrade to Team ($19/mo) for unlimited everything.' },
+  { q: 'Is devicelog really free?', a: 'Yes. The Free plan includes up to 50 assets and 2 team members. No credit card, no time limit, no hidden fees. We believe every team should have basic IT asset management, and charging for that doesn\'t sit right with us. Upgrade to Team ($9/mo) for unlimited everything.' },
   { q: 'How is this different from a spreadsheet?', a: 'Spreadsheets go stale the moment someone forgets to update them. devicelog gives your whole team a shared, real-time view of your entire IT inventory. Plus you get automatic certificate expiry reminders, QR code labels, mobile barcode scanning, and team assignment tracking. Things spreadsheets simply can\'t do. When Sarah leaves the company, you know exactly which laptop to recover.' },
   { q: 'Can I import my existing inventory?', a: 'Absolutely. Drop your CSV or Excel file and our column mapper auto-detects names, serials, models, and assigned users. Works with exports from Excel, Google Sheets, Snipe-IT, and most other tools. We\'ve imported inventories ranging from 20 devices to 5,000+.' },
   { q: 'How is my data secured?', a: 'All data is encrypted in transit (TLS 1.3) and at rest (AES-256). We run on Supabase with row-level security, meaning your team can only see your company\'s data. Our database is SOC 2 compliant. We don\'t sell, share, or analyze your inventory data. Ever.' },
