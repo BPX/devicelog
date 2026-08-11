@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 import { useTheme } from '@/lib/theme'
 import { supabase } from '@/lib/supabase/client'
 import InstallPrompt from '@/components/install-prompt'
+import ToastContainer from '@/components/toast'
 import QuickAdd from '@/components/quick-add'
 
 const navItems = [
@@ -96,6 +97,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </aside>
       <main className="flex-1 overflow-auto p-8">{children}</main>
       <InstallPrompt />
+      <ToastContainer />
     </div>
   )
 }

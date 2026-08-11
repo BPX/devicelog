@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { getTeam, getEmployees, queryAssets, saveEmployee, deleteEmployee, saveAsset, deleteAsset } from '@/lib/data'
+import { addToast } from '@/components/toast'
 import CsvImport from '@/components/csv-import'
 import ConfirmDialog from '@/components/confirm-dialog'
 import { Plus, Search, X, Upload, Ghost, Monitor, Download, ArrowUpDown, ArrowUp, ArrowDown, Pencil, Copy } from 'lucide-react'
@@ -319,7 +320,7 @@ Jane Doe,jane@company.com,System Admin,IT`} sampleFilename="employees.csv" onImp
       }
       await loadEmployees()
       setShowImport(false)
-      if (skipped > 0) alert(`Imported ${imported} employees. Skipped ${skipped} duplicate${skipped > 1 ? 's' : ''}.`)
+      if (skipped > 0) addToast(`Imported ${imported} employees. Skipped ${skipped} duplicate${skipped > 1 ? 's' : ''}.`, 'success')
     }} onClose={() => setShowImport(false)} />}
 
     {confirmRemove && <ConfirmDialog

@@ -8,6 +8,7 @@ import ConfirmDialog from '@/components/confirm-dialog'
 import { downloadCsv } from '@/lib/export'
 import { getSettings } from '@/lib/settings-store'
 import { getTeam, queryCerts, saveCert, deleteCert, getTeamSettings } from '@/lib/data'
+import { addToast } from '@/components/toast'
 import Link from 'next/link'
 
 interface Cert { id: string; name: string; type: string; issuer: string; expires_at: string; notify_before_days: number; document?: string; docName?: string }
@@ -233,11 +234,11 @@ Office 365,software_license,Microsoft,2026-12-31`}
             notify_before_days: parseInt(r.notify_before_days) || 30,
           })
         }
-        if (newCerts.length === 0) { alert('All rows are duplicates — nothing imported.'); setShowImport(false); return }
+        if (newCerts.length === 0) { addToast('All rows are duplicates — nothing imported.', 'warning'); setShowImport(false); return }
         for (const c of newCerts) await saveCert(c, teamId)
         await loadCerts()
         setShowImport(false)
-        if (skipped > 0) alert(`Imported ${newCerts.length} certificates. Skipped ${skipped} duplicate${skipped > 1 ? 's' : ''}.`)
+        if (skipped > 0) addToast(`Imported ${newCerts.length} certificates. Skipped ${skipped} duplicate${skipped > 1 ? 's' : ''}.`, 'success')
       }}
       onClose={() => setShowImport(false)}
     />}
