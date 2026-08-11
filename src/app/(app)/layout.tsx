@@ -80,15 +80,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <span className="truncate">{display as string}</span>
           </Link>
           <div className="flex items-center gap-1 mt-1">
-            <a
-              href="https://github.com/bpx/devicelog/issues/new/choose"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-              title="Request a feature"
-            >
-              <MessageSquare size={14} />
-            </a>
             <button onClick={toggle} className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}>
               {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
               <span className="truncate">{theme === 'dark' ? 'Light' : 'Dark'} mode</span>
