@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS settings (
 CREATE TABLE IF NOT EXISTS teams (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
-  owner_id UUID NOT NULL REFERENCES auth.users(id),
+  owner_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -172,8 +172,13 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = ''
 AS $$
+DECLARE
+  uid UUID := auth.uid();
 BEGIN
-  DELETE FROM auth.users WHERE id = auth.uid();
+  -- Delete teams owned by this user first (foreign key constraint)
+  DELETE FROM public.teams WHERE owner_id = uid;
+  -- Delete the user (cascades to all other owned data)
+  DELETE FROM auth.users WHERE id = uid;
 END;
 $$;
 
