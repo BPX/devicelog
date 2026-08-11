@@ -2,10 +2,11 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Package, Shield, Settings, LogOut, LayoutDashboard, Users, User, Sun, Moon, MessageSquare } from 'lucide-react'
-import { getCurrentUser, getCurrentUsername, signOut } from '@/lib/auth'
+import { getCurrentUsername, signOut } from '@/lib/auth'
 import { getTeam } from '@/lib/data'
 import { useEffect, useState } from 'react'
 import { useTheme } from '@/lib/theme'
+import { supabase } from '@/lib/supabase/client'
 import InstallPrompt from '@/components/install-prompt'
 import QuickAdd from '@/components/quick-add'
 
@@ -26,8 +27,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     async function init() {
-      const user = getCurrentUser()
-      if (!user) { router.replace('/login'); return }
+      // Use getSession for proper token refresh, not localStorage
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) { router.replace('/login'); return }
 
       // Extract username from JWT if not in localStorage yet
       if (!getCurrentUsername()) {
@@ -49,7 +51,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         }
       }
 
-      setDisplay(getCurrentUsername() || user)
+      setDisplay(getCurrentUsername() || session.user.email || 'User')
     }
     init()
   }, [])

@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
-import { getCurrentUser } from '@/lib/auth'
 import { Plus, Users } from 'lucide-react'
 
 export default function SetupPage() {
@@ -14,9 +13,9 @@ export default function SetupPage() {
 
   useEffect(() => {
     async function check() {
-      const user = getCurrentUser()
-      if (!user) { router.replace('/login'); return }
-      // Check if user already belongs to a team
+      // Use getSession to refresh the token if needed
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) { router.replace('/login'); return }
       const { data } = await supabase.from('team_members').select('team_id').single()
       if (data?.team_id) router.replace('/dashboard')
       else setHasTeam(false)
@@ -28,18 +27,25 @@ export default function SetupPage() {
     e.preventDefault()
     if (!name.trim()) return
     setLoading(true); setError('')
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { router.replace('/login'); return }
+
+    // Refresh session before proceeding
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) { router.replace('/login'); return }
 
     // Create team
-    const { data: team, error: teamErr } = await supabase.from('teams').insert({ name: name.trim(), owner_id: user.id }).select('id').single()
+    const { data: team, error: teamErr } = await supabase
+      .from('teams')
+      .insert({ name: name.trim(), owner_id: session.user.id })
+      .select('id')
+      .single()
+
     if (teamErr) { setError(teamErr.message); setLoading(false); return }
 
     // Add creator as admin
-    await supabase.from('team_members').insert({ team_id: team.id, user_id: user.id, role: 'admin' })
+    await supabase.from('team_members').insert({ team_id: team.id, user_id: session.user.id, role: 'admin' })
 
     // Create default settings
-    await supabase.from('settings').insert({ user_id: user.id, team_id: team.id })
+    await supabase.from('settings').insert({ user_id: session.user.id, team_id: team.id, key: 'defaults', value: {} })
 
     router.push('/dashboard')
   }
@@ -50,7 +56,7 @@ export default function SetupPage() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 bg-cyan-100 dark:bg-cyan-900 rounded-full flex items-center justify-center mx-auto mb-4">
             <Users size={24} className="text-cyan-600 dark:text-cyan-400" />
           </div>
           <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Set up your team</h1>
@@ -61,7 +67,7 @@ export default function SetupPage() {
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Team name</label>
             <input value={name} onChange={e => setName(e.target.value)} required placeholder="Acme Corp IT"
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
+              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500" />
           </div>
           <button type="submit" disabled={loading}
             className="w-full py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700 disabled:opacity-50">

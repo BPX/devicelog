@@ -1,8 +1,10 @@
 'use client'
 
+import { supabase } from './supabase/client'
+
 const U = 'https://mbsjxuymiuevankxrgmo.supabase.co'
 const REST = U + '/rest/v1'
-export const K = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ic2p4dXltaXVldmFua3hyZ21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNTcwOTQsImV4cCI6MjEwMTkzMzA5NH0.TUV0c2eIYkr00MTuzCiC84D9fThHeGEiMIvm4090DIs'
+export const K = 'eyJhbG...0DIs'
 
 // Resolve username → email (localStorage first, then API)
 async function resolveEmail(username: string): Promise<string | null> {
@@ -46,6 +48,9 @@ export async function signUp(email: string, password: string, username?: string)
     localStorage.setItem('sb_refresh', j.refresh_token || '')
     localStorage.setItem('sb_email', email)
     if (username) localStorage.setItem('sb_username', username)
+
+    // Sync session to Supabase SDK
+    await supabase.auth.setSession({ access_token: j.access_token, refresh_token: j.refresh_token || '' })
     
     // Insert into user_profiles for login lookup
     if (username) {
@@ -86,6 +91,9 @@ export async function signIn(login: string, password: string) {
   localStorage.setItem('sb_token', j.access_token)
   localStorage.setItem('sb_refresh', j.refresh_token || '')
   localStorage.setItem('sb_email', email)
+
+  // Sync session to Supabase SDK so client components can use supabase.from()
+  await supabase.auth.setSession({ access_token: j.access_token, refresh_token: j.refresh_token || '' })
   
   // Username — try user_metadata first, then user_profiles
   const metaUser = j.user?.user_metadata?.username
