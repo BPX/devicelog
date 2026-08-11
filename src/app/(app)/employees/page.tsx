@@ -259,7 +259,9 @@ Jane Doe,jane@company.com,System Admin,IT`} sampleFilename="employees.csv" onImp
       for (const r of rows) {
         const name = (r.name || r['name'] || r[Object.keys(r)[0]] || '').trim()
         if (name) {
+          const empId = Date.now().toString() + Math.random().toString(36).slice(2, 6)
           await saveEmployee({
+            id: empId,
             name,
             email: (r.email || '').trim(),
             job_title: (r.job_title || '').trim(),

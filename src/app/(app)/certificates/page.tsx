@@ -197,6 +197,7 @@ Office 365,software_license,Microsoft,2026-12-31`}
       onImport={async rows => {
         if (!teamId) return
         const newCerts = rows.map(r => ({
+          id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
           name: r.name || r.cert_name || r.domain || 'Unknown',
           type: (r.type || 'ssl_cert').toLowerCase().replace(' ','_'),
           issuer: r.issuer || '',
