@@ -355,7 +355,7 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
       />
     )}
 
-    {qrAsset && <QrLabel assetId={qrAsset.id} assetName={qrAsset.name} onClose={() => setQrAsset(null)} />}
+    {qrAsset && <QrLabel assetId={qrAsset.id} assetName={qrAsset.name} assetSerial={qrAsset.serial_number} onClose={() => setQrAsset(null)} />}
 
     {deletingAsset && (
       <ConfirmDialog
