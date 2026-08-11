@@ -72,8 +72,8 @@ export default function DashboardPage() {
 
   const stats = [
     { label: 'Total Assets', value: assets.length, icon: Package, color: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-50 dark:bg-cyan-950', href: '/assets' },
-    { label: 'Active Certs', value: certs.length, icon: Shield, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-950', href: '/certificates' },
     { label: 'Employees', value: employeeCount, icon: Users, color: 'text-violet-600 dark:text-violet-400', bg: 'bg-violet-50 dark:bg-violet-950', href: '/employees' },
+    { label: 'Active Certifications', value: certs.length, icon: Shield, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-950', href: '/certificates' },
     { label: 'Expiring Soon', value: expiringSoon, icon: AlertTriangle, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-950', href: '/certificates?expiring=true' },
     { label: 'Expired', value: expired, icon: AlertTriangle, color: 'text-red-600 dark:text-red-400', bg: 'bg-red-50 dark:bg-red-950', href: '/certificates?expired=true' },
   ]
