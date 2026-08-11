@@ -99,7 +99,7 @@ export default function CertsPage() {
 
   function startEdit(c: Cert) {
     setEditing(c)
-    setForm({ name:c.name, type:c.type, issuer:c.issuer||'', expires_at:c.expires_at, notify_before_days:c.notify_before_days||30, document:c.document||'', docName:c.docName||'' })
+    setForm({ id:c.id, name:c.name, type:c.type, issuer:c.issuer||'', expires_at:c.expires_at, notify_before_days:c.notify_before_days||30, document:c.document||'', docName:c.docName||'' })
     setShowForm(true)
   }
 
