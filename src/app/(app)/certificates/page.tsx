@@ -29,6 +29,7 @@ export default function CertsPage() {
 
   // ── Multi-select ──
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkDeleting, setBulkDeleting] = useState(false)
 
   function toggleSelect(id: string) {
     setSelectedIds(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
@@ -39,9 +40,8 @@ export default function CertsPage() {
     setSelectedIds(new Set(certs.map(c => c.id)))
   }
 
-  async function bulkDelete() {
-    if (selectedIds.size === 0) return
-    if (!confirm(`Delete ${selectedIds.size} certificate${selectedIds.size > 1 ? 's' : ''}?`)) return
+  async function doBulkDelete() {
+    setBulkDeleting(false)
     for (const id of selectedIds) await deleteCert(id)
     setSelectedIds(new Set())
     await loadCerts()
@@ -243,6 +243,16 @@ Office 365,software_license,Microsoft,2026-12-31`}
       onClose={() => setShowImport(false)}
     />}
 
+    {bulkDeleting && (
+      <ConfirmDialog
+        title={`Delete ${selectedIds.size} certificate${selectedIds.size > 1 ? 's' : ''}?`}
+        message="This permanently removes the selected certificates."
+        confirmLabel={`Delete ${selectedIds.size}`}
+        onConfirm={doBulkDelete}
+        onCancel={() => setBulkDeleting(false)}
+      />
+    )}
+
     {deleteTarget && <ConfirmDialog
       title={`Delete ${deleteTarget.name}?`}
       message="This permanently removes the certificate from your tracking."
@@ -256,7 +266,7 @@ Office 365,software_license,Microsoft,2026-12-31`}
       {selectedIds.size > 0 && (
         <div className="flex items-center gap-3 px-4 py-2 bg-cyan-50 dark:bg-cyan-950 border-b border-cyan-200 dark:border-cyan-800 text-sm">
           <span className="text-cyan-800 dark:text-cyan-200 font-medium">{selectedIds.size} selected</span>
-          <button onClick={bulkDelete} className="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600">Delete</button>
+          <button onClick={() => setBulkDeleting(true)} className="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600">Delete</button>
           <button onClick={() => setSelectedIds(new Set())} className="px-3 py-1 border border-slate-300 dark:border-slate-600 rounded text-xs text-slate-600 dark:text-slate-400">Clear</button>
         </div>
       )}

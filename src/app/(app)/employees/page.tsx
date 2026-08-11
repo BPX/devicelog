@@ -29,6 +29,7 @@ export default function EmployeesPage() {
 
   // ── Multi-select ──
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkDeleting, setBulkDeleting] = useState(false)
 
   function toggleSelect(id: string) {
     setSelectedIds(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next })
@@ -39,9 +40,8 @@ export default function EmployeesPage() {
     setSelectedIds(new Set(employees.map(e => e.id!).filter(Boolean)))
   }
 
-  async function bulkDelete() {
-    if (selectedIds.size === 0) return
-    if (!confirm(`Delete ${selectedIds.size} employee${selectedIds.size > 1 ? 's' : ''}?`)) return
+  async function doBulkDelete() {
+    setBulkDeleting(false)
     for (const id of selectedIds) await deleteEmployee(id)
     setSelectedIds(new Set())
     await loadEmployees()
@@ -218,7 +218,7 @@ export default function EmployeesPage() {
         {selectedIds.size > 0 && (
           <div className="flex items-center gap-3 px-4 py-2 bg-cyan-50 dark:bg-cyan-950 border-b border-cyan-200 dark:border-cyan-800 text-sm">
             <span className="text-cyan-800 dark:text-cyan-200 font-medium">{selectedIds.size} selected</span>
-            <button onClick={bulkDelete} className="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600">Delete</button>
+            <button onClick={() => setBulkDeleting(true)} className="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600">Delete</button>
             <button onClick={() => setSelectedIds(new Set())} className="px-3 py-1 border border-slate-300 dark:border-slate-600 rounded text-xs text-slate-600 dark:text-slate-400">Clear</button>
           </div>
         )}
@@ -322,6 +322,16 @@ Jane Doe,jane@company.com,System Admin,IT`} sampleFilename="employees.csv" onImp
       setShowImport(false)
       if (skipped > 0) addToast(`Imported ${imported} employees. Skipped ${skipped} duplicate${skipped > 1 ? 's' : ''}.`, 'success')
     }} onClose={() => setShowImport(false)} />}
+
+    {bulkDeleting && (
+      <ConfirmDialog
+        title={`Delete ${selectedIds.size} employee${selectedIds.size > 1 ? 's' : ''}?`}
+        message="This permanently removes the selected employees and unassigns their assets."
+        confirmLabel={`Delete ${selectedIds.size}`}
+        onConfirm={doBulkDelete}
+        onCancel={() => setBulkDeleting(false)}
+      />
+    )}
 
     {confirmRemove && <ConfirmDialog
       title={`Remove ${confirmRemove.name}?`}

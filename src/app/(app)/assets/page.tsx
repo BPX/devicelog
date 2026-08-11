@@ -30,6 +30,7 @@ export default function AssetsPage() {
 
   // ── Multi-select ──
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [bulkDeleting, setBulkDeleting] = useState(false)
 
   function toggleSelect(id: string) {
     setSelectedIds(prev => {
@@ -44,9 +45,8 @@ export default function AssetsPage() {
     setSelectedIds(new Set(assets.map(a => a.id)))
   }
 
-  async function bulkDelete() {
-    if (selectedIds.size === 0) return
-    if (!confirm(`Delete ${selectedIds.size} asset${selectedIds.size > 1 ? 's' : ''}?`)) return
+  async function doBulkDelete() {
+    setBulkDeleting(false)
     for (const id of selectedIds) await deleteAssetDb(id)
     setSelectedIds(new Set())
     await fetchAssets()
@@ -358,6 +358,16 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
 
     {qrAsset && <QrLabel assetId={qrAsset.id} assetName={qrAsset.name} assetSerial={qrAsset.serial_number} onClose={() => setQrAsset(null)} />}
 
+    {bulkDeleting && (
+      <ConfirmDialog
+        title={`Delete ${selectedIds.size} asset${selectedIds.size > 1 ? 's' : ''}?`}
+        message="This permanently removes the selected assets from your inventory."
+        confirmLabel={`Delete ${selectedIds.size}`}
+        onConfirm={doBulkDelete}
+        onCancel={() => setBulkDeleting(false)}
+      />
+    )}
+
     {deletingAsset && (
       <ConfirmDialog
         title={`Delete ${deletingAsset.name}?`}
@@ -428,7 +438,7 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
         {selectedIds.size > 0 && (
           <div className="flex items-center gap-3 px-4 py-2 bg-cyan-50 dark:bg-cyan-950 border-b border-cyan-200 dark:border-cyan-800 text-sm">
             <span className="text-cyan-800 dark:text-cyan-200 font-medium">{selectedIds.size} selected</span>
-            <button onClick={bulkDelete} className="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600">Delete</button>
+            <button onClick={() => setBulkDeleting(true)} className="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600">Delete</button>
             <button onClick={() => setSelectedIds(new Set())} className="px-3 py-1 border border-slate-300 dark:border-slate-600 rounded text-xs text-slate-600 dark:text-slate-400">Clear</button>
           </div>
         )}
