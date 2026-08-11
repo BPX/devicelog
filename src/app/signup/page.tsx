@@ -34,7 +34,7 @@ export default function SignupPage() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 tracking-tight">Track<span className="text-cyan-600 dark:text-cyan-400">stack</span></h1>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 tracking-tight">device<span className="text-cyan-600 dark:text-cyan-400">log</span></h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Create your account</p>
         </div>
         <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-950 p-6 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
