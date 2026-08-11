@@ -144,14 +144,14 @@ export default function CertsPage() {
     <div className="text-center py-20">
       <Shield size={48} className="mx-auto mb-3 text-slate-300 dark:text-slate-600" />
       <p className="text-lg font-medium text-slate-600 dark:text-slate-400">No team set up</p>
-      <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Create or join a team to track certificates.</p>
+      <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Create or join a team to track certifications.</p>
       <Link href="/team" className="inline-block mt-4 px-4 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400">Go to Team</Link>
     </div>
   )
 
   return (<div>
     <div className="flex justify-between items-center mb-6">
-      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Certs &amp; Licenses</h1>
+      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Certifications</h1>
       <div className="flex gap-2">
         <button onClick={() => setShowImport(true)} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Upload size={16}/>Import CSV</button>
         <button onClick={() => downloadCsv(certs, 'devicelog-certs.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Download size={16}/>Export</button>
@@ -210,7 +210,7 @@ export default function CertsPage() {
       </form></div></div>}
 
     {showImport && <CsvImport
-      title="Import Certificates"
+      title="Import Certifications"
       description="Upload a CSV with name, type, issuer, expiry. We'll try to match columns."
       sampleData={`name,type,issuer,expires_at
 devicelog.com SSL,ssl_cert,Let's Encrypt,2027-06-15
@@ -246,7 +246,7 @@ Office 365,software_license,Microsoft,2026-12-31`}
     {bulkDeleting && (
       <ConfirmDialog
         title={`Delete ${selectedIds.size} certificate${selectedIds.size > 1 ? 's' : ''}?`}
-        message="This permanently removes the selected certificates."
+        message="This permanently removes the selected certifications."
         confirmLabel={`Delete ${selectedIds.size}`}
         onConfirm={doBulkDelete}
         onCancel={() => setBulkDeleting(false)}

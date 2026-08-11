@@ -9,7 +9,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] })
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "devicelog — Free IT Asset Management Software | Track Laptops, Certs & Licenses",
+  title: "devicelog — Free IT Asset Management Software | Track Laptops & Certifications",
   description: "Simple IT asset management for small teams. Track laptops, monitors, SSL certificates, and software licenses. Free tier, CSV import, QR labels. No bloat.",
   manifest: "/manifest.json",
   keywords: ["IT asset management", "asset tracking", "IT inventory", "certificate tracking", "warranty tracking", "software license management"],

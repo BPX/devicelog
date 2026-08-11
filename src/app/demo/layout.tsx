@@ -8,7 +8,7 @@ const navItems = [
   { href: '/demo/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/demo/assets', label: 'Assets', icon: Package },
   { href: '/demo/employees', label: 'Employees', icon: Users },
-  { href: '/demo/certificates', label: 'Certs & Licenses', icon: Shield },
+  { href: '/demo/certificates', label: 'Certifications', icon: Shield },
 ]
 
 export default function DemoLayout({ children }: { children: React.ReactNode }) {

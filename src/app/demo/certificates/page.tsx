@@ -59,7 +59,7 @@ export default function DemoCertificates() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">Certs &amp; Licenses</h1>
+      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">Certifications</h1>
 
       <div className="mb-4 relative">
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />

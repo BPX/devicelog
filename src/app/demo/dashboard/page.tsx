@@ -7,8 +7,8 @@ import { daysUntil } from '@/lib/utils'
 
 const stats = [
   { label: 'Total Assets', value: 247, icon: Package, color: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-50 dark:bg-cyan-950' },
-  { label: 'Active Certs', value: 38, icon: Shield, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-950' },
   { label: 'Team Members', value: 12, icon: Users, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-950' },
+  { label: 'Active Certifications', value: 38, icon: Shield, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-950' },
   { label: 'Expiring Soon', value: 5, icon: AlertTriangle, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-950' },
 ]
 

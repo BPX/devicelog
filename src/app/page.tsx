@@ -94,7 +94,7 @@ const featureTabs = [
     ),
   },
   {
-    id: 'certs', label: 'Certificates', icon: Shield,
+    id: 'certs', label: 'Certifications', icon: Shield,
     title: 'Never let a certificate expire again',
     description: 'Track SSL certs, software licenses, support contracts, and domain renewals. Get email reminders before they expire. See at a glance what\'s expiring this month, what\'s already expired, and what\'s safe.',
     image: (
@@ -304,8 +304,8 @@ export default function LandingPage() {
             <div className="p-6 sm:p-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[
                 { label: 'Total Assets', value: '247', icon: Package, color: 'text-cyan-400', bg: 'bg-cyan-500/10' },
-                { label: 'Active Certs', value: '38', icon: Shield, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
                 { label: 'Team Members', value: '12', icon: Users, color: 'text-violet-400', bg: 'bg-violet-500/10' },
+                { label: 'Active Certifications', value: '38', icon: Shield, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
                 { label: 'Expiring Soon', value: '5', icon: AlertTriangle, color: 'text-amber-400', bg: 'bg-amber-500/10' },
               ].map(s => (
                 <div key={s.label} className={`${s.bg} rounded-lg p-4 border border-white/5 text-left`}>
@@ -530,7 +530,7 @@ export default function LandingPage() {
             <div>
               <h4 className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">Product</h4>
               <div className="space-y-2.5 text-sm">
-                {['Live Demo','Compare','Demo Dashboard','Demo Assets','Demo Certificates','Pricing'].map((label, i) => (
+                {['Live Demo','Compare','Demo Dashboard','Demo Assets','Demo Certifications','Pricing'].map((label, i) => (
                   <div key={label}><Link href={['/demo','/compare','/demo/dashboard','/demo/assets','/demo/certificates','/#pricing'][i]} className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">{label}</Link></div>
                 ))}
               </div>
