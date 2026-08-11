@@ -21,7 +21,7 @@ export default function DemoLayout({ children }: { children: React.ReactNode }) 
       <aside className="w-56 border-r border-slate-200 dark:border-slate-700 flex flex-col bg-slate-50 dark:bg-slate-900">
         <div className="p-5 border-b border-slate-200 dark:border-slate-700">
           <Link href="/" className="text-lg font-semibold text-slate-900 dark:text-slate-100 tracking-tight">
-            Track<span className="text-cyan-600 dark:text-cyan-400">stack</span>
+            device<span className="text-cyan-600 dark:text-cyan-400">log</span>
           </Link>
           <span className="ml-2 px-2 py-0.5 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 text-xs font-medium rounded-full">
             Demo
