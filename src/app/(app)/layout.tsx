@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase/client'
 import InstallPrompt from '@/components/install-prompt'
 import ToastContainer from '@/components/toast'
 import QuickAdd from '@/components/quick-add'
+import OnboardingTour from '@/components/onboarding-tour'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -98,6 +99,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </aside>
       <main className="flex-1 overflow-auto p-8">{children}</main>
       <InstallPrompt />
+      <OnboardingTour />
       <ToastContainer />
     </div>
   )
