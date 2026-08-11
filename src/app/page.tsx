@@ -181,7 +181,7 @@ const featureTabs = [
 // ── Pricing ──
 const plans = [
   { name: 'Free', price: '$0', period: 'forever', description: 'For individuals and small teams getting started.', features: ['Up to 50 assets','2 team members','Certificate tracking','CSV import & export','QR code labels','Basic dashboard'], cta: 'Start free', href: '/signup', featured: false },
-  { name: 'Team', price: '$19', period: '/month', description: 'For growing companies that need shared visibility.', features: ['Unlimited assets','Unlimited team members','Everything in Free','Device barcode scanning','Priority support','Bulk QR generation','Custom fields'], cta: 'Start free trial', href: '/signup?plan=team', featured: true },
+  { name: 'Team', price: '$9', period: '/month', description: 'For growing companies that need shared visibility.', features: ['Unlimited assets','Unlimited team members','Everything in Free','Device barcode scanning','Priority support','Bulk QR generation','Custom fields'], cta: 'Start free trial', href: '/signup?plan=team', featured: true },
   { name: 'Enterprise', price: 'Custom', period: '', description: 'For larger organizations with advanced requirements.', features: ['Everything in Team','SSO / SAML','Audit logs','Dedicated support','Custom SLA','On-premise option','API access'], cta: 'Contact sales', href: 'mailto:hello@devicelog.dev', featured: false },
 ]
 
@@ -233,6 +233,7 @@ export default function LandingPage() {
           </Link>
           <div className="hidden sm:flex items-center gap-5">
             <Link href="/demo" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Live Demo</Link>
+            <Link href="/compare" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Compare</Link>
             <Link href="/#pricing" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Pricing</Link>
             <a href="https://github.com/bpx/devicelog/issues/new/choose" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Feedback</a>
             <Link href="/login" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Log in</Link>
@@ -531,8 +532,8 @@ export default function LandingPage() {
             <div>
               <h4 className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">Product</h4>
               <div className="space-y-2.5 text-sm">
-                {['Live Demo','Demo Dashboard','Demo Assets','Demo Certificates','Pricing'].map((label, i) => (
-                  <div key={label}><Link href={['/demo','/demo/dashboard','/demo/assets','/demo/certificates','/#pricing'][i]} className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">{label}</Link></div>
+                {['Live Demo','Compare','Demo Dashboard','Demo Assets','Demo Certificates','Pricing'].map((label, i) => (
+                  <div key={label}><Link href={['/demo','/compare','/demo/dashboard','/demo/assets','/demo/certificates','/#pricing'][i]} className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">{label}</Link></div>
                 ))}
               </div>
             </div>
