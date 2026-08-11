@@ -44,7 +44,7 @@ So I built the thing I wanted: drop a CSV, get QR codes, track certs, scan from 
 **A few honest things:**
 
 - This is a solo project. I wrote every line of code (with AI help on the boilerplate).
-- The storage bucket upload currently has a 500KB limit — working on raising it.
+- The storage bucket upload currently has a 2MB limit — working on raising it.
 - It's source-visible under BSL, meaning you can read the code, contribute, and self-host for non-production use. MIT after 4 years.
 
 **What I'd love feedback on:**
