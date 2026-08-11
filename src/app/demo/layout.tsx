@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Package, Shield, LayoutDashboard, Users, ArrowRight, Sun, Moon, MessageSquare } from 'lucide-react'
+import { Package, Shield, LayoutDashboard, Users, ArrowRight, Sun, Moon, Settings } from 'lucide-react'
 import { useTheme } from '@/lib/theme'
 
 const navItems = [
@@ -9,6 +9,8 @@ const navItems = [
   { href: '/demo/assets', label: 'Assets', icon: Package },
   { href: '/demo/employees', label: 'Employees', icon: Users },
   { href: '/demo/certificates', label: 'Certifications', icon: Shield },
+  { href: '/signup', label: 'Team', icon: Users },
+  { href: '/signup', label: 'Settings', icon: Settings },
 ]
 
 export default function DemoLayout({ children }: { children: React.ReactNode }) {
@@ -44,30 +46,21 @@ export default function DemoLayout({ children }: { children: React.ReactNode }) 
             )
           })}
         </nav>
-        <div className="p-3 border-t border-slate-200 dark:border-slate-700 space-y-2">
-          <a
-            href="https://github.com/bpx/devicelog/issues/new/choose"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-          >
-            <MessageSquare size={14} />
-            Request feature
-          </a>
-          <Link
-            href="/signup"
-            className="flex items-center gap-2 px-3 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700 transition-colors"
-          >
+        <div className="p-3 border-t border-slate-200 dark:border-slate-700">
+          <Link href="/signup" className="flex items-center justify-center gap-2 px-3 py-2 bg-cyan-600 text-white rounded-md text-sm font-medium hover:bg-cyan-700 transition-colors">
             Sign up free <ArrowRight size={14} />
           </Link>
-          <button
-            onClick={toggle}
-            className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 w-full transition-colors"
-            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-          >
-            {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
-            <span className="truncate">{theme === 'dark' ? 'Light' : 'Dark'} mode</span>
-          </button>
+          <div className="flex items-center gap-1 mt-2">
+            <button onClick={toggle} className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}>
+              {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+              <span className="truncate">{theme === 'dark' ? 'Light' : 'Dark'} mode</span>
+            </button>
+          </div>
+          <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+            <a href="https://github.com/bpx/devicelog/issues/new/choose" target="_blank" rel="noopener" className="flex items-center gap-2 px-3 py-2 rounded-md text-xs text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+              🐛 Report a bug · Request a feature
+            </a>
+          </div>
         </div>
       </aside>
 
