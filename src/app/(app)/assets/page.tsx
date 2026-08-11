@@ -1,10 +1,11 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
-import { formatDate } from '@/lib/utils'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Plus, Search, Pencil, Trash2, Package, Upload, Monitor, QrCode, ArrowUpDown, ArrowUp, ArrowDown, Download, Camera, ChevronLeft, ChevronRight, AlertTriangle, RefreshCw } from 'lucide-react'
 import { getSettings, addEmployee as addEmp } from '@/lib/settings-store'
 import { getTeam, queryAssets, saveAsset, saveAssetsBatch, deleteAsset as deleteAssetDb, uploadAssetImage, getTeamSettings, getEmployees } from '@/lib/data'
 import { addToast } from '@/components/toast'
+import { formatDate } from '@/lib/utils'
 import { checkPlanLimit } from '@/lib/billing'
 import type { Asset } from '@/lib/data'
 import CsvImport from '@/components/csv-import'
@@ -128,13 +129,12 @@ export default function AssetsPage() {
     if (!teamLoading) { fetchAssets(); loadEmployeeNames() }
   }, [fetchAssets, teamLoading])
 
+  const searchParams = useSearchParams()
+
   // Auto-open create modal from QuickAdd
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.location.search.includes('new=true')) {
-      setShowForm(true)
-      window.history.replaceState({}, '', window.location.pathname)
-    }
-  }, [])
+    if (searchParams.get('new') === 'true') setShowForm(true)
+  }, [searchParams])
 
   function handleSearchChange(value: string) {
     setSearch(value)
@@ -310,7 +310,7 @@ export default function AssetsPage() {
         <button onClick={() => setShowCsvImport(true)} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Upload size={16} />Import CSV</button>
         <button onClick={() => setShowScanner(true)} className="flex items-center gap-2 px-3 py-2 border border-cyan-300 text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-950 rounded-md text-sm font-medium hover:bg-cyan-100"><Monitor size={16} />Scan Device</button>
         <button onClick={() => downloadCsv(assets, 'devicelog-assets.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Download size={16} />Export</button>
-        <button className="add-asset-btn flex items-center gap-2 px-4 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400" onClick={() => { setEditing(null); setShowCsvImport(false); setShowScanner(false); setDeletingAsset(null); setQrAsset(null); setForm({ name: '', category: 'laptop', manufacturer: '', model: '', serial_number: '', status: 'active', assigned_to: '', location: '', purchase_date: '', warranty_expires: '', image: '' }); setShowForm(true) }}><Plus size={16} />Add Asset</button>
+        <button className="add-asset-btn" onClick={() => { setEditing(null); setShowCsvImport(false); setShowScanner(false); setDeletingAsset(null); setQrAsset(null); setForm({ name: '', category: 'laptop', manufacturer: '', model: '', serial_number: '', status: 'active', assigned_to: '', location: '', purchase_date: '', warranty_expires: '', image: '' }); setShowForm(true) }}><Plus size={16} />Add Asset</button>
       </div>
     </div>
 
