@@ -1,0 +1,30 @@
+name: Bug Report
+description: Report something that isn't working
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: textarea
+    attributes:
+      label: Describe the bug
+      description: What happened? What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See error
+  - type: input
+    attributes:
+      label: Browser
+      placeholder: e.g. Chrome 130, Firefox 128
+  - type: input
+    attributes:
+      label: Device
+      placeholder: e.g. Desktop, iPhone
+  - type: textarea
+    attributes:
+      label: Screenshots
+      description: Drag and drop screenshots here if applicable.

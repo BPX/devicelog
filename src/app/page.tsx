@@ -269,6 +269,7 @@ export default function LandingPage() {
           <div className="hidden sm:flex items-center gap-5">
             <Link href="/demo" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Live Demo</Link>
             <Link href="/#pricing" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Pricing</Link>
+            <a href="https://github.com/bpx/trackstack/issues/new/choose" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Feedback</a>
             <Link href="/login" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors">Log in</Link>
             <button onClick={toggle} className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" aria-label="Toggle theme">
               {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
@@ -613,7 +614,7 @@ export default function LandingPage() {
               <h4 className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">Company</h4>
               <div className="space-y-2.5 text-sm">
                 <div><a href="mailto:hello@trackstack.dev" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">Contact us</a></div>
-                <div><a href="https://github.com/bpx/trackstack" target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">GitHub</a></div>
+                <div><a href="https://github.com/bpx/trackstack/issues/new/choose" target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">Request feature</a></div>
                 <div><span className="text-slate-500 dark:text-slate-400">hello@trackstack.dev</span></div>
               </div>
             </div>
