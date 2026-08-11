@@ -95,6 +95,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </button>
             <button onClick={async () => { await signOut(); router.replace('/login') }} className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" title="Sign out"><LogOut size={14} /></button>
           </div>
+          <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+            <a href="https://github.com/bpx/devicelog/issues/new/choose" target="_blank" rel="noopener" className="flex items-center gap-2 px-3 py-2 rounded-md text-xs text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+              🐛 Report a bug · Request a feature
+            </a>
+          </div>
         </div>
       </aside>
       <main className="flex-1 overflow-auto p-8">{children}</main>

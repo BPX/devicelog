@@ -80,7 +80,12 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">Dashboard</h1>
+      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-3">Dashboard</h1>
+      <div className="mb-4 flex items-center gap-2 px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-500 dark:text-slate-400">
+        <span>🐛</span>
+        <span>Found a bug or have a feature idea?</span>
+        <a href="https://github.com/bpx/devicelog/issues/new/choose" target="_blank" rel="noopener" className="text-cyan-600 dark:text-cyan-400 font-medium hover:underline ml-auto">Report on GitHub →</a>
+      </div>
       {(expired > 0 || warrantyExpired > 0) && <div className="mb-4 flex items-center gap-3 px-4 py-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg text-sm">
         <AlertTriangle size={16} className="text-red-500 flex-shrink-0" />
         <span className="text-red-800">
