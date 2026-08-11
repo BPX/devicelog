@@ -226,7 +226,8 @@ export default function LandingPage() {
       {/* ── NAV ── */}
       <nav className="border-b border-slate-100 dark:border-slate-800 sticky top-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md z-50">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            <img src="/logo.svg" alt="" className="w-7 h-7" />
             device<span className="text-cyan-600 dark:text-cyan-400">log</span>
           </Link>
           <div className="hidden sm:flex items-center gap-5">
@@ -515,7 +516,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid sm:grid-cols-4 gap-8 mb-12">
             <div className="sm:col-span-1">
-              <Link href="/" className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">device<span className="text-cyan-600 dark:text-cyan-400">log</span></Link>
+              <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100"><img src="/logo.svg" alt="" className="w-7 h-7" />device<span className="text-cyan-600 dark:text-cyan-400">log</span></Link>
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-3 leading-relaxed">Simple IT asset management for modern teams. No bloat, no spreadsheets, no surprises.</p>
             </div>
             <div>

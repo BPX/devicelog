@@ -64,7 +64,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="flex h-screen">
       <aside className="w-56 border-r border-slate-200 dark:border-slate-700 flex flex-col bg-slate-50 dark:bg-slate-900">
         <div className="p-5 border-b border-slate-200 dark:border-slate-700">
-          <Link href="/dashboard" className="text-lg font-semibold text-slate-900 dark:text-slate-100 tracking-tight">device<span className="text-cyan-600 dark:text-cyan-400">log</span></Link>
+          <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold text-slate-900 dark:text-slate-100 tracking-tight"><img src="/logo.svg" alt="" className="w-6 h-6" />device<span className="text-cyan-600 dark:text-cyan-400">log</span></Link>
         </div>
         <div className="px-3 pt-3"><QuickAdd />
         </div>
