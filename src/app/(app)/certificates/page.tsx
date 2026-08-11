@@ -80,12 +80,10 @@ export default function CertsPage() {
     if (!teamLoading) loadCerts()
   }, [teamLoading])
 
+  const searchParams = useSearchParams()
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.location.search.includes('new=true')) {
-      setShowForm(true); setEditing(null)
-      window.history.replaceState({}, '', window.location.pathname)
-    }
-  }, [])
+    if (searchParams.get('new') === 'true') { setShowForm(true); setEditing(null) }
+  }, [searchParams])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

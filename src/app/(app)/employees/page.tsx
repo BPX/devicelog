@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { getTeam, getEmployees, queryAssets, saveEmployee, deleteEmployee, saveAsset, deleteAsset } from '@/lib/data'
 import { addToast } from '@/components/toast'
 import CsvImport from '@/components/csv-import'
@@ -85,12 +86,10 @@ export default function EmployeesPage() {
     if (!teamLoading) loadEmployees()
   }, [teamLoading])
 
+  const searchParams = useSearchParams()
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.location.search.includes('new=true')) {
-      setShowAddModal(true)
-      window.history.replaceState({}, '', window.location.pathname)
-    }
-  }, [])
+    if (searchParams.get('new') === 'true') setShowAddModal(true)
+  }, [searchParams])
 
   function toggleSort(f: string) {
     if (sortField === f) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
