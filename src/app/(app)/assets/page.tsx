@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { formatDate } from '@/lib/utils'
 import { Plus, Search, Pencil, Trash2, Package, Upload, Monitor, QrCode, ArrowUpDown, ArrowUp, ArrowDown, Download, Camera, ChevronLeft, ChevronRight, AlertTriangle, RefreshCw } from 'lucide-react'
 import { getSettings, addEmployee as addEmp } from '@/lib/settings-store'
-import { getTeam, queryAssets, saveAsset, saveAssetsBatch, deleteAsset as deleteAssetDb, uploadAssetImage, getTeamSettings } from '@/lib/data'
+import { getTeam, queryAssets, saveAsset, saveAssetsBatch, deleteAsset as deleteAssetDb, uploadAssetImage, getTeamSettings, getEmployees } from '@/lib/data'
 import { checkPlanLimit } from '@/lib/billing'
 import type { Asset } from '@/lib/data'
 import CsvImport from '@/components/csv-import'
@@ -77,7 +77,7 @@ export default function AssetsPage() {
   const localSettings = getSettings()
   const [teamSettings, setTeamSettings] = useState<any>(null)
   const settings = teamSettings || localSettings
-  const employeeNames = settings.employees?.map((e: any) => e.name) || []
+  const [employeeNames, setEmployeeNames] = useState<string[]>([])
 
   // Load team settings from Supabase
   useEffect(() => {
@@ -94,6 +94,12 @@ export default function AssetsPage() {
       setTeamLoading(false)
     })()
   }, [])
+
+  // ── Load employee names for autocomplete ──
+  async function loadEmployeeNames() {
+    const empData = await getEmployees()
+    setEmployeeNames((empData || []).map((e: any) => e.name))
+  }
 
   // ── Fetch assets ──
   const fetchAssets = useCallback(async () => {
@@ -118,7 +124,7 @@ export default function AssetsPage() {
   }, [teamId, page, debouncedSearch, sortField, sortDir])
 
   useEffect(() => {
-    if (!teamLoading) fetchAssets()
+    if (!teamLoading) { fetchAssets(); loadEmployeeNames() }
   }, [fetchAssets, teamLoading])
 
   // Auto-open create modal from QuickAdd
@@ -303,7 +309,7 @@ export default function AssetsPage() {
         <button onClick={() => setShowCsvImport(true)} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Upload size={16} />Import CSV</button>
         <button onClick={() => setShowScanner(true)} className="flex items-center gap-2 px-3 py-2 border border-cyan-300 text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-950 rounded-md text-sm font-medium hover:bg-cyan-100"><Monitor size={16} />Scan Device</button>
         <button onClick={() => downloadCsv(assets, 'devicelog-assets.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Download size={16} />Export</button>
-        <button onClick={() => { setEditing(null); setShowCsvImport(false); setShowScanner(false); setForm({ name: '', category: 'laptop', manufacturer: '', model: '', serial_number: '', status: 'active', assigned_to: '', location: '', purchase_date: '', warranty_expires: '', image: '' }); setShowForm(true) }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400"><Plus size={16} />Add Asset</button>
+        <button onClick={() => { setEditing(null); setShowCsvImport(false); setShowScanner(false); setDeletingAsset(null); setQrAsset(null); setForm({ name: '', category: 'laptop', manufacturer: '', model: '', serial_number: '', status: 'active', assigned_to: '', location: '', purchase_date: '', warranty_expires: '', image: '' }); setShowForm(true) }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400"><Plus size={16} />Add Asset</button>
       </div>
     </div>
 
@@ -372,7 +378,7 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
               <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Category</label>
                 <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm">{(settings.categories as string[]).map((c: string) => <option key={c} value={c}>{c}</option>)}</select></div>
               <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Manufacturer</label><input value={form.manufacturer} onChange={e => setForm({ ...form, manufacturer: e.target.value })} list="manufacturers" className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" placeholder="Dell / Apple / Lenovo" /><datalist id="manufacturers">{["Apple","Dell","Lenovo","HP","Cisco","Synology","Samsung","Logitech","Ubiquiti","APC","Sony","Raspberry Pi","Google","Microsoft","Intel","AMD","NVIDIA","ASUS","Acer","LG","BenQ","Epson","Brother","Canon","Fujitsu","Panasonic","Toshiba","Supermicro"].map(m => <option key={m} value={m} />)}</datalist></div>
-              <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Model</label><input value={form.model} onChange={e => setForm({ ...form, model: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
+              <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Model</label><input value={form.model} onChange={e => setForm({ ...form, model: e.target.value })} list="models" className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /><datalist id="models">{["MacBook Pro","MacBook Air","Mac mini","iMac","Mac Studio","XPS 15","XPS 13","Latitude","OptiPlex","Precision","ThinkPad X1 Carbon","ThinkPad T14","ThinkCentre","ThinkVision","EliteBook","ProBook","ProDesk","iPhone","iPad Air","iPad Pro","Galaxy S","Galaxy Tab","UltraSharp","Surface Laptop","Surface Pro","Pixel","Framework Laptop"].map(m => <option key={m} value={m} />)}</datalist></div>
               <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Serial Number</label><input value={form.serial_number} onChange={e => setForm({ ...form, serial_number: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
               <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Status</label>
                 <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm">{(settings.statuses as string[]).map((s: string) => <option key={s} value={s}>{s}</option>)}</select></div>
@@ -381,6 +387,7 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
               <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Location</label><input value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" placeholder="Office / room" /></div>
               <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Purchase Date</label><input type="date" value={form.purchase_date} onChange={e => setForm({ ...form, purchase_date: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
               <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Warranty Expires</label><input type="date" value={form.warranty_expires} onChange={e => setForm({ ...form, warranty_expires: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
+              <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Planned Purchase Date</label><input type="date" value={form.purchase_date} onChange={e => setForm({ ...form, purchase_date: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
             </div>
             <div className="pt-2">
               <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Photo</label>
