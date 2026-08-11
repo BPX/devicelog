@@ -51,7 +51,8 @@ export default function EmployeesPage() {
   const [editEmp, setEditEmp] = useState<Employee | null>(null)
   const [editForm, setEditForm] = useState({ email:'', job_title:'', department:'' })
   const [showAddModal, setShowAddModal] = useState(false)
-  const [addForm, setAddForm] = useState({ name:'', email:'', job_title:'', department:'' })
+  const [addError, setAddError] = useState('')
+  const [addForm, setAddForm] = useState({ first_name:'', last_name:'', email:'', job_title:'', department:'' })
 
   // ── Load team ──
   useEffect(() => {
@@ -142,16 +143,18 @@ export default function EmployeesPage() {
   }
 
   async function saveNew() {
-    if (!addForm.name.trim() || !teamId) return
-    if (employees.find(e => e.name === addForm.name.trim())) return
+    if (!addForm.first_name.trim() || !teamId) return
+    const fullName = `${addForm.first_name.trim()} ${addForm.last_name.trim()}`.trim()
+    if (employees.find(e => e.name.toLowerCase() === fullName.toLowerCase())) { setAddError('An employee with this name already exists.'); return }
     await saveEmployee({
-      name: addForm.name.trim(),
+      name: fullName,
       email: addForm.email.trim(),
       job_title: addForm.job_title.trim(),
       department: addForm.department.trim(),
     }, teamId)
     setShowAddModal(false)
-    setAddForm({ name:'', email:'', job_title:'', department:'' })
+    setAddForm({ first_name:'', last_name:'', email:'', job_title:'', department:'' })
+    setAddError('')
     await loadEmployees()
   }
 
@@ -199,7 +202,7 @@ export default function EmployeesPage() {
       <div className="flex gap-2">
         <button onClick={() => setShowImport(true)} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Upload size={16}/>Import CSV</button>
         <button onClick={() => downloadCsv(employees.map(e => ({ name: e.name, email: e.email, job_title: e.job_title, department: e.department, devices: counts[e.name]||0 })), 'devicelog-employees.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Download size={16}/>Export</button>
-        <button onClick={() => { setAddForm({ name:'', email:'', job_title:'', department:'' }); setShowAddModal(true) }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400"><Plus size={16}/>Add Employee</button>
+        <button onClick={() => { setAddForm({ first_name:'', last_name:'', email:'', job_title:'', department:'' }); setAddError(''); setShowAddModal(true) }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400"><Plus size={16}/>Add Employee</button>
       </div>
     </div>
 
@@ -270,12 +273,16 @@ export default function EmployeesPage() {
 
     {showAddModal && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"><div className="bg-white dark:bg-slate-950 rounded-lg p-6 w-full max-w-lg border border-slate-200 dark:border-slate-800 shadow-xl"><h2 className="text-lg font-semibold mb-4">New Employee</h2>
       <div className="space-y-3"><div className="grid grid-cols-2 gap-3">
-        <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Name *</label><input autoFocus value={addForm.name} onChange={e => setAddForm({...addForm, name: e.target.value})} placeholder="John Smith" className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" onKeyDown={e => { if(e.key==='Enter') saveNew() }} /></div>
+        {addError && <div className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 p-2 rounded mb-3">{addError}</div>}
+        <div className="grid grid-cols-2 gap-3">
+          <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">First Name *</label><input autoFocus value={addForm.first_name} onChange={e => setAddForm({...addForm, first_name: e.target.value})} placeholder="John" className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" onKeyDown={e => { if(e.key==='Enter') saveNew() }} /></div>
+          <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Last Name</label><input value={addForm.last_name} onChange={e => setAddForm({...addForm, last_name: e.target.value})} placeholder="Smith" className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" onKeyDown={e => { if(e.key==='Enter') saveNew() }} /></div>
+        </div>
         <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Email</label><input value={addForm.email} onChange={e => setAddForm({...addForm, email: e.target.value})} placeholder="john@company.com" className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
         <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Job Title</label><input value={addForm.job_title} onChange={e => setAddForm({...addForm, job_title: e.target.value})} placeholder="IT Manager" className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
         <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Department</label><input value={addForm.department} onChange={e => setAddForm({...addForm, department: e.target.value})} placeholder="Engineering" className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
       </div>
-      <div className="flex gap-2 pt-2"><button onClick={saveNew} disabled={!addForm.name.trim()} className="flex-1 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400 disabled:opacity-50">Add Employee</button><button onClick={() => setShowAddModal(false)} className="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800">Cancel</button></div></div></div></div>}
+      <div className="flex gap-2 pt-2"><button onClick={saveNew} disabled={!addForm.first_name.trim()} className="flex-1 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400 disabled:opacity-50">Add Employee</button><button onClick={() => setShowAddModal(false)} className="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800">Cancel</button></div></div></div></div>}
 
     {editEmp && <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"><div className="bg-white dark:bg-slate-950 rounded-lg p-6 w-full max-w-lg border border-slate-200 dark:border-slate-800 shadow-xl"><h2 className="text-lg font-semibold mb-4">Edit {editEmp.name}</h2>
       <div className="grid grid-cols-2 gap-3">

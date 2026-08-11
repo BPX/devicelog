@@ -13,7 +13,7 @@ export default function QrLabel({ assetId, assetName, onClose }: Props) {
     const u = `${window.location.origin}/asset?id=${assetId}`
     setUrl(u)
     if (canvasRef.current) {
-      QRCode.toCanvas(canvasRef.current, u, { width: 300, margin: 2, color: { dark: '#0f172a', light: '#ffffff' } })
+      QRCode.toCanvas(canvasRef.current, u, { width: 400, margin: 2, color: { dark: '#0f172a', light: '#ffffff' } })
     }
   }, [assetId])
 

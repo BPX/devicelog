@@ -17,7 +17,7 @@ export interface AppSettings {
 
 const defaults: AppSettings = {
   categories: ['laptop','desktop','monitor','phone','tablet','server','printer','network','software','license','other'],
-  statuses: ['active','maintenance','retired','lost'],
+  statuses: ['active','maintenance','planned','retired','lost'],
   employees: [],
   cert_types: ['ssl_cert','software_license','support_contract','domain','other'],
 }

@@ -281,7 +281,7 @@ CREATE POLICY "subscriptions_self" ON subscriptions FOR ALL
 -- 5. STORAGE BUCKET (asset images)
 -- ==========================================================================
 INSERT INTO storage.buckets (id, name, public, file_size_limit)
-  VALUES ('asset-images', 'asset-images', true, 524288)
+  VALUES ('asset-images', 'asset-images', true, 2097152)
   ON CONFLICT (id) DO UPDATE SET public = true;
 
 DROP POLICY IF EXISTS "assets_images_insert" ON storage.objects;

@@ -85,7 +85,7 @@ export default function ScanDevice({ onImport, onClose }: Props) {
         {step === 'instructions' ? (<>
           <div className="bg-slate-900 text-green-400 rounded-lg p-4 font-mono text-sm mb-4">
             <div className="flex items-center gap-2 text-slate-400 text-xs mb-2"><Terminal size={12} /> Terminal</div>
-            <div className="mb-1"><span className="text-cyan-400">$</span> curl -O https://thought-grade-phoenix-quality.trycloudflare.com/scanner.py</div>
+            <div className="mb-1"><span className="text-cyan-400">$</span> curl -O https://devicelog.dev/scanner.py</div>
             <div><span className="text-cyan-400">$</span> {command}</div>
           </div>
 

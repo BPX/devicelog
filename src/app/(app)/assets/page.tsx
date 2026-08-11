@@ -262,7 +262,7 @@ export default function AssetsPage() {
   async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0]
     if (!f) return
-    if (f.size > 500 * 1024) { alert('Image too large. Max 500KB. Please resize.'); return }
+    if (f.size > 2 * 1024 * 1024) { alert('Image too large. Max 2MB. Please resize.'); return }
     setUploading(true)
     const url = await uploadAssetImage(f)
     setUploading(false)
@@ -303,7 +303,7 @@ export default function AssetsPage() {
         <button onClick={() => setShowCsvImport(true)} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Upload size={16} />Import CSV</button>
         <button onClick={() => setShowScanner(true)} className="flex items-center gap-2 px-3 py-2 border border-cyan-300 text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-950 rounded-md text-sm font-medium hover:bg-cyan-100"><Monitor size={16} />Scan Device</button>
         <button onClick={() => downloadCsv(assets, 'devicelog-assets.csv')} className="flex items-center gap-2 px-3 py-2 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 rounded-md text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"><Download size={16} />Export</button>
-        <button onClick={() => { setEditing(null); setForm({ name: '', category: 'laptop', manufacturer: '', model: '', serial_number: '', status: 'active', assigned_to: '', location: '', purchase_date: '', warranty_expires: '', image: '' }); setShowForm(true) }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400"><Plus size={16} />Add Asset</button>
+        <button onClick={() => { setEditing(null); setShowCsvImport(false); setShowScanner(false); setForm({ name: '', category: 'laptop', manufacturer: '', model: '', serial_number: '', status: 'active', assigned_to: '', location: '', purchase_date: '', warranty_expires: '', image: '' }); setShowForm(true) }} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded-md text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400"><Plus size={16} />Add Asset</button>
       </div>
     </div>
 
@@ -371,7 +371,7 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
               <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Name *</label><input required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" placeholder="e.g. MacBook Pro 14" /></div>
               <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Category</label>
                 <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm">{(settings.categories as string[]).map((c: string) => <option key={c} value={c}>{c}</option>)}</select></div>
-              <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Manufacturer</label><input value={form.manufacturer} onChange={e => setForm({ ...form, manufacturer: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" placeholder="Dell / Apple / Lenovo" /></div>
+              <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Manufacturer</label><input value={form.manufacturer} onChange={e => setForm({ ...form, manufacturer: e.target.value })} list="manufacturers" className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" placeholder="Dell / Apple / Lenovo" /><datalist id="manufacturers">{["Apple","Dell","Lenovo","HP","Cisco","Synology","Samsung","Logitech","Ubiquiti","APC","Sony","Raspberry Pi","Google","Microsoft","Intel","AMD","NVIDIA","ASUS","Acer","LG","BenQ","Epson","Brother","Canon","Fujitsu","Panasonic","Toshiba","Supermicro"].map(m => <option key={m} value={m} />)}</datalist></div>
               <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Model</label><input value={form.model} onChange={e => setForm({ ...form, model: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
               <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Serial Number</label><input value={form.serial_number} onChange={e => setForm({ ...form, serial_number: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm" /></div>
               <div><label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Status</label>
@@ -457,7 +457,7 @@ Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
                   <td className="py-2.5 px-4 text-slate-500 dark:text-slate-400 capitalize">{a.category}</td>
                   <td className="py-2.5 px-4 text-slate-600 dark:text-slate-400">{a.assigned_to || '—'}</td>
                   <td className="py-2.5 px-4">
-                    <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${a.status === 'active' ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300' : a.status === 'maintenance' ? 'bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}>{a.status}</span>
+                    <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${a.status === 'active' ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300' : a.status === 'maintenance' ? 'bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300' : a.status === 'planned' ? 'bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}>{a.status}</span>
                   </td>
                   <td className="py-2.5 px-4 text-slate-500 dark:text-slate-400">{formatDate(a.warranty_expires)}</td>
                   <td className="py-2.5 px-4">
