@@ -295,7 +295,13 @@ export default function EmployeesPage() {
       </div>
       <div className="flex gap-2 pt-2"><button onClick={saveEdit} className="flex-1 py-2 bg-cyan-600 dark:bg-cyan-500 text-white rounded text-sm font-medium hover:bg-cyan-700 dark:hover:bg-cyan-400">Save Changes</button><button onClick={() => setEditEmp(null)} className="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800">Cancel</button></div></div></div>}
 
-    {showImport && <CsvImport title="Import Employees" description="Upload a CSV with name, email, job title, department." sampleData={`name,email,job_title,department
+    {showImport && <CsvImport title="Import Employees" description="Upload a CSV with employee data."
+      fields={[
+        { key: 'name', label: 'Name', required: true, guess: ['name','full_name','employee','person','staff'] },
+        { key: 'email', label: 'Email', guess: ['email','mail','e-mail'] },
+        { key: 'job_title', label: 'Job Title', guess: ['job_title','title','role','position','job'] },
+        { key: 'department', label: 'Department', guess: ['department','dept','team','group'] },
+      ]} sampleData={`name,email,job_title,department
 John Smith,john@company.com,IT Manager,IT
 Jane Doe,jane@company.com,System Admin,IT`} sampleFilename="employees.csv" onImport={async rows => {
       if (!teamId) return

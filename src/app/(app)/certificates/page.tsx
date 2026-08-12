@@ -208,8 +208,15 @@ export default function CertsPage() {
       </form></div></div>}
 
     {showImport && <CsvImport
-      title="Import Certifications"
-      description="Upload a CSV with name, type, issuer, expiry. We'll try to match columns."
+    title="Import Certifications"
+    description="Upload a CSV with your certifications data."
+    fields={[
+      { key: 'name', label: 'Name', required: true, guess: ['name','cert','domain','title','subject'] },
+      { key: 'type', label: 'Type', guess: ['type','kind','category'] },
+      { key: 'issuer', label: 'Issuer', guess: ['issuer','issued_by','authority','ca'] },
+      { key: 'expires_at', label: 'Expires At', guess: ['expires','expires_at','expiry','expiration','date','end'] },
+      { key: 'notify_before_days', label: 'Notify Before (Days)', guess: ['notify','reminder','days','alert'] },
+    ]}
       sampleData={`name,type,issuer,expires_at
 devicelog.com SSL,ssl_cert,Let's Encrypt,2027-06-15
 Office 365,software_license,Microsoft,2026-12-31`}

@@ -335,7 +335,19 @@ export default function AssetsPage() {
     {showCsvImport && (
       <CsvImport
         title="Import Assets from CSV"
-        description="Upload your existing inventory spreadsheet. We'll try to match columns like name, model, serial, category, assigned_to, etc."
+        description="Upload your existing inventory spreadsheet."
+        fields={[
+          { key: 'name', label: 'Name', required: true, guess: ['name','asset','device','item','product'] },
+          { key: 'category', label: 'Category', guess: ['category','type','kind'] },
+          { key: 'manufacturer', label: 'Manufacturer', guess: ['manufacturer','make','brand','vendor'] },
+          { key: 'model', label: 'Model', guess: ['model','product'] },
+          { key: 'serial_number', label: 'Serial Number', guess: ['serial','serial_number','serialnumber','s/n','sn'] },
+          { key: 'status', label: 'Status', guess: ['status','state','condition'] },
+          { key: 'assigned_to', label: 'Assigned To', guess: ['assigned','assigned_to','assignedto','user','employee','person','owner'] },
+          { key: 'location', label: 'Location', guess: ['location','room','office','site'] },
+          { key: 'purchase_date', label: 'Purchase Date', guess: ['purchase','purchased','purchase_date','date','bought'] },
+          { key: 'warranty_expires', label: 'Warranty Expires', guess: ['warranty','warranty_expires','warrantyexpires','expires','expiry'] },
+        ]}
         sampleData={`name,model,serial_number,category,assigned_to,location
 MacBook Pro,MBP 14 M3,SN123456,laptop,John Smith,Zurich Office
 Dell XPS 15,XPS 9530,SN789012,laptop,Jane Doe,Geneva Office`}
