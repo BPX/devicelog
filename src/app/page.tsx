@@ -442,6 +442,39 @@ export default function LandingPage() {
         </div>
       </Section>
 
+      {/* ── PRICE COMPARISON HOOK ── */}
+      <section className="max-w-6xl mx-auto px-6 py-20">
+        <div className="text-center mb-12">
+          <span className="inline-flex px-3 py-1 bg-cyan-50 dark:bg-cyan-950 border border-cyan-200 dark:border-cyan-800 rounded-full text-xs font-semibold text-cyan-700 dark:text-cyan-300 mb-4">WHY DEVICELOG</span>
+          <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">The price gap is ridiculous</h2>
+          <p className="mt-3 text-base text-slate-500 dark:text-slate-400">Same features. 5&times; to 28&times; cheaper. No per-user pricing. No hidden fees.</p>
+        </div>
+
+        <div className="max-w-xl mx-auto space-y-3">
+          {[
+            { name: 'devicelog', price: '$9/mo', bar: 'w-[100%]', color: 'bg-cyan-500', ours: true },
+            { name: 'Snipe-IT (hosted)', price: '$40/mo', bar: 'w-[22%]', color: 'bg-slate-300 dark:bg-slate-600' },
+            { name: 'Freshservice', price: '$119/mo', bar: 'w-[8%]', color: 'bg-slate-300 dark:bg-slate-600' },
+            { name: 'Asset Panda', price: '$250/mo', bar: 'w-[4%]', color: 'bg-slate-300 dark:bg-slate-600' },
+          ].map((item, i) => (
+            <div key={item.name} className={`flex items-center gap-3 ${item.ours ? 'bg-cyan-50/50 dark:bg-cyan-950/30 rounded-lg px-4 py-3 border border-cyan-200/50 dark:border-cyan-800/50' : 'px-4'}`}>
+              <span className={`text-sm font-medium w-40 text-right shrink-0 ${item.ours ? 'text-cyan-700 dark:text-cyan-300' : 'text-slate-500 dark:text-slate-400'}`}>
+                {item.name}
+                {item.ours && <span className="ml-1 text-xs text-cyan-500">(you)</span>}
+              </span>
+              <div className="flex-1 h-8 bg-slate-100 dark:bg-slate-800 rounded overflow-hidden relative">
+                <div className={`h-full ${item.color} rounded transition-all duration-1000 ${item.bar}`} />
+              </div>
+              <span className={`text-sm font-semibold w-20 shrink-0 ${item.ours ? 'text-cyan-600 dark:text-cyan-400' : 'text-slate-400 dark:text-slate-500'}`}>{item.price}</span>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-center mt-8 text-sm text-slate-400 dark:text-slate-500">
+          All plans: unlimited users. No per-seat pricing. Cancel anytime.
+        </p>
+      </section>
+
       {/* ── PRICING ── */}
       <Section alt id="pricing">
         <div className="text-center mb-16">
