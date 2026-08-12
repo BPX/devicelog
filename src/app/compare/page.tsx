@@ -19,7 +19,7 @@ const columns = [
 ]
 
 const rows = [
-  { label: 'Pricing', devicelog: 'Free tier + $9/mo', snipeit: 'Free (self-host)', spreadsheet: 'Free', assetpanda: 'From $50/mo' },
+  { label: 'Pricing', devicelog: 'Free — unlimited', snipeit: 'Free (self-host)', spreadsheet: 'Free', assetpanda: 'From $50/mo' },
   { label: 'Setup time', devicelog: '< 2 minutes', snipeit: 'Hours (server setup)', spreadsheet: 'Minutes', assetpanda: 'Days (onboarding)' },
   { label: 'Hosting', devicelog: 'Cloud (included)', snipeit: 'Self-hosted', spreadsheet: 'Any', assetpanda: 'Cloud' },
   { label: 'Certificate tracking', devicelog: 'Built-in', snipeit: 'No', spreadsheet: 'No', assetpanda: 'No' },
@@ -29,7 +29,7 @@ const rows = [
   { label: 'CSV import', devicelog: 'Auto-column match', snipeit: 'Manual mapping', spreadsheet: 'Native', assetpanda: 'Limited' },
   { label: 'Team collaboration', devicelog: 'Built-in', snipeit: 'Limited', spreadsheet: 'No', assetpanda: 'Yes' },
   { label: 'Modern UI', devicelog: 'Yes', snipeit: 'Dated', spreadsheet: 'Varies', assetpanda: 'Functional' },
-  { label: 'Free tier', devicelog: '50 assets, 2 users', snipeit: 'Unlimited', spreadsheet: 'Unlimited', assetpanda: 'No' },
+  { label: 'Free tier', devicelog: 'Unlimited assets & users', snipeit: 'Unlimited', spreadsheet: 'Unlimited', assetpanda: 'No' },
   { label: 'Open source', devicelog: 'Source-visible (BSL)', snipeit: 'AGPL', spreadsheet: 'N/A', assetpanda: 'No' },
 ]
 
@@ -54,7 +54,7 @@ export default function ComparePage() {
           Compare IT Asset Management Tools
         </h1>
         <p className="mt-4 text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-          See why teams choose devicelog over Snipe-IT, spreadsheets, and Asset Panda for modern, no-hassle IT asset tracking.
+          See why teams choose devicelog over Snipe-IT, spreadsheets, and Asset Panda. Free. Unlimited. No server required.
         </p>
       </section>
 
@@ -109,7 +109,7 @@ export default function ComparePage() {
             <p className="font-medium text-slate-900 dark:text-slate-100 mb-2">When Snipe-IT makes sense</p>
             <ul className="space-y-1.5">
               <li>• You already have server infrastructure and IT staff</li>
-              <li>• You need unlimited assets on a free tier</li>
+              <li>• You prefer self-hosted open source under AGPL</li>
               <li>• You require on-premise deployment for compliance</li>
               <li>• You prefer full AGPL open source</li>
             </ul>
@@ -172,7 +172,7 @@ export default function ComparePage() {
           Ready to stop fighting your spreadsheet?
         </h2>
         <p className="text-slate-500 dark:text-slate-400 mb-6">
-          Start tracking your IT assets in under 2 minutes. Free for up to 50 assets.
+          Start tracking your IT assets in under 2 minutes. Free — unlimited everything.
         </p>
         <Link href="/signup" className="inline-flex items-center gap-2 px-6 py-3 bg-cyan-600 text-white text-sm font-semibold rounded-lg hover:bg-cyan-700">
           Start free <ArrowRight size={16} />
