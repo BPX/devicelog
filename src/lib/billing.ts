@@ -87,7 +87,7 @@ function uid(): string {
  * Plan limits for the free tier.
  */
 const PLAN_LIMITS: Record<string, { assets: number; members: number }> = {
-  free: { assets: 50, members: 2 },
+  free: { assets: Infinity, members: Infinity },
   team: { assets: Infinity, members: Infinity },
   enterprise: { assets: Infinity, members: Infinity },
 }

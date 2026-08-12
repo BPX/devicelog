@@ -6,7 +6,6 @@ import { getSettings, addEmployee as addEmp } from '@/lib/settings-store'
 import { getTeam, queryAssets, saveAsset, saveAssetsBatch, deleteAsset as deleteAssetDb, uploadAssetImage, getTeamSettings, getEmployees } from '@/lib/data'
 import { addToast } from '@/components/toast'
 import { formatDate } from '@/lib/utils'
-import { checkPlanLimit } from '@/lib/billing'
 import type { Asset } from '@/lib/data'
 import CsvImport from '@/components/csv-import'
 import EmployeeAutocomplete from '@/components/employee-autocomplete'
@@ -176,8 +175,7 @@ export default function AssetsPage() {
 
   async function handleCsvImport(rows: Record<string, string>[]) {
     if (!teamId) return
-    const limit = await checkPlanLimit('create_asset')
-    if (!limit.allowed) { addToast(limit.message, 'warning'); return }
+
     const existingSerials = new Set(assets.filter(a => a.serial_number).map(a => a.serial_number.toLowerCase()))
     const newAssets: Asset[] = []
     let skipped = 0
@@ -200,8 +198,7 @@ export default function AssetsPage() {
   // ── Scan device ──
   async function handleScanImport(data: Record<string, string>) {
     if (!teamId) return
-    const limit = await checkPlanLimit('create_asset')
-    if (!limit.allowed) { addToast(limit.message, 'warning'); return }
+
     const asset: Asset = {
       id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
       name: data.name || 'Unknown',
@@ -226,8 +223,7 @@ export default function AssetsPage() {
 
     // Check plan limits for new assets (not edits)
     if (!editing) {
-      const limit = await checkPlanLimit('create_asset')
-      if (!limit.allowed) { addToast(limit.message, 'warning'); return }
+
     }
 
     if (editing) {

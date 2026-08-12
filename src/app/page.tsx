@@ -180,8 +180,8 @@ const featureTabs = [
 
 // ── Pricing ──
 const plans = [
-  { name: 'Free', price: '$0', period: 'forever', description: 'For individuals and small teams getting started.', features: ['Up to 50 assets','2 team members','Certificate tracking','CSV import & export','QR code labels','Basic dashboard'], cta: 'Start free', href: '/signup', featured: false },
-  { name: 'Team', price: '$9', period: '/month', description: 'For growing companies that need shared visibility.', features: ['Unlimited assets','Unlimited team members','Everything in Free','Device barcode scanning','Priority support','Bulk QR generation','Custom fields'], cta: 'Start free trial', href: '/signup?plan=team', featured: true },
+  { name: 'Free', price: '$0', period: 'forever', description: 'Everything you need. No catch.', features: ['Unlimited assets','Unlimited team members','QR code labels','SSL cert monitoring','CSV import','Expiry alerts','Dark mode'], cta: 'Start free', href: '/signup', featured: false },
+  { name: 'Team', price: '$9', period: '/month', description: 'Premium features for power users.', features: ['Everything in Free','Audit log — see who changed what','Custom fields','CSV & JSON export','API access','Remove branding','Priority support'], cta: 'Go Team', href: '/signup?plan=team', featured: true },
 ]
 
 const comparison = [
@@ -208,12 +208,12 @@ function CheckCell({ value }: { value: boolean | string }) {
 }
 
 const faqs = [
-  { q: 'Is devicelog really free?', a: 'Yes. The Free plan includes up to 50 assets and 2 team members. No credit card, no time limit, no hidden fees. We believe every team should have basic IT asset management, and charging for that doesn\'t sit right with us. Upgrade to Team ($9/mo) for unlimited everything.' },
+  { q: 'Is devicelog really free?', a: 'Yes. Unlimited assets, unlimited team members, QR codes, SSL cert monitoring, CSV import, expiry alerts — all free forever. No credit card, no time limit. The optional Team plan ($9/mo) adds audit logs, custom fields, and API access if you need them.' },
   { q: 'How is this different from a spreadsheet?', a: 'Spreadsheets go stale the moment someone forgets to update them. devicelog gives your whole team a shared, real-time view of your entire IT inventory. Plus you get automatic certificate expiry reminders, QR code labels, mobile barcode scanning, and team assignment tracking. Things spreadsheets simply can\'t do. When Sarah leaves the company, you know exactly which laptop to recover.' },
   { q: 'Can I import my existing inventory?', a: 'Absolutely. Drop your CSV or Excel file and our column mapper auto-detects names, serials, models, and assigned users. Works with exports from Excel, Google Sheets, Snipe-IT, and most other tools. We\'ve imported inventories ranging from 20 devices to 5,000+.' },
   { q: 'How is my data secured?', a: 'All data is encrypted in transit (TLS 1.3) and at rest (AES-256). We run on Supabase with row-level security, meaning your team can only see your company\'s data. Our database is SOC 2 compliant. We don\'t sell, share, or analyze your inventory data. Ever.' },
   { q: 'What happens if I exceed the free limits?', a: 'We\'ll show a friendly notification in your dashboard when you\'re approaching the limit. Your existing data stays safe and accessible. You just can\'t add more assets or team members until you upgrade to Team. No data loss, no surprise bills.' },
-  { q: 'Can I cancel my Team plan anytime?', a: 'Yes, with one click from your billing settings. Your data remains accessible on the Free plan. If you have more than 50 assets, you can still view and export everything. You just can\'t add new ones until you either upgrade again or reduce your inventory count.' },
+  { q: 'Can I cancel my Team plan anytime?', a: 'Yes, with one click from your billing settings. Your data stays fully accessible — you just lose access to premium features like audit logs, custom fields, and API access. No data loss. No lock-in.' },
 ]
 
 export default function LandingPage() {
@@ -270,7 +270,7 @@ export default function LandingPage() {
         </h1>
 
         <p className="mt-6 text-lg sm:text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-center leading-relaxed">
-          The IT asset manager your team will actually use. Import your inventory in seconds, scan QR codes from your phone, and never miss a renewal. Free for up to 50 assets.
+          The IT asset manager your team will actually use. Import your inventory in seconds, scan QR codes from your phone, and never miss a renewal. Free — unlimited everything.
         </p>
 
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -498,7 +498,7 @@ export default function LandingPage() {
       <section className="py-24 sm:py-32 bg-slate-900 dark:bg-slate-900">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white leading-tight">Stop guessing where your IT assets are</h2>
-          <p className="mt-4 text-lg text-slate-300 leading-relaxed">Set up in 2 minutes. Import your spreadsheet. Free for up to 50 assets. No credit card needed.</p>
+          <p className="mt-4 text-lg text-slate-300 leading-relaxed">Set up in 2 minutes. Import your spreadsheet. Unlimited free assets. No credit card needed.</p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/signup" className="inline-flex items-center gap-2 px-7 py-3.5 bg-cyan-500 text-white text-base font-semibold rounded-lg hover:bg-cyan-400 transition-colors shadow-[0_0_0_1px_rgba(8,145,178,0.3),0_4px_8px_rgba(8,145,178,0.3)]">
               Start tracking for free <ArrowRight size={18} />

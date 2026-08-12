@@ -60,8 +60,7 @@ export default function TeamPage() {
     if (!email) return
 
     // Check plan limits
-    const limit = await checkPlanLimit('invite_member')
-    if (!limit.allowed) { setInviteError(limit.message); return }
+
 
     setInviting(true)
     setInviteError('')
