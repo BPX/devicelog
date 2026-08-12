@@ -23,7 +23,12 @@ function fuzzyMatch(header: string, guesses: string[]): boolean {
   const h = header.toLowerCase().replace(/[^a-z0-9]/g, '')
   return guesses.some(g => {
     const g2 = g.toLowerCase().replace(/[^a-z0-9]/g, '')
-    return h.includes(g2) || g2.includes(h)
+    // Exact match or one contains the other
+    if (h === g2 || h.includes(g2) || g2.includes(h)) return true
+    // Partial word match: check if any guess word appears in the header
+    const hWords = h.split(/(?=[a-z])/).filter(w => w.length >= 2)
+    const gWords = g2.split(/(?=[a-z])/).filter(w => w.length >= 2)
+    return hWords.some(hw => gWords.some(gw => hw === gw || hw.includes(gw) || gw.includes(hw)))
   })
 }
 
