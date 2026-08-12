@@ -181,7 +181,7 @@ const featureTabs = [
 // ── Pricing ──
 const plans = [
   { name: 'Free', price: '$0', period: 'forever', description: 'Everything you need. No catch.', features: ['Unlimited assets','Unlimited team members','QR code labels','SSL cert monitoring','CSV import','Expiry alerts','Dark mode'], cta: 'Start free', href: '/signup', featured: false },
-  { name: 'Team', price: '$9', period: '/month', description: 'Premium features for power users.', features: ['Everything in Free','Audit log — see who changed what','Custom fields','CSV & JSON export','API access','Remove branding','Priority support'], cta: 'Go Team', href: '/signup?plan=team', featured: true },
+  { name: 'Team', price: '$9', period: '/month', description: 'Support an indie project. Get exactly the same product.', features: ['Everything in Free — literally','No extra features (yet)','Fund ongoing development','Priority bug fixes','Your name in the README','Early access to new features','Cancel anytime'], cta: 'Support us — $9', href: '/signup?plan=team', featured: true },
 ]
 
 const comparison = [
@@ -208,12 +208,13 @@ function CheckCell({ value }: { value: boolean | string }) {
 }
 
 const faqs = [
-  { q: 'Is devicelog really free?', a: 'Yes. Unlimited assets, unlimited team members, QR codes, SSL cert monitoring, CSV import, expiry alerts — all free forever. No credit card, no time limit. The optional Team plan ($9/mo) adds audit logs, custom fields, and API access if you need them.' },
+  { q: 'Is devicelog really free?', a: 'Yes. Unlimited everything, free forever. No credit card needed. No time limit. No hidden limits. The Team plan is a supporter tier — you get exactly the same product and help fund development. Totally optional.' },
   { q: 'How is this different from a spreadsheet?', a: 'Spreadsheets go stale the moment someone forgets to update them. devicelog gives your whole team a shared, real-time view of your entire IT inventory. Plus you get automatic certificate expiry reminders, QR code labels, mobile barcode scanning, and team assignment tracking. Things spreadsheets simply can\'t do. When Sarah leaves the company, you know exactly which laptop to recover.' },
   { q: 'Can I import my existing inventory?', a: 'Absolutely. Drop your CSV or Excel file and our column mapper auto-detects names, serials, models, and assigned users. Works with exports from Excel, Google Sheets, Snipe-IT, and most other tools. We\'ve imported inventories ranging from 20 devices to 5,000+.' },
   { q: 'How is my data secured?', a: 'All data is encrypted in transit (TLS 1.3) and at rest (AES-256). We run on Supabase with row-level security, meaning your team can only see your company\'s data. Our database is SOC 2 compliant. We don\'t sell, share, or analyze your inventory data. Ever.' },
   { q: 'What happens if I exceed the free limits?', a: 'We\'ll show a friendly notification in your dashboard when you\'re approaching the limit. Your existing data stays safe and accessible. You just can\'t add more assets or team members until you upgrade to Team. No data loss, no surprise bills.' },
-  { q: 'Can I cancel my Team plan anytime?', a: 'Yes, with one click from your billing settings. Your data stays fully accessible — you just lose access to premium features like audit logs, custom fields, and API access. No data loss. No lock-in.' },
+  { q: 'What do I get with the Team plan?', a: 'Right now? A warm feeling and faster bug fixes. The Team plan is a supporter tier — you get the exact same product as Free. Over time we will add premium-only features (audit logs, API access, custom fields), and Team subscribers get them first. For now, you are directly funding an indie developer to keep building.' },
+  { q: 'Can I cancel my Team plan anytime?', a: 'Yes, with one click. Cancel anytime and your data stays exactly as it is — you just revert to the Free plan. No data loss, no lock-in, no hard feelings.' },
 ]
 
 export default function LandingPage() {
