@@ -103,7 +103,7 @@ export default function CsvImport({ onImport, onClose, title, description, field
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onDragOver={e => { e.preventDefault(); setDragOver(true) }} onDragLeave={() => setDragOver(false)} onDrop={e => { e.preventDefault(); setDragOver(false); handleFile(e.dataTransfer.files[0]) }}>
-      <div className="bg-white dark:bg-slate-950 rounded-lg p-6 w-full max-w-xl border border-slate-200 dark:border-slate-800 shadow-xl">
+      <div className="bg-white dark:bg-slate-950 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-auto border border-slate-200 dark:border-slate-800 shadow-xl">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
           <button onClick={onClose}><X size={18} className="text-slate-400" /></button>
@@ -139,7 +139,7 @@ export default function CsvImport({ onImport, onClose, title, description, field
             <div className="space-y-2 mb-4">
               {headers.map(header => (
                 <div key={header} className="flex items-center gap-3">
-                  <span className="text-sm text-slate-700 dark:text-slate-300 font-medium w-40 truncate text-right shrink-0" title={header}>
+                  <span className="text-sm text-slate-700 dark:text-slate-300 font-medium w-32 truncate text-right shrink-0" title={header}>
                     {header}
                   </span>
                   <ArrowRight size={14} className="text-slate-300 shrink-0" />
