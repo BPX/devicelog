@@ -8,11 +8,11 @@ Simple IT asset management for small teams. Track laptops, monitors, SSL certifi
 
 ## Features
 
-- 📦 **Asset tracking** — laptops, monitors, phones, servers, printers with serials, warranties, and QR codes
-- 🔒 **Certificate & license tracking** — SSL certs, software licenses, support contracts with expiry alerts
-- 👥 **Team sync** — shared inventory, assigned owners, full audit trail
-- 📥 **CSV import/export** — drop your spreadsheet, we handle the rest
-- 🌙 **Dark mode** — built-in
+- **Asset tracking** — laptops, monitors, phones, servers, printers with serials, warranties, and QR codes
+- **Certificate & license tracking** — SSL certs, software licenses, support contracts with expiry alerts
+- **Team sync** — shared inventory, assigned owners, full audit trail
+- **CSV import/export** — drop your spreadsheet, we handle the rest
+- **Dark mode** — built-in
 
 ## Tech Stack
 
