@@ -7,6 +7,4 @@
   <url><loc>https://devicelog.dev/demo/assets</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://devicelog.dev/demo/employees</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://devicelog.dev/demo/certificates</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://devicelog.dev/login</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://devicelog.dev/signup</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>

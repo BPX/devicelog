@@ -1,0 +1,26 @@
+# devicelog
+
+> Simple IT asset management for small teams. Track laptops, monitors, SSL certificates, and software licenses. Unlimited free tier. No self-hosting.
+
+devicelog is a free, open-source IT asset manager. Drop your CSV, get QR code labels, track SSL certs and warranties, and never miss an expiry again.
+
+## Key pages
+
+- [Home](https://devicelog.dev/): What devicelog does, pricing, and features
+- [Live demo](https://devicelog.dev/demo): Explore the product without signing up
+- [Compare](https://devicelog.dev/compare): devicelog vs Snipe-IT, spreadsheets, and Asset Panda
+
+## What devicelog does
+
+- Track laptops, monitors, phones, and servers with serials and warranties
+- SSL certificate, software license, and support contract tracking with expiry alerts
+- QR code labels you can scan from your phone
+- CSV import from Excel, Google Sheets, or Snipe-IT with column mapping
+- Team sync — everyone sees the same real-time inventory
+- Free forever: unlimited assets, unlimited team members. Optional $9/mo supporter tier.
+
+## Stack
+
+Next.js 16 (static export), Supabase (Postgres + RLS), Stripe, Vercel. Source-visible under BSL 1.1.
+
+- [GitHub](https://github.com/bpx/devicelog)

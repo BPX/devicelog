@@ -10,13 +10,16 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 
 export const metadata: Metadata = {
   icons: { icon: '/logo.svg', apple: '/logo.svg' },
-  title: "devicelog — Free IT Asset Management Software | Track Laptops & Certifications",
-  description: "Simple IT asset management for small teams. Track laptops, monitors, SSL certificates, and software licenses. Free tier, CSV import, QR labels. No bloat.",
+  title: {
+    default: "devicelog — Simple IT Asset Management",
+    template: "%s — devicelog",
+  },
+  description: "Track your company's laptops, monitors, SSL certificates, and software licenses. Unlimited free tier. QR labels, CSV import, expiry alerts.",
   manifest: "/manifest.json",
   keywords: ["IT asset management", "asset tracking", "IT inventory", "certificate tracking", "warranty tracking", "software license management"],
   openGraph: {
     title: "devicelog — Simple IT Asset Management",
-    description: "Track your company's laptops, monitors, SSL certs, and software licenses. Free for small teams.",
+    description: "Track your company's laptops, monitors, SSL certs, and software licenses. Unlimited free tier.",
     url: "https://devicelog.dev",
     siteName: "devicelog",
     type: "website",
@@ -25,11 +28,10 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "devicelog — Simple IT Asset Management",
-    description: "Track your company's laptops, monitors, SSL certs, and software licenses. Free for small teams.",
+    description: "Track your company's laptops, monitors, SSL certs, and software licenses. Unlimited free tier.",
     images: ["https://devicelog.dev/og-image.svg"],
   },
   robots: { index: true, follow: true },
-  alternates: { canonical: "https://devicelog.dev" },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -57,8 +59,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               "name": "devicelog",
               "applicationCategory": "BusinessApplication",
               "operatingSystem": "Web",
-              "description": "Simple IT asset management for small teams. Track laptops, monitors, SSL certificates, and software licenses.",
-              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "description": "Free tier with up to 50 assets" },
+              "description": "Track laptops, monitors, SSL certificates, and software licenses. Unlimited free tier, QR labels, CSV import.",
+              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "description": "Free forever — unlimited assets and users" },
               "url": "https://devicelog.dev",
             }),
           }}
