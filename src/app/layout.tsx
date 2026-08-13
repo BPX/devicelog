@@ -60,7 +60,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               "applicationCategory": "BusinessApplication",
               "operatingSystem": "Web",
               "description": "Track laptops, monitors, SSL certificates, and software licenses. Unlimited free tier, QR labels, CSV import.",
-              "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "description": "Free forever — unlimited assets and users" },
               "url": "https://devicelog.dev",
             }),
           }}

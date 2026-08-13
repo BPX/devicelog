@@ -3,10 +3,10 @@ import Link from 'next/link'
 import { Check, X, ArrowRight } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'devicelog vs Snipe-IT, Spreadsheets & Asset Panda — IT Asset Management Comparison',
+  title: 'devicelog vs Snipe-IT & Asset Panda',
   description: 'Compare devicelog with Snipe-IT, spreadsheets, and Asset Panda. See how devicelog gives you modern IT asset tracking without self-hosting, spreadsheets, or enterprise pricing.',
   openGraph: {
-    title: 'devicelog vs Snipe-IT, Spreadsheets & Asset Panda',
+    title: 'devicelog vs Snipe-IT & Asset Panda',
     description: 'Compare devicelog with Snipe-IT, spreadsheets, and Asset Panda.',
   },
 }
